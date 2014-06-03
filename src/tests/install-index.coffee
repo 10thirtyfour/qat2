@@ -26,6 +26,8 @@ module.exports = ->
   {Q,utils,toolfuns} = runner = @
   auth = "Basic " + new Buffer("qx\\robot:2p4u-Zz").toString("base64")
   
+  precursor = []
+
   if runner.argv["install-lycia"]
     @reg
       name: "lycia$download"
@@ -39,14 +41,14 @@ module.exports = ->
           headers:
             "Authorization": auth
       promise: toolfuns.regDownloadPromise
-    precursor = "lycia$download"
+    precursor = ["lycia$download"]
   
     commandIndex = 1
     for command in platforms.win32.commands
       @reg
         name: "lycia$install$cmd"+commandIndex
         setup: true;
-        after: [precursor]
+        after: precursor
         data:
           command: command
           options:
@@ -62,7 +64,7 @@ module.exports = ->
     @reg
       name: "lycia$install$environ"
       setup: true;
-#      after: [precursor]
+      after: [precursor]
       data:
         command: platforms.win32.environ
       promise: toolfuns.regGetEnviron
