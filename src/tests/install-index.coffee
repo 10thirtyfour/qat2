@@ -33,7 +33,7 @@ module.exports = ->
       name: "lycia$download"
       setup: true;
       data:
-        filename: "d:\\temp\\package.zip"
+        filename: "c:\\temp\\package.zip"
         retries: 3
         options:
           host: "buildsystem.qx"
@@ -52,9 +52,9 @@ module.exports = ->
         data:
           command: command
           options:
-            cwd:"d:\\temp"
+            cwd:"c:\\temp"
             env:
-              path:"c:\\bats"
+              path:"c:\\windows\\system32\\bats"
             stdio:"ignore"
         promise: toolfuns.regExecPromise
       precursor = "lycia$install$cmd"+commandIndex
