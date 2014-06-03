@@ -53,8 +53,8 @@ module.exports = ->
           command: command
           options:
             cwd:"c:\\temp"
-            env:
-              path:"c:\\windows\\system32\\bats"
+#            env:
+#              path:"c:\\windows\\system32\\bats"
             stdio:"ignore"
         promise: toolfuns.regExecPromise
       precursor = "lycia$install$cmd"+commandIndex
