@@ -15,6 +15,16 @@ module.exports = (grunt) ->
         dest: "lib"
         src: "**/*.coffee"
         ext: ".js"
+    copy:
+      main:
+        expand: true
+        cwd: "src/"
+        src: "**/*.js"
+        dest: "lib"
+    mkdir:
+      all:
+        options:
+          create: ["tmp"]
     watch:
       main:
         files: ["src/**"]
@@ -29,4 +39,4 @@ module.exports = (grunt) ->
           ]
 
   grunt.initConfig config
-  grunt.registerTask "default", ["clean","coffee","markdown"]
+  grunt.registerTask "default", ["clean","coffee","copy","mkdir","markdown"]

@@ -7,7 +7,7 @@ byline = require "byline"
 spawn = require("child_process").spawn
 http = require "http"
 
-{CallbackReadWrapper} = require "D:/src/qat/src/engines/readercallback"
+{CallbackReadWrapper} = require "./readercallback"
 
 module.exports = ->
   {yp,fs,_,Q,path} = runner = @
