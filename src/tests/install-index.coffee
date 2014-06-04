@@ -3,12 +3,12 @@ platforms =
     url:"/repository/downloadAll/bt80/.lastSuccessful"
     environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
     commands: [
-      "unzip.exe -j package.zip *Lycia-nt-32*.exe"
-      "cmd /c ren Lycia-nt-32*.exe lycia2.exe"
-      "lycia2.exe /S"
       "unzip.exe -j package.zip *LyciaDesktop-1.1-*.msi"
       "cmd /c ren LyciaDesktop-1.1-*.msi ldnet.msi"
       "cmd /c ldnet.msi /quiet"
+      "unzip.exe -j package.zip *Lycia-nt-32*.exe"
+      "cmd /c ren Lycia-nt-32*.exe lycia2.exe"
+      "lycia2.exe /S"
       "cvs.exe -d :pserver:seza@cvs.qx:/demo co ."
     ]
    
