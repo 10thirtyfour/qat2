@@ -13,7 +13,7 @@ module.exports = ->
         pattern: ["**/*.tlog"]
         parseFile: (fn) ->
           yp.frun( =>
-            logData = toolfuns.getHeaderData(fn)
+            logData = toolfuns.regLoadHeaderData(fn)
 
             unless logData.programName?
               runner.info "Can not read programName from "+logData.fileName
