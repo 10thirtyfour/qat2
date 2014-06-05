@@ -180,12 +180,10 @@ module.exports = ->
           exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
           
           params = [
-            @logData.projectPath
-            path.basename(@logData.programName)
             "-M"
             @options.buildMode
-            "-d"
-            @options.commondb.LYCIA_DB_DRIVER
+            @logData.projectPath
+            path.basename(@logData.programName)
           ]
           
           @data.commandLine = "qbuild " + params.join(" ")
@@ -220,12 +218,10 @@ module.exports = ->
           unless @logData.buildMode?
             @logData.buildMode = @options.buildMode 
           params = [
-            @logData.projectPath
-            path.basename(@logData.programName)
             "-M"
             @logData.buildMode
-            '-d'
-            '"C:/ProgramData/Application Data/Querix/Lycia 6/progs"'
+            @logData.projectPath 
+            path.basename(@logData.programName)
           ]
           
           @data.commandLine = "qbuild " + params.join(" ")
@@ -282,7 +278,7 @@ module.exports = ->
           child.kill('SIGTERM')
       )
       
-    getHeaderData : (logFileName) ->
+    regLoadHeaderData : (logFileName) ->
       logData =
         fileName: logFileName
     
@@ -298,9 +294,7 @@ module.exports = ->
           #logData.programName = matches[1]
         # TODO : ticket number search here and some other params
         # also can be placed inside logData
-      #maybe next line causes EBADF read error  
-      #logStream.close()
-    
+   
       #looking for .fglproject file. Moving up from logFname
       tempPath = logFileName
       while (tempPath != ( tempPath = path.dirname tempPath ))
@@ -323,13 +317,8 @@ module.exports = ->
       
         testData = getTestData(@fileName,programName,projectPath)
         
-        unless testData.programName? 
-          return ->
-            "Can not read programName from "+testData.fileName
-
-        unless testData.projectPath?
-          return ->
-            "projectPath undefined"
+        unless testData.programName? then return -> "Can not read programName from "+testData.fileName
+        unless testData.projectPath? then return -> "projectPath undefined"
 
         runner.reg 
           name: "headless$negative-build$#{testData.projectPath}$#{testData.programName}"
@@ -359,6 +348,6 @@ module.exports = ->
           nop=0
           
     RegWD : (obj) ->
-      obj.name = @fileName  
+      unless obj.name? then obj.name = @fileName  
       runner.regWD obj
       
