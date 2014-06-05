@@ -3,6 +3,7 @@ platforms =
     url:"/repository/downloadAll/bt80/.lastSuccessful"
     environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
     commands: [
+      "timeout 2"
       "unzip.exe -j package.zip *LyciaDesktop-1.1-*.msi"
       "cmd /c ren LyciaDesktop-1.1-*.msi ldnet.msi"
       "cmd /c ldnet.msi /quiet"
@@ -57,14 +58,14 @@ module.exports = ->
 #              path:"c:\\windows\\system32\\bats"
             stdio:"ignore"
         promise: toolfuns.regExecPromise
-      precursor = "lycia$install$cmd"+commandIndex
+      precursor = ["lycia$install$cmd"+commandIndex]
       commandIndex++
   
   unless runner.argv["skip-environ"]
     @reg
       name: "lycia$install$environ"
       setup: true;
-      after: [precursor]
+      after: precursor
       data:
         command: platforms.win32.environ
       promise: toolfuns.regGetEnviron
