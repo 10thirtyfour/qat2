@@ -22,7 +22,7 @@ module.exports = ->
           INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
           DBDATE: "MDY4/"
           TNS_ADMIN: "c:\\Oracle"
-          QX_REFRESH_LEVEL=2
+          QX_REFRESH_LEVEL: 2
         headless:
           QX_HEADLESS_MODE: 1  
 
