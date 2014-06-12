@@ -26,6 +26,7 @@ module.exports = ->
                 "projectPath undefined"
 
             buildPromiseName=[]
+
             unless runner.argv["skip-build"]
               buildPromiseName=["headless$build$#{logData.projectPath}$#{logData.programName}"]
               runner.reg 

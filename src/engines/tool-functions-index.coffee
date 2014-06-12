@@ -117,8 +117,6 @@ module.exports = ->
       
       [command,args...] = @data.command.split(" ")
       
-      unless fs.existsSync(command)
-        return Q.reject("env file not found!")
       def = Q.defer()
       child = spawn command,args,@data.options
       child.stdout.setEncoding('utf8')
@@ -128,7 +126,7 @@ module.exports = ->
         runner.tests[name].env = JSON.parse(child.stdout.read())
         def.resolve code
         
-      child.on "error", (e) -> def.reject()
+      child.on "error", (e) -> def.reject("environ.bat execution failed")
       
       return def.promise
       
@@ -171,7 +169,7 @@ module.exports = ->
       yp.frun( => 
         try
           opt = 
-            env: @runner.tests["lycia$install$environ"].env
+            env: @runner.tests["read$environ"].env
             cwd: path.join(@logData.projectPath,"output")
           _.merge opt.env, @options.commondb
 
@@ -206,13 +204,14 @@ module.exports = ->
     regBuild: ->
       yp.frun( => 
         try
-          opt = 
-            env: @runner.tests["lycia$install$environ"].env
-            cwd: path.join(@logData.projectPath,"output")
-          _.merge opt.env, @options.commondb
-          
-          exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
 
+          opt = 
+            env: @runner.tests["read$environ"].env
+            cwd: path.join(@logData.projectPath,"output")
+
+          _.merge opt.env, @options.commondb
+
+          exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
           unless @logData.buildMode?
             @logData.buildMode = @options.buildMode 
           params = [
@@ -223,15 +222,16 @@ module.exports = ->
           ]
           
           @data.commandLine = "qbuild " + params.join(" ")
-          
-          child = spawn( exename,params,opt) 
+
+          child = spawn( exename , params , opt) 
           {stdout} = child 
     
           stdout.setEncoding('utf8')
           text = yp exitPromise(child).timeout(@timeouts.build)
-
+           
           unless fs.existsSync(@logData.programExecutable)
             @data.failReason = "Failed to build executable"
+            @data.output = text 
             throw "Build failed, can't locate executable "+@logData.programExecutable
                           
         finally 
@@ -246,9 +246,9 @@ module.exports = ->
       yp.frun( => 
         try
           opt = 
-            env: @runner.tests["lycia$install$environ"].env
+            env: @runner.tests["read$environ"].env
             cwd: path.join(@logData.projectPath,"output")
-            
+ 
           _.merge opt.env, @options.commondb
           _.merge opt.env, @options.headless
 

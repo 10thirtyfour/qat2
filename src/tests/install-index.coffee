@@ -24,12 +24,13 @@ platforms =
 
 
 module.exports = ->
-  {Q,utils,toolfuns,yp} = runner = @
+  {path,Q,utils,toolfuns,yp} = runner = @
   auth = "Basic " + new Buffer("qx\\robot:2p4u-Zz").toString("base64")
   
   precursor = []
   
   tempPath = runner.tests.globLoader.root
+  packageName = path.join(tempPath,"package.zip")
   
   runner.reg
     name: "lycia$download"
@@ -37,7 +38,7 @@ module.exports = ->
     disabled: true 
     before:["lycia$install"] 
     data:
-      filename: path.join(tempPath,"package.zip")
+      filename: packageName 
       retries: 3
       options:
         host: "buildsystem.qx"
@@ -52,7 +53,6 @@ module.exports = ->
     disabled: true
     before: ["globLoader"]
     promise: ->
-      console.log "in promise : "+runner.tests.globLoader.root
       precursors = ["lycia$install"]
       commandIndex = 1
       for command in platforms.win32.commands
@@ -74,7 +74,8 @@ module.exports = ->
 
   runner.reg
     name: "read$environ"
-    setup: true;
+    setup: true
+    before: ["globLoader"]
     data:
       command: platforms.win32.environ
     promise: toolfuns.regGetEnviron
