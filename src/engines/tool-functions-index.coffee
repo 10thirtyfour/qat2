@@ -1,9 +1,4 @@
-#yp = require "yield-on-promise"
-#_ = require "lodash"
-#fs = require "fs"
 byline = require "byline"
-#Q = require "q"
-#path = require "path"
 spawn = require("child_process").spawn
 http = require "http"
 
@@ -119,9 +114,12 @@ module.exports = ->
     regGetEnviron: ->
       runner = @runner
       name = @name
-      def = Q.defer()
       
       [command,args...] = @data.command.split(" ")
+      
+      unless fs.existsSync(command)
+        return Q.reject("env file not found!")
+      def = Q.defer()
       child = spawn command,args,@data.options
       child.stdout.setEncoding('utf8')
       

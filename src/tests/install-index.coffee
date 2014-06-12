@@ -24,51 +24,60 @@ platforms =
 
 
 module.exports = ->
-  {Q,utils,toolfuns} = runner = @
+  {Q,utils,toolfuns,yp} = runner = @
   auth = "Basic " + new Buffer("qx\\robot:2p4u-Zz").toString("base64")
   
   precursor = []
+  
+  tempPath = runner.tests.globLoader.root
+  
+  runner.reg
+    name: "lycia$download"
+    setup: true 
+    disabled: true 
+    before:["lycia$install"] 
+    data:
+      filename: path.join(tempPath,"package.zip")
+      retries: 3
+      options:
+        host: "buildsystem.qx"
+        path: platforms.win32.url
+        headers:
+          "Authorization": auth
+    promise: toolfuns.regDownloadPromise
+  
+  runner.reg
+    name: "lycia$install"
+    setup: true 
+    disabled: true
+    before: ["globLoader"]
+    promise: ->
+      console.log "in promise : "+runner.tests.globLoader.root
+      precursors = ["lycia$install"]
+      commandIndex = 1
+      for command in platforms.win32.commands
+        runner.reg
+          name: "lycia$install$command"+commandIndex
+          after: precursors
+          before: ["read$environ"]
+          setup: true
+          data:
+            command: command
+            options:
+              cwd: tempPath
+              stdio:"ignore"
+          promise: toolfuns.regExecPromise
+          
+        precursors = ["lycia$install$command"+commandIndex]
+        commandIndex++    
+      runner.sync()
 
-  if runner.argv["install-lycia"]
-    @reg
-      name: "lycia$download"
-      setup: true;
-      data:
-        filename: "c:\\temp\\package.zip"
-        retries: 3
-        options:
-          host: "buildsystem.qx"
-          path: platforms.win32.url
-          headers:
-            "Authorization": auth
-      promise: toolfuns.regDownloadPromise
-    precursor = ["lycia$download"]
-  
-    commandIndex = 1
-    for command in platforms.win32.commands
-      @reg
-        name: "lycia$install$cmd"+commandIndex
-        setup: true;
-        after: precursor
-        data:
-          command: command
-          options:
-            cwd:"c:\\temp"
-#            env:
-#              path:"c:\\windows\\system32\\bats"
-            stdio:"ignore"
-        promise: toolfuns.regExecPromise
-      precursor = ["lycia$install$cmd"+commandIndex]
-      commandIndex++
-  
-  unless runner.argv["skip-environ"]
-    @reg
-      name: "lycia$install$environ"
-      setup: true;
-      after: precursor
-      data:
-        command: platforms.win32.environ
-      promise: toolfuns.regGetEnviron
+  runner.reg
+    name: "read$environ"
+    setup: true;
+    data:
+      command: platforms.win32.environ
+    promise: toolfuns.regGetEnviron
     
   runner.sync()
 

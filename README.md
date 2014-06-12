@@ -410,17 +410,6 @@ A: Use `async` plugin, which is disabled by default. I.e.
 
     $ qat --no-async.disabled
 
-COMMAND LINE keys (SeZa): 
----
-
---install-lycia
-perform lycia2 downl;oad and installation
-
---skip-build
-skip building programs, while running tlogs.
-
---skip-environ
-skip reading environ
 
 
 
