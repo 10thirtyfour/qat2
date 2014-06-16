@@ -19,9 +19,10 @@ module.exports = ->
           INFORMIXSERVER: "querix_tcp"
           LOGNAME: "informix"
           INFORMIXPASS: "default2375"
-          INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client_SDK\\"
+          INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
           DBDATE: "MDY4/"
           TNS_ADMIN: "c:\\Oracle"
+          QX_REFRESH_LEVEL: 2
         headless:
           QX_HEADLESS_MODE: 1  
 
@@ -32,6 +33,9 @@ module.exports = ->
             level: "trace"
     globLoader:
       root: "c:/temp"
+    selenium:
+      startTimeout: 30000
+
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
   @seleniumServerPort = 9515

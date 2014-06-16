@@ -19,7 +19,7 @@ module.exports = ->
   @reg
     name: "wd"
     # CFGOPT: default wait timeout
-    defaultWaitTimeout: 10000
+    defaultWaitTimeout: 30000
     setup: true
     before: "globLoader"
     enable:
@@ -58,18 +58,6 @@ module.exports = ->
         (title) ->
           @elementByCss(""".qx-aum-toolbar-button[title="#{title}"]"""))
           
-      wd.addPromiseMethod(
-        "buildApplication"
-        (appName) ->
-          console.log "buildApplication "+appName
-          @reg
-            name: "some"
-            data:
-              kind: "build" 
-            logData : "data"
-            promise: runner.toolfuns.regBuild
-      )
-      
       wd.addPromiseMethod(
         "startApplication"
         (command,instance) ->

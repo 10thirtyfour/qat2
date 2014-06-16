@@ -11,24 +11,29 @@ module.exports = ->
   getTestData = (fn,programName,projectPath) ->
     testData = 
       programName : programName
-      
+      projectPath : projectPath
     unless programName?
       # cutting filename by 12 chars
       testData.programName = path.basename(fn[0...(fn.length-12)])
-  
+
     unless projectPath?
       tempPath = fn
       while (tempPath != ( tempPath = path.dirname tempPath ))
         if fs.existsSync(path.join(tempPath,".fglproject")) 
           testData.projectPath = tempPath
           break
+          
 
+    
       if testData.projectPath?
         testData.projectName = path.basename testData.projectPath  
-     
+    
+    
     testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
+ 
     #looks like on win32 shown also for x64 platform
     if process.platform is "win32" then testData.programExecutable+=".exe" 
+
     return testData
   
   runLog = (child,logFileName,linetimeout,setCurrentStatus) ->
@@ -40,7 +45,7 @@ module.exports = ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent=true
+        delimeterSent=true 
       writeLine line for line in message
 
     {stdout,stdin} = child 
@@ -222,12 +227,15 @@ module.exports = ->
           ]
           
           @data.commandLine = "qbuild " + params.join(" ")
-
+     
+          
           child = spawn( exename , params , opt) 
           {stdout} = child 
-    
+          
           stdout.setEncoding('utf8')
-          text = yp exitPromise(child).timeout(@timeouts.build)
+          @logData.timeout ?= @timeouts.build
+          console.log @logData.timeout
+          text = yp exitPromise(child).timeout(@logData.timeout)
            
           unless fs.existsSync(@logData.programExecutable)
             @data.failReason = "Failed to build executable"
@@ -237,7 +245,6 @@ module.exports = ->
         finally 
           if @data.failReason? 
             @data.failMessage = stdout.read()
-              
           child.kill('SIGTERM')
         return "Build"
       )
@@ -310,7 +317,7 @@ module.exports = ->
 
     
   runner.extfuns =   
-    ReverseBuild: (programName,projectPath) ->
+    ReverseBuild: (programName,projectPath,delay) ->
       yp.frun =>
       
         testData = getTestData(@fileName,programName,projectPath)
@@ -327,12 +334,15 @@ module.exports = ->
         return ->
           nop=0
 
-    Build: (programName,projectPath) ->
+    Build: (programName,projectPath,timeout) ->
       yp.frun =>
-        testData = getTestData(@fileName,programName,projectPath)
-        #enabling deploy
         
-        testData.buildMode = "all"        
+        testData = getTestData(@fileName,programName,projectPath)
+       
+        #enabling deploy
+        testData.buildMode = "all"
+        testData.timeout = timeout
+        
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
@@ -346,6 +356,11 @@ module.exports = ->
           nop=0
           
     RegWD : (obj) ->
-      unless obj.name? then obj.name = @fileName  
+      unless obj.name? 
+        obj.name = @fileName
+          
       runner.regWD obj
       
+    Compile : (fileName, expectedResult) ->
+      yp.frun =>
+        console.log fileName
