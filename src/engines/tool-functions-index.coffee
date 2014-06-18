@@ -234,7 +234,6 @@ module.exports = ->
           
           stdout.setEncoding('utf8')
           @logData.timeout ?= @timeouts.build
-          console.log @logData.timeout
           text = yp exitPromise(child).timeout(@logData.timeout)
            
           unless fs.existsSync(@logData.programExecutable)

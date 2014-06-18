@@ -32,7 +32,7 @@ module.exports = ->
           console:
             level: "trace"
     globLoader:
-      root: "c:/temp"
+      root: "c:/qat/tests"
     selenium:
       startTimeout: 30000
 
