@@ -8,10 +8,26 @@ module.exports = ->
   {yp,fs,_,Q,path} = runner = @
   
   # acquiring test data from filename if needed
-  getTestData = (fn,programName,projectPath) ->
+  getTestData = (fn,params...) ->
+  # use any params order
+  # directory treated as project path
+  # integer treated as timeout
+
+    for i,param of params
+      if fs.existsSync(param)
+        if fs.lstatSync(param).isDirectory()
+          projectPath = param
+          continue
+      if (param is parseInt(param))
+        timeout = param
+      else
+        programName = param
+
     testData = 
       programName : programName
       projectPath : projectPath
+      timeout : timeout
+      
     unless programName?
       # cutting filename by 12 chars
       testData.programName = path.basename(fn[0...(fn.length-12)])
@@ -23,11 +39,8 @@ module.exports = ->
           testData.projectPath = tempPath
           break
           
-
-    
-      if testData.projectPath?
-        testData.projectName = path.basename testData.projectPath  
-    
+    if testData.projectPath?
+      testData.projectName = path.basename testData.projectPath  
     
     testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
  
@@ -316,10 +329,10 @@ module.exports = ->
 
     
   runner.extfuns =   
-    ReverseBuild: (programName,projectPath,delay) ->
+    ReverseBuild: (params...) ->
       yp.frun =>
       
-        testData = getTestData(@fileName,programName,projectPath)
+        testData = getTestData(@fileName,params...)
         
         unless testData.programName? then return -> "Can not read programName from "+testData.fileName
         unless testData.projectPath? then return -> "projectPath undefined"
@@ -333,14 +346,13 @@ module.exports = ->
         return ->
           nop=0
 
-    Build: (programName,projectPath,timeout) ->
+          
+    Build: (params...) ->
       yp.frun =>
-        
-        testData = getTestData(@fileName,programName,projectPath)
-       
+        testData = getTestData(@fileName,params...)
+
         #enabling deploy
         testData.buildMode = "all"
-        testData.timeout = timeout
         
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"
