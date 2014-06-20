@@ -4,9 +4,10 @@ module.exports = ->
   {Q,yp,toolfuns} = runner = @
   
   @reg
-    name: "node-headless-search"
+    name: "tlogLoader"
     before: "globLoader"
     setup: true 
+    disabled: true
     promise: ->
       @runner.tests.globLoader.regGlob
         name: "node$headless-indexer"

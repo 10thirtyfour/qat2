@@ -23,6 +23,7 @@ module.exports = ->
           DBDATE: "MDY4/"
           TNS_ADMIN: "c:\\Oracle"
           QX_REFRESH_LEVEL: 2
+          #LYCIA_LEAVE_WS: 1
         headless:
           QX_HEADLESS_MODE: 1  
     logger:
@@ -32,7 +33,6 @@ module.exports = ->
             level: "trace"
     globLoader:
       root: "c:/temp"
-    
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
