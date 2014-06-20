@@ -1,3 +1,5 @@
+exec = require('child_process').exec
+
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -164,8 +166,14 @@ module.exports = ->
                 plugin.trace "> #{meth.yellow}", path.grey, data || '')
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
-              unless binfo.closeBrowser is false or plugin.closeBrowser is false
-                r = r.finally -> browser.quit()
+              unless binfo.closeBrowser is false or plugin.closeBrowser is false 
+                r = r.finally ->
+                  # taskkill                
+                  processName = runner.path.basename(info.name).split("-test")[0]+".exe"
+                  console.log processName
+                  exec('taskkill /F /T /IM '+ processName, (error, stdout, stderr) -> 
+                    browser.quit() )
+
               return r.then(-> "OK")
             @reg binfo
             binfo.data.browser = i

@@ -25,16 +25,16 @@ module.exports = ->
           QX_REFRESH_LEVEL: 2
         headless:
           QX_HEADLESS_MODE: 1  
-
+    node-headless:
+      disabled: true
     logger:
       conf:
         transports:
           console:
             level: "trace"
     globLoader:
-      root: "c:/qat/tests"
-    selenium:
-      startTimeout: 30000
+      root: "c:/temp"
+    
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"

@@ -24,9 +24,7 @@ module.exports = ->
                 contextParams[n] = (params...) ->
                   f.apply contextParams,params
                 
-            
             cfeval fs.readFileSync(fn,encoding:"utf8"),sandbox: contextParams
-            
               
             return ->
               nop=0
