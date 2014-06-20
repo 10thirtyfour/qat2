@@ -25,8 +25,6 @@ module.exports = ->
           QX_REFRESH_LEVEL: 2
         headless:
           QX_HEADLESS_MODE: 1  
-    node-headless:
-      disabled: true
     logger:
       conf:
         transports:
