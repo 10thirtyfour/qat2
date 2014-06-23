@@ -8,40 +8,33 @@ module.exports = ->
   {yp,fs,_,Q,path} = runner = @
   
   # acquiring test data from filename if needed
-  getTestData = (fn,params...) ->
-  # use any params order
-  # directory treated as project path
-  # integer treated as timeout
+  getTestData = (params) ->
 
-    for i,param of params
-      if fs.existsSync(param)
-        if fs.lstatSync(param).isDirectory()
-          projectPath = param
-          continue
-      if (param is parseInt(param))
-        timeout = param
-      else
-        programName = param
-
+    params.programName ?= params.program
+    params.projectPath ?= params.project
+    params.fail ?= params.reverse
+  
     testData = 
-      programName : programName
-      projectPath : projectPath
-      timeout : timeout
+      programName : params.programName
+      projectPath : params.projectPath
+      needFail : params.fail
+      timeout : params.timeout
+      buildMode : if params.deploy? then "all" else "rebuild"
       
-    unless programName?
+    unless testData.programName?
       # cutting filename by 12 chars
-      testData.programName = path.basename(fn[0...(fn.length-12)])
+      testData.programName = path.basename(params.testFileName[0...(params.testFileName.length-12)])
 
-    unless projectPath?
-      tempPath = fn
+    unless testData.projectPath?
+      tempPath = params.testFileName
       while (tempPath != ( tempPath = path.dirname tempPath ))
         if fs.existsSync(path.join(tempPath,".fglproject")) 
           testData.projectPath = tempPath
           break
-          
+        
     if testData.projectPath?
       testData.projectName = path.basename testData.projectPath  
-    
+ 
     testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
  
     #looks like on win32 shown also for x64 platform
@@ -58,7 +51,7 @@ module.exports = ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent=true 
+        delimeterSent=true
       writeLine line for line in message
 
     {stdout,stdin} = child 
@@ -221,44 +214,38 @@ module.exports = ->
 
     regBuild: ->
       yp.frun( => 
+        opt = 
+          env: @runner.tests["read$environ"].env
+          cwd: path.join(@logData.projectPath,"output")
+
+        _.merge opt.env, @options.commondb
+
+        exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
+        
+        @logData.buildMode ?= @options.buildMode 
+        @logData.timeout ?= @timeouts.build
+
+        params = [ "-M", @logData.buildMode, @logData.projectPath, path.basename(@logData.programName) ]
+
+        @data.commandLine = "qbuild " + params.join(" ")
+   
         try
+          {stdout,stderr} = child = spawn( exename , params , opt) 
 
-          opt = 
-            env: @runner.tests["read$environ"].env
-            cwd: path.join(@logData.projectPath,"output")
-
-          _.merge opt.env, @options.commondb
-
-          exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
-          unless @logData.buildMode?
-            @logData.buildMode = @options.buildMode 
-          params = [
-            "-M"
-            @logData.buildMode
-            @logData.projectPath 
-            path.basename(@logData.programName)
-          ]
-          
-          @data.commandLine = "qbuild " + params.join(" ")
-     
-          
-          child = spawn( exename , params , opt) 
-          {stdout} = child 
-          
           stdout.setEncoding('utf8')
-          @logData.timeout ?= @timeouts.build
-          text = yp exitPromise(child).timeout(@logData.timeout)
-           
-          unless fs.existsSync(@logData.programExecutable)
-            @data.failReason = "Failed to build executable"
-            @data.output = text 
-            throw "Build failed, can't locate executable "+@logData.programExecutable
-                          
+          stderr.setEncoding('utf8')
+ 
+          if (yp exitPromise(child).timeout(@logData.timeout))
+            if @logData.needFail then return "Build has been failed as expected."
+            throw stdout.read()
+
+        catch e
+          @data.failReason = e
+          throw "Build failed!"
         finally 
-          if @data.failReason? 
-            @data.failMessage = stdout.read()
           child.kill('SIGTERM')
-        return "Build"
+        if @logData.needFail then throw "Build OK but fail expected!"
+        return "Build OK."
       )
       
     regLogRun : ->
@@ -329,30 +316,11 @@ module.exports = ->
 
     
   runner.extfuns =   
-    ReverseBuild: (params...) ->
-      yp.frun =>
-      
-        testData = getTestData(@fileName,params...)
-        
-        unless testData.programName? then return -> "Can not read programName from "+testData.fileName
-        unless testData.projectPath? then return -> "projectPath undefined"
-
-        runner.reg 
-          name: "headless$negative-build$#{testData.projectPath}$#{testData.programName}"
-          data:
-            kind: "negative-build" 
-          logData: testData  
-          promise: runner.toolfuns.regNegativeBuild
-        return ->
-          nop=0
-
           
-    Build: (params...) ->
+    Build: (params) ->
       yp.frun =>
-        testData = getTestData(@fileName,params...)
-
-        #enabling deploy
-        testData.buildMode = "all"
+        params.testFileName = @fileName
+        testData = getTestData(params)
         
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"
