@@ -1,5 +1,7 @@
 exec = require('child_process').exec
 
+
+
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -63,7 +65,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "startApplication"
         (command,instance) ->
-          instance ?= runner.qasDefaultInstance
+          instance ?= runner.qatDefaultInstance
           @get(runner.lyciaWebUrl)
             .then((i) ->
               plugin.trace "Starting #{command} at #{instance}"
@@ -74,10 +76,11 @@ module.exports = ->
             .type(command)
             .elementById("qx-home-form")
             .submit()
-            .waitIdle())
+            .waitIdle()) 
       wd.addPromiseMethod(
         "formField"
         (name) -> @elementByCss ".qx-ident-#{name}")
+     
       wd.addPromiseMethod(
         "waitExit"
         (timeout) ->
@@ -96,6 +99,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "invoke",
         (el) ->
+          unless el.click? then el = @elementByCss ".#{el}"
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"
           else
@@ -124,7 +128,17 @@ module.exports = ->
       wd.addPromiseMethod(
         "fieldText"
         (el) -> @remoteCall el, "fieldText")
-        
+     
+
+      wd.addPromiseMethod(
+        "checkSize"           
+        (el,w,h) -> 
+          if _.isString el then el = @elementByCss ".#{el}"
+          el.getSize().then( (i) ->
+            unless w is i.width and h is i.height 
+              Q.reject("size mismatch. Expected #{w}x#{h}. Actual #{i.width}x#{i.height}")
+          )
+      )            
       synproto = {}
       wrap = (m,n) ->
         (args...) ->
@@ -170,7 +184,6 @@ module.exports = ->
                 r = r.finally ->
                   # taskkill                
                   processName = runner.path.basename(info.name).split("-test")[0]+".exe"
-                  console.log processName
                   exec('taskkill /F /T /IM '+ processName, (error, stdout, stderr) -> 
                     browser.quit() )
 

@@ -176,42 +176,6 @@ module.exports = ->
       tryRequest()
       def.promise
     
-    regNegativeBuild: ->  
-      yp.frun( => 
-        try
-          opt = 
-            env: @runner.tests["read$environ"].env
-            cwd: path.join(@logData.projectPath,"output")
-          _.merge opt.env, @options.commondb
-
-          exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
-          
-          params = [
-            "-M"
-            @options.buildMode
-            @logData.projectPath
-            path.basename(@logData.programName)
-          ]
-          
-          @data.commandLine = "qbuild " + params.join(" ")
-          
-          child = spawn(exename, params, opt) 
-          {stdout} = child 
-    
-          stdout.setEncoding('utf8')
-          text = yp exitPromise(child).timeout(@timeouts.build)
-
-          unless fs.existsSync(@logData.programExecutable)
-            return "Build failed, can't locate executable "+@logData.programExecutable
-          else
-            @data.failReason = "Build successful"        
-            throw "Build successful"
-                          
-        finally 
-          child.kill('SIGTERM')
-        return "Build failed"
-      )
-
     regBuild: ->
       yp.frun( => 
         opt = 
@@ -230,15 +194,12 @@ module.exports = ->
         @data.commandLine = "qbuild " + params.join(" ")
    
         try
-          {stdout,stderr} = child = spawn( exename , params , opt) 
-
+          {stdout} = child = spawn( exename , params , opt) 
           stdout.setEncoding('utf8')
-          stderr.setEncoding('utf8')
  
           if (yp exitPromise(child).timeout(@logData.timeout))
             if @logData.needFail then return "Build has been failed as expected."
             throw stdout.read()
-
         catch e
           @data.failReason = e
           throw "Build failed!"
@@ -328,17 +289,17 @@ module.exports = ->
         runner.reg 
           name: "headless$build$#{testData.projectPath}$#{testData.programName}"
           data:
-            kind: "build" 
+            kind: if testData.needFail then "build-reverse" else "build"
           logData: testData  
           promise: runner.toolfuns.regBuild
         return ->
           nop=0
           
     RegWD : (obj) ->
-      unless obj.name? 
-        obj.name = @fileName
-          
-      runner.regWD obj
+      runner.regWD
+        syn: obj
+        name: @fileName
+        
       
     Compile : (fileName, expectedResult) ->
       yp.frun =>

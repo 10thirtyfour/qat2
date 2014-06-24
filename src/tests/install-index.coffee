@@ -10,7 +10,7 @@ platforms =
       "unzip.exe -j package.zip *Lycia-nt-32*.exe"
       "cmd /c ren Lycia-nt-32*.exe lycia2.exe"
       "lycia2.exe /S"
-      "cvs.exe -d :pserver:seza@cvs.qx:/demo co ."
+      "cvs.exe -d :pserver:seza@cvs.qx:/demo co ./other-demos/form_demo"
     ]
    
   win64:
