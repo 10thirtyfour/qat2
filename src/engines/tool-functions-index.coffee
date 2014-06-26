@@ -272,7 +272,7 @@ module.exports = ->
       logData.programExecutable = path.join(logData.projectPath,"output",path.basename(logData.programName))
       #looks like on win32 shown also for x64 platform
       if process.platform is "win32" then logData.programExecutable+=".exe"
-    
+      
       return logData    
 
     

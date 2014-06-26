@@ -1,4 +1,4 @@
-#Build project:"D:/workspace/form_demo" ,deploy:true
+Build project: "c:/qat/tests/other-demos/form_demo" ,deploy:true
 RegWD ->
   @startApplication "form_demo/fm_attribute_action"
   @checkSize "qx-ident-accept",76,27
