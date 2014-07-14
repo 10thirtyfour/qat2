@@ -4,6 +4,7 @@ module.exports = ->
     name: "node-modules-search"
     before: "globLoader"
     setup: true
+    disabled: true
     promise: ->
       @runner.tests.globLoader.regGlob
         name: "node$modules"

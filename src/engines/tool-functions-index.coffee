@@ -180,8 +180,8 @@ module.exports = ->
       yp.frun( => 
         opt = 
           env: @runner.tests["read$environ"].env
-          cwd: path.join(@logData.projectPath,"output")
-
+          cwd: @logData.projectPath
+        
         _.merge opt.env, @options.commondb
 
         exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
@@ -190,15 +190,14 @@ module.exports = ->
         @logData.timeout ?= @timeouts.build
 
         params = [ "-M", @logData.buildMode, @logData.projectPath, path.basename(@logData.programName) ]
-
         @data.commandLine = "qbuild " + params.join(" ")
-   
         try
           {stdout} = child = spawn( exename , params , opt) 
           stdout.setEncoding('utf8')
- 
-          if (yp exitPromise(child).timeout(@logData.timeout))
-            if @logData.needFail then return "Build has been failed as expected."
+          result = (yp exitPromise(child).timeout(@logData.timeout))
+          if result
+            if @logData.needFail 
+              return "Build has been failed as expected."
             throw stdout.read()
         catch e
           @data.failReason = e
@@ -277,7 +276,7 @@ module.exports = ->
 
     
   runner.extfuns =   
-          
+    assertEqual : runner.assert.equal
     Build: (params) ->
       yp.frun =>
         params.testFileName = @fileName

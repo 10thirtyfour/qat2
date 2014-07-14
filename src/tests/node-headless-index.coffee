@@ -7,7 +7,7 @@ module.exports = ->
     name: "tlogLoader"
     before: "globLoader"
     setup: true 
-    disabled: true
+    disabled: false
     promise: ->
       @runner.tests.globLoader.regGlob
         name: "node$headless-indexer"
