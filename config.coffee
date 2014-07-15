@@ -32,7 +32,7 @@ module.exports = ->
           console:
             level: "trace"
     globLoader:
-      root: "./tests"
+      root: "d:/workspace"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"

@@ -8,11 +8,14 @@ module.exports = ->
   {yp,fs,_,Q,path} = runner = @
   
   # acquiring test data from filename if needed
+  cutofTest = (testName) ->
+    return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
+
   getTestData = (params) ->
 
     params.programName ?= params.program
     params.projectPath ?= params.project
-    params.fail ?= params.reverse
+    params.reverse?=params.fail
   
     testData = 
       programName : params.programName
@@ -23,7 +26,7 @@ module.exports = ->
       
     unless testData.programName?
       # cutting filename by 12 chars
-      testData.programName = path.basename(params.testFileName[0...(params.testFileName.length-12)])
+      testData.programName = cutofTest(params.testFileName)
 
     unless testData.projectPath?
       tempPath = params.testFileName
@@ -44,7 +47,7 @@ module.exports = ->
   
   runLog = (child,logFileName,linetimeout,setCurrentStatus) ->
 
-    delimeterSent = false 
+    delimeterSent = false
     
     writeBlock = ( stream , message, linetimeout=20000 ) ->
       writeLine = ( line ) ->
@@ -175,28 +178,41 @@ module.exports = ->
          
       tryRequest()
       def.promise
+      
+    regCompile: ->
+      yp.frun( =>
+        opt = 
+          env: @runner.tests["read$environ"].env
+        _.merge opt.env, @options.commondb
+        switch (@testData.ext).toLowerCase()
+          when ".4gl" then cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER}"
+          when ".per" then cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER}"
+        
+        return "ok"
+        
+      )      
     
     regBuild: ->
       yp.frun( => 
         opt = 
           env: @runner.tests["read$environ"].env
-          cwd: @logData.projectPath
+          cwd: @testData.projectPath
         
         _.merge opt.env, @options.commondb
 
         exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
         
-        @logData.buildMode ?= @options.buildMode 
-        @logData.timeout ?= @timeouts.build
+        @testData.buildMode ?= @options.buildMode 
+        @testData.timeout ?= @timeouts.build
 
-        params = [ "-M", @logData.buildMode, @logData.projectPath, path.basename(@logData.programName) ]
+        params = [ "-M", @testData.buildMode, @testData.projectPath, path.basename(@testData.programName) ]
         @data.commandLine = "qbuild " + params.join(" ")
         try
           {stdout} = child = spawn( exename , params , opt) 
           stdout.setEncoding('utf8')
-          result = (yp exitPromise(child).timeout(@logData.timeout))
+          result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
-            if @logData.needFail 
+            if @testData.reverse 
               return "Build has been failed as expected."
             throw stdout.read()
         catch e
@@ -204,7 +220,7 @@ module.exports = ->
           throw "Build failed!"
         finally 
           child.kill('SIGTERM')
-        if @logData.needFail then throw "Build OK but fail expected!"
+        if @logData.reverse then throw "Build OK but fail expected!"
         return "Build OK."
       )
       
@@ -275,8 +291,47 @@ module.exports = ->
       return logData    
 
     
-  runner.extfuns =   
-    assertEqual : runner.assert.equal
+  runner.extfuns =  
+  
+    Compile: (params) ->
+      yp.frun =>
+
+        if typeof params is "string"
+          testData = fileName: params
+        else
+          testData = if params then params else fileName:cutofTest(@fileName)
+        
+        testData.fileName?=testData.fn
+        testData.fileName?=cutofTest(@fileName)
+
+        testData.reverse?=testData.fail
+        
+        delete testData.fail
+        delete testData.fn
+        
+        if testData.ext?
+          unless testData.ext[0] is "." then testData.ext="."+testData.ext
+        else
+          # .4gl used as default extension"
+          testData.ext=".4gl"
+      
+        testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
+
+        unless path.extname(testData.fileName) 
+          testData.fileName+=testData.ext
+        else
+          testData.ext=path.extname(testData.fileName)
+        
+        runner.reg
+          name: "headless$#{@fileName}$compile$#{testData.fileName}"
+          data:
+            kind: "compile"+testData.ext
+            testData: testData
+            
+          promise: runner.toolfuns.regCompile 
+        return ->
+          nop=0
+       
     Build: (params) ->
       yp.frun =>
         params.testFileName = @fileName
@@ -288,8 +343,8 @@ module.exports = ->
         runner.reg 
           name: "headless$build$#{testData.projectPath}$#{testData.programName}"
           data:
-            kind: if testData.needFail then "build-reverse" else "build"
-          logData: testData  
+            kind: if testData.reverse then "build-reverse" else "build"
+          testData: testData  
           promise: runner.toolfuns.regBuild
         return ->
           nop=0
@@ -300,6 +355,3 @@ module.exports = ->
         name: @fileName
         
       
-    Compile : (fileName, expectedResult) ->
-      yp.frun =>
-        console.log fileName
