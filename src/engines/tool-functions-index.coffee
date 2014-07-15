@@ -187,8 +187,24 @@ module.exports = ->
         switch (@testData.ext).toLowerCase()
           when ".4gl" then cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER}"
           when ".per" then cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER}"
+        [command,args...] = cmdLine.split(" ")
         
-        return "ok"
+        try
+          {stdout} = child = spawn( command , args , opt) 
+          stdout.setEncoding('utf8')
+          result = (yp exitPromise(child).timeout(@testData.timeout))
+          if result
+            if @testData.reverse 
+              return "Build has been failed as expected."
+            throw stdout.read()
+        catch e
+          @data.failReason = e
+          throw "Build failed!"
+        finally 
+          child.kill('SIGTERM')
+        if @logData.reverse then throw "Compilation successful but fail expected!"
+        return "Compilation successful"
+
         
       )      
     
