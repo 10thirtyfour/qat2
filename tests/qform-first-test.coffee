@@ -1,9 +1,6 @@
-#Compile()
-#Compile "c:/2.per"
-#Compile fileName:"some3.per"
-#Compile "./../44"
-#Compile fn:"./someDir/sources/5fifth", reverse:true
-#Compile ext:"per", fail:true
-#Compile ext:".per"
+#Compile "C:/qat/tests/other-demos/form_demo/source/fm_window_title.4gl", reverse:true
+#Compile "C:/qat/tests/other-demos/form_demo/source/form/fm_attribute_action.per", fail:true
+Build "fm_attribute_action", project:"C:/qat/tests/other-demos/form_demo", fail:true
+
 
 

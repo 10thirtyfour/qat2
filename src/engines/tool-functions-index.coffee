@@ -12,15 +12,15 @@ module.exports = ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
   getTestData = (params) ->
-
     params.programName ?= params.program
     params.projectPath ?= params.project
+    params.projectPath ?= params.prj
     params.reverse?=params.fail
   
     testData = 
       programName : params.programName
       projectPath : params.projectPath
-      needFail : params.fail
+      reverse : params.reverse
       timeout : params.timeout
       buildMode : if params.deploy? then "all" else "rebuild"
       
@@ -183,11 +183,14 @@ module.exports = ->
       yp.frun( =>
         opt = 
           env: @runner.tests["read$environ"].env
+          
         _.merge opt.env, @options.commondb
         switch (@testData.ext).toLowerCase()
-          when ".4gl" then cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER}"
-          when ".per" then cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER}"
-        [command,args...] = cmdLine.split(" ")
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER}"
+          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER}"
+        [command,args...] = @data.cmdLine.split(" ")
+        
+        command = path.join(opt.env.LYCIA_DIR,"bin",command)
         
         try
           {stdout} = child = spawn( command , args , opt) 
@@ -195,14 +198,14 @@ module.exports = ->
           result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
             if @testData.reverse 
-              return "Build has been failed as expected."
+              return "Compilation has been failed as expected."
             throw stdout.read()
         catch e
           @data.failReason = e
-          throw "Build failed!"
+          throw "Compilation failed!"
         finally 
           child.kill('SIGTERM')
-        if @logData.reverse then throw "Compilation successful but fail expected!"
+        if @testData.reverse then throw "Compilation successful but fail expected!"
         return "Compilation successful"
 
         
@@ -220,7 +223,6 @@ module.exports = ->
         
         @testData.buildMode ?= @options.buildMode 
         @testData.timeout ?= @timeouts.build
-
         params = [ "-M", @testData.buildMode, @testData.projectPath, path.basename(@testData.programName) ]
         @data.commandLine = "qbuild " + params.join(" ")
         try
@@ -309,18 +311,19 @@ module.exports = ->
     
   runner.extfuns =  
   
-    Compile: (params) ->
+    Compile: (arg, additionalParams) ->
       yp.frun =>
-
-        if typeof params is "string"
-          testData = fileName: params
+        if typeof arg is "string"
+          testData = additionalParams
+          testData.fileName = arg
         else
-          testData = if params then params else fileName:cutofTest(@fileName)
+          testData = if arg then arg else fileName:cutofTest(@fileName)
         
         testData.fileName?=testData.fn
         testData.fileName?=cutofTest(@fileName)
 
         testData.reverse?=testData.fail
+        testData.timeout?=20000
         
         delete testData.fail
         delete testData.fn
@@ -348,10 +351,16 @@ module.exports = ->
         return ->
           nop=0
        
-    Build: (params) ->
+    Build: (arg, additionalParams) ->
       yp.frun =>
-        params.testFileName = @fileName
-        testData = getTestData(params)
+        if typeof arg is "string"
+          testData = additionalParams
+          testData.program = arg
+        else
+          testData = arg
+
+        testData.testFileName = @fileName
+        testData = getTestData(testData)
         
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"

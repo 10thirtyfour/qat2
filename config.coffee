@@ -6,6 +6,7 @@ module.exports = ->
       timeouts:
         line: 12000
         run: 60000
+        compile: 20000
         build: 60000
         download: 600000
         unzip: 180000
