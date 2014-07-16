@@ -14,14 +14,14 @@ module.exports = ->
         pattern: ["**/*.tlog"]
         parseFile: (fn) ->
           yp.frun( =>
-            logData = toolfuns.regLoadHeaderData(fn)
+            testData = toolfuns.regLoadHeaderData(fn)
 
-            unless logData.programName?
-              runner.info "Can not read programName from "+logData.fileName
+            unless testData.programName?
+              runner.info "Can not read programName from "+testData.fileName
               return ->
-                "Can not read programName from "+logData.fileName
+                "Can not read programName from "+testData.fileName
                 
-            unless logData.projectPath?
+            unless testData.projectPath?
               runner.info "projectPath undefined"
               return ->
                 "projectPath undefined"
@@ -29,19 +29,19 @@ module.exports = ->
             buildPromiseName=[]
 
             unless runner.argv["skip-build"]
-              buildPromiseName=["headless$build$#{logData.projectPath}$#{logData.programName}"]
+              buildPromiseName=["headless$build$#{testData.projectPath}$#{testData.programName}"]
               runner.reg 
                 name: buildPromiseName[0]
                 data:
                   kind: "build" 
-                logData : logData  
+                testData : testData  
                 promise: toolfuns.regBuild
               
             runner.reg
-              name: "headless$play$#{logData.projectName}$#{logData.programName}$"+logData.fileName
+              name: "headless$play$#{testData.projectName}$#{testData.programName}$"+testData.fileName
               data:
                 kind: "common-tlog"
-              logData : logData  
+              testData : testData  
               after: buildPromiseName
               promise: toolfuns.regLogRun
 

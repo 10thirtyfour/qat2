@@ -236,7 +236,7 @@ module.exports = ->
           throw "Build failed!"
         finally 
           child.kill('SIGTERM')
-        if @logData.reverse then throw "Build OK but fail expected!"
+        if @testData.reverse then throw "Build OK but fail expected!"
         return "Build OK."
       )
       
@@ -245,7 +245,7 @@ module.exports = ->
         try
           opt = 
             env: @runner.tests["read$environ"].env
-            cwd: path.join(@logData.projectPath,"output")
+            cwd: path.join(@testData.projectPath,"output")
  
           _.merge opt.env, @options.commondb
           _.merge opt.env, @options.headless
@@ -257,7 +257,7 @@ module.exports = ->
           exename = path.join(opt.env.LYCIA_DIR, "bin", "qrun")
           
           params = [
-            @logData.programExecutable
+            @testData.programExecutable
             "-d"
             @options.commondb.LYCIA_DB_DRIVER
           ]
@@ -265,17 +265,17 @@ module.exports = ->
           @data.commandLine = "qrun "+ params.join(" ")
           child = spawn( exename, params, opt)
                        
-          @logData.ignoreHeadlessErrorlevel = true; #????
+          @testData.ignoreHeadlessErrorlevel = true; #????
           
-          childPromise = exitPromise(child, @logData.ignoreHeadlessErrorlevel ).timeout(@timeouts.run, "Log timeout")
-          logPromise = yp.frun( => runLog( child , @logData.fileName, @timeouts.line, setCurrentStatus) )
+          childPromise = exitPromise(child, @testData.ignoreHeadlessErrorlevel ).timeout(@timeouts.run, "Log timeout")
+          logPromise = yp.frun( => runLog( child , @testData.fileName, @timeouts.line, setCurrentStatus) )
           yp Q.all( [ childPromise, logPromise ] )
         finally
           child.kill('SIGTERM')
       )
       
     regLoadHeaderData : (logFileName) ->
-      logData =
+      testData =
         fileName: logFileName
     
       logStream = fs.createReadStream(logFileName, encoding: "utf8")
@@ -285,26 +285,26 @@ module.exports = ->
         break if line is "<<<"
         # << "something.exe" whatever >> turn to 'something' and can handle names with or without .exe
         if (matches=(line.match /^<< "?(.*?)(?:.exe)?"? -d.*>>/))
-          logData.programName = matches[1]
+          testData.programName = matches[1]
         #if (matches=(line.match /^<< "?(.*?)(?:.exe)?"? -d.*>>/))
-          #logData.programName = matches[1]
+          #testData.programName = matches[1]
         # TODO : ticket number search here and some other params
-        # also can be placed inside logData
+        # also can be placed inside testData
    
       #looking for .fglproject file. Moving up from logFname
-      tempPath = logFileName
+      tempPath = path.resolve(logFileName)
       while (tempPath != ( tempPath = path.dirname tempPath ))
         if fs.existsSync(path.join(tempPath,".fglproject")) 
-          logData.projectPath = tempPath
+          testData.projectPath = tempPath
           break
-      if logData.projectPath?
-        logData.projectName = path.basename logData.projectPath  
+      if testData.projectPath?
+        testData.projectName = path.basename testData.projectPath  
     
-      logData.programExecutable = path.join(logData.projectPath,"output",path.basename(logData.programName))
+      testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
       #looks like on win32 shown also for x64 platform
-      if process.platform is "win32" then logData.programExecutable+=".exe"
-      
-      return logData    
+      if process.platform is "win32" then testData.programExecutable+=".exe"
+      #testData.projectPath = path.resolve(testData.projectPath)
+      return testData    
 
     
   runner.extfuns =  
@@ -330,9 +330,9 @@ module.exports = ->
         else
           # .4gl used as default extension"
           testData.ext=".4gl"
-      
+        
         testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
-
+        
         unless path.extname(testData.fileName) 
           testData.fileName+=testData.ext
         else
@@ -342,7 +342,7 @@ module.exports = ->
           name: "headless$#{@fileName}$compile$#{testData.fileName}"
           data:
             kind: "compile"+testData.ext
-            testData: testData
+          testData: testData
             
           promise: runner.toolfuns.regCompile 
         return ->
