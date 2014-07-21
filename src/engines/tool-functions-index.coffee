@@ -5,22 +5,18 @@ http = require "http"
 {CallbackReadWrapper} = require "./readercallback"
 
 module.exports = ->
-  {yp,fs,_,Q,path} = runner = @
+  {yp,fs,_,Q,path,xpath,dom} = runner = @
   
   # acquiring test data from filename if needed
   cutofTest = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
   getTestData = (params) ->
-    params.programName ?= params.program
-    params.projectPath ?= params.project
-    params.projectPath ?= params.prj
-    params.reverse?=params.fail
-  
+    
     testData = 
-      programName : params.programName
-      projectPath : params.projectPath
-      reverse : params.reverse
+      programName : (params.programName or params.program)
+      projectPath : (params.projectPath or params.project or params.prj)
+      reverse : (params.reverse or params.fail)
       timeout : params.timeout
       buildMode : if params.deploy? then "all" else "rebuild"
       
@@ -47,8 +43,7 @@ module.exports = ->
   
   runLog = (child,logFileName,linetimeout,setCurrentStatus) ->
 
-    delimeterSent = false
-    
+    delimeterSent = false     
     writeBlock = ( stream , message, linetimeout=20000 ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
@@ -186,23 +181,32 @@ module.exports = ->
           
         _.merge opt.env, @options.commondb
         switch (@testData.ext).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join(@runner.tempPath,path.basename(@testData.fileName,'.4gl'))}.4o"
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join(@runner.tempPath,path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
           when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{@runner.tempPath}"
         [command,args...] = @data.cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
         
         try
-          {stdout} = child = spawn( command , args , opt) 
+          {stdout,stderr} = child = spawn( command , args , opt) 
           stdout.setEncoding('utf8')
+          stderr.setEncoding('utf8')
           result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
-            if @testData.reverse 
-              return "Compilation has been failed as expected."
-            throw stdout.read()
-        catch e
-          @data.failReason = e
-          throw "Compilation failed!"
+            try
+              errorMessage = stderr.read()
+              xmlerr = new dom().parseFromString(errorMessage)
+              @data.failReason = xpath.select("/problem/error/code",xmlerr)[0].firstChild.data
+            catch 
+              @data.failReason = errorMessage or stdout.read()
+            
+            if @testData.reverse
+              if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(@data.failReason,10))
+                return "Compilation has been failed as expected."
+              @data.failReason = "ErrorCode mismatch! expected : #{@testData.errorCode}, actual : #{@data.failReason}."
+            throw @data.failReason
+        catch errorMessage
+          throw errorMessage
         finally 
           child.kill('SIGTERM')
         if @testData.reverse then throw "Compilation successful but fail expected!"
@@ -318,14 +322,17 @@ module.exports = ->
         else
           testData = if arg? then arg else fileName:cutofTest(@fileName)
 
-        testData.fileName?=testData.fn
-        testData.fileName?=cutofTest(@fileName)
+        testData.fileName?=(testData.fn or cutofTest(@fileName))
         testData.reverse?=testData.fail
         testData.timeout?=20000
+        testData.errorCode?=(testData.error or testData.err)
+
+        if testData.errorCode? then testData.reverse = true
         
         delete testData.fail
         delete testData.fn
         
+       
         if testData.ext?
           unless testData.ext[0] is "." then testData.ext="."+testData.ext
         else

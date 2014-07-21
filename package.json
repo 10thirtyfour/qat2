@@ -29,7 +29,10 @@
     "minimatch": "~0.2.14",
     "winston-couchdb": "~0.6.1",
     "archy": "0.0.2",
-    "byline": "~4.1.1"
+    "byline": "~4.1.1",
+    "xpath": "~0.0.7",
+    "xmldom": "~0.1.19"
+     
   },
   "devDependencies": {
     "grunt": "~0.4.2",

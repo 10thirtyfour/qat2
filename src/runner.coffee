@@ -7,6 +7,9 @@ dot = require "graphlib-dot"
 Q.longStackSupport = true
 fs = require "fs"
 assert = require "assert"
+xpath = require "xpath"
+dom = require("xmldom").DOMParser
+
 
 syncNo = 0
 
@@ -20,6 +23,8 @@ class Runner
   minimatch: require "minimatch"
   _: _
   Q: Q
+  xpath: xpath
+  dom: dom
   graphlib: graphlib
   prettyjson: (v) -> prettyjson.render v,
     keysColor: "magenta"
