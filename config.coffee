@@ -39,3 +39,4 @@ module.exports = ->
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
+  @tempPath = "c:/temp"

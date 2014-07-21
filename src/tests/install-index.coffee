@@ -29,7 +29,7 @@ module.exports = ->
   
   precursor = []
   
-  tempPath = runner.tests.globLoader.root
+  tempPath = runner.tempPath
   packageName = path.join(tempPath,"package.zip")
   runner.reg
     name: "lycia$download"

@@ -186,8 +186,8 @@ module.exports = ->
           
         _.merge opt.env, @options.commondb
         switch (@testData.ext).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER}"
-          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER}"
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join(@runner.tempPath,path.basename(@testData.fileName,'.4gl'))}.4o"
+          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{@runner.tempPath}"
         [command,args...] = @data.cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
@@ -314,14 +314,12 @@ module.exports = ->
     Compile: (arg, additionalParams) ->
       yp.frun =>
         if typeof arg is "string"
-          testData = additionalParams
-          testData.fileName = arg
+          testData = _.defaults(fileName:arg,additionalParams)
         else
-          testData = if arg then arg else fileName:cutofTest(@fileName)
-        
+          testData = if arg? then arg else fileName:cutofTest(@fileName)
+
         testData.fileName?=testData.fn
         testData.fileName?=cutofTest(@fileName)
-
         testData.reverse?=testData.fail
         testData.timeout?=20000
         
@@ -333,7 +331,6 @@ module.exports = ->
         else
           # .4gl used as default extension"
           testData.ext=".4gl"
-        
         testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
         
         unless path.extname(testData.fileName) 
