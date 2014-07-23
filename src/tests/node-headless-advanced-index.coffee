@@ -23,9 +23,10 @@ module.exports = ->
               do (n,f) =>
                 contextParams[n] = (params...) ->
                   f.apply contextParams,params
-                
-            cfeval fs.readFileSync(fn,encoding:"utf8"),sandbox: contextParams
-              
+            try    
+              cfeval fs.readFileSync(fn,encoding:"utf8"),sandbox: contextParams
+            catch errorMessage
+              runner.info "Headless-advanced. Eval failed for #{fn}. Message : #{errorMessage}"
             return ->
               nop=0
             )

@@ -16,7 +16,7 @@ module.exports = ->
         env:
           QX_QAT: 1
         commondb:
-          LYCIA_DB_DRIVER: "informix"
+          LYCIA_DB_DRIVER: "sqlite"
           INFORMIXSERVER: "querix_tcp"
           LOGNAME: "informix"
           INFORMIXPASS: "default2375"

@@ -11,6 +11,31 @@ module.exports = ->
   cutofTest = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
+  parceError = (raw) ->
+    errorMessage = raw : raw
+    errorMessage.xml = new dom().parseFromString(raw)
+    
+    try
+      errorMessage.code = xpath.select1("/problem/error/code/text()",errorMessage.xml).toString()
+    catch 
+      errorMessage.code=-1
+    finally
+      errorMessage.code?=-1
+     
+    try 
+      errorMessage.line = xpath.select1("/problem/source/@first_line",errorMessage.xml).value
+    catch
+      errorMessage.line=-1
+    finally
+      errorMessage.line?=-1
+       
+    try   
+      errorMessage.message = xpath.select1("/problem/error/message/text()",errorMessage.xml).toString()
+    catch
+      errorMessage.message = raw 
+    
+    errorMessage
+
   getTestData = (params) ->
     
     testData = 
@@ -43,7 +68,7 @@ module.exports = ->
   
   runLog = (child,logFileName,linetimeout,setCurrentStatus) ->
 
-    delimeterSent = false     
+    delimeterSent = false 
     writeBlock = ( stream , message, linetimeout=20000 ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
@@ -76,7 +101,7 @@ module.exports = ->
           actualLine = readBlock(nextOutLine,"<<<").join "\n"
           expectedLine = block.join "\n"
           if actualLine!=expectedLine
-            throw "ERROR in line : "+ nextLogLine(1)+"\nActual :\n"+actualLine+"\nExpected :\n"+expectedLine
+            throw "ERROR in line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
     if (block = readBlock(nextOutLine,"<<<")).length>1
       throw "ERROR : Program output not empty at the end of scenario. " + block
     return nextLogLine("LineCount")
@@ -180,37 +205,38 @@ module.exports = ->
           env: @runner.tests["read$environ"].env
           
         _.merge opt.env, @options.commondb
-        switch (@testData.ext).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join(@runner.tempPath,path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
-          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{@runner.tempPath}"
+        
+        @testData.timeout?=20000
+        
+        switch (path.extname(@testData.fileName)).toLowerCase()
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
+          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
         [command,args...] = @data.cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
         
         try
-          {stdout,stderr} = child = spawn( command , args , opt) 
-          stdout.setEncoding('utf8')
+          {stderr} = child = spawn( command , args , opt) 
           stderr.setEncoding('utf8')
+          
           result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
-            try
-              errorMessage = stderr.read()
-              xmlerr = new dom().parseFromString(errorMessage)
-              @data.failReason = xpath.select("/problem/error/code",xmlerr)[0].firstChild.data
-            catch 
-              @data.failReason = errorMessage or stdout.read()
+            errorMessage = parceError(stderr.read())
             
             if @testData.reverse
-              if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(@data.failReason,10))
-                return "Compilation has been failed as expected."
-              @data.failReason = "ErrorCode mismatch! expected : #{@testData.errorCode}, actual : #{@data.failReason}."
-            throw @data.failReason
-        catch errorMessage
-          throw errorMessage
+              if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
+                return "Code matched:#{errorMessage.code}. Line:#{errorMessage.line}."
+              else 
+                throw "ErrorCode mismatch! Expected: #{@testData.errorCode}, Actual :#{errorMessage.code} at Line:#{errorMessage.line}."
+
+            # construction error message
+            @data.failMessage=errorMessage.message
+            throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}"
+            
         finally 
           child.kill('SIGTERM')
-        if @testData.reverse then throw "Compilation successful but fail expected!"
-        return "Compilation successful"
+        if @testData.reverse then throw "Successful compilation, but fail expected!"
+        return "Successful compilation."
 
         
       )      
@@ -312,9 +338,62 @@ module.exports = ->
       #testData.projectPath = path.resolve(testData.projectPath)
       return testData    
 
+    regXPath : ->
+      yp.frun => 
+        rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/2011/fglForms"',"")
+        xml = new dom().parseFromString(rawxml)
+        s = xpath[@testData.method](@testData.query, xml).toString()
+        
+        if s is @testData.sample
+          return "Matched!"
+        else
+          throw "String mismatch. Expected: #{@testData.sample}. Actual: #{s}."
+      
     
   runner.extfuns =  
   
+    CheckXML: (testData) ->
+      testData.fileName?=testData.fn or cutofTest(@fileName)
+      testData.method?="select"
+      testData.reverse?=testData.fail
+      testData.timeout?=10000
+      testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
+     
+      unless path.extname(testData.fileName) 
+        if fs.existsSync(testData.fileName+".fm2")
+          testData.fileName+=".fm2"
+        else
+          testData.fileName+=".per"
+
+      compileTestName=[]
+      
+      if path.extname(testData.fileName).toLowerCase() is ".per"
+        compileTestName=["headless$#{@fileName}$compile$#{testData.fileName}"]
+        runner.reg
+          name: compileTestName[0]
+          data:
+            kind: "compile"+path.extname(testData.fileName).toLowerCase()
+          testData: 
+            fileName: testData.fileName
+          promise: runner.toolfuns.regCompile 
+        testData.fileName = testData.fileName.substring(0,testData.fileName.lastIndexOf(".per"))+".fm2"
+      
+      n = 0
+      loop
+        testName="headless$#{@fileName}$xpath$#{testData.fileName}$#{n}"
+        n+=1
+        unless testName of @runner.tests then break
+      
+      runner.reg
+        name: testName
+        after: compileTestName
+        data:
+          kind: "xpath"
+        testData: testData
+        promise: runner.toolfuns.regXPath
+      return ->
+        nop=0
+        
     Compile: (arg, additionalParams) ->
       yp.frun =>
         if typeof arg is "string"
@@ -324,14 +403,12 @@ module.exports = ->
 
         testData.fileName?=(testData.fn or cutofTest(@fileName))
         testData.reverse?=testData.fail
-        testData.timeout?=20000
         testData.errorCode?=(testData.error or testData.err)
 
-        if testData.errorCode? then testData.reverse = true
+        if testData.errorCode? then testData.reverse = true 
         
         delete testData.fail
         delete testData.fn
-        
        
         if testData.ext?
           unless testData.ext[0] is "." then testData.ext="."+testData.ext
@@ -348,7 +425,7 @@ module.exports = ->
         runner.reg
           name: "headless$#{@fileName}$compile$#{testData.fileName}"
           data:
-            kind: "compile"+testData.ext
+            kind: "compile"+testData.ext.toLowerCase()
           testData: testData
             
           promise: runner.toolfuns.regCompile 
