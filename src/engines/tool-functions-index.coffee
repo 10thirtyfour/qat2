@@ -353,46 +353,47 @@ module.exports = ->
   runner.extfuns =  
   
     CheckXML: (testData) ->
-      testData.fileName?=testData.fn or cutofTest(@fileName)
-      testData.method?="select"
-      testData.reverse?=testData.fail
-      testData.timeout?=@timeouts.compile
-      testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
-     
-      unless path.extname(testData.fileName) 
-        if fs.existsSync(testData.fileName+".fm2")
-          testData.fileName+=".fm2"
-        else
-          testData.fileName+=".per"
+      yp.frun => 
+        testData.fileName?=testData.fn or cutofTest(@fileName)
+        testData.method?="select"
+        testData.reverse?=testData.fail
+        testData.timeout?=10000
+        testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
+       
+        unless path.extname(testData.fileName) 
+          if fs.existsSync(testData.fileName+".fm2")
+            testData.fileName+=".fm2"
+          else
+            testData.fileName+=".per"
 
-      compileTestName=[]
-      
-      if path.extname(testData.fileName).toLowerCase() is ".per"
-        compileTestName=["headless$#{@fileName}$compile$#{testData.fileName}"]
+        compileTestName=[]
+        
+        if path.extname(testData.fileName).toLowerCase() is ".per"
+          compileTestName=["headless$#{@fileName}$compile$#{testData.fileName}"]
+          runner.reg
+            name: compileTestName[0]
+            data:
+              kind: "compile"+path.extname(testData.fileName).toLowerCase()
+            testData: 
+              fileName: testData.fileName
+            promise: runner.toolfuns.regCompile 
+          testData.fileName = testData.fileName.substring(0,testData.fileName.lastIndexOf(".per"))+".fm2"
+        
+        n = 0
+        loop
+          testName="headless$#{@fileName}$xpath$#{testData.fileName}$#{n}"
+          n+=1
+          unless testName of @runner.tests then break
+        
         runner.reg
-          name: compileTestName[0]
+          name: testName
+          after: compileTestName
           data:
-            kind: "compile"+path.extname(testData.fileName).toLowerCase()
-          testData: 
-            fileName: testData.fileName
-          promise: runner.toolfuns.regCompile 
-        testData.fileName = testData.fileName.substring(0,testData.fileName.lastIndexOf(".per"))+".fm2"
-      
-      n = 0
-      loop
-        testName="headless$#{@fileName}$xpath$#{testData.fileName}$#{n}"
-        n+=1
-        unless testName of @runner.tests then break
-      
-      runner.reg
-        name: testName
-        after: compileTestName
-        data:
-          kind: "xpath"
-        testData: testData
-        promise: runner.toolfuns.regXPath
-      return ->
-        nop=0
+            kind: "xpath"
+          testData: testData
+          promise: runner.toolfuns.regXPath
+        return ->
+          nop=0
         
     Compile: (arg, additionalParams) ->
       yp.frun =>
@@ -405,7 +406,7 @@ module.exports = ->
         testData.reverse?=testData.fail
         testData.errorCode?=(testData.error or testData.err)
 
-        if testData.errorCode? then testData.reverse = true
+        if testData.errorCode? then testData.reverse = true 
         
         delete testData.fail
         delete testData.fn
