@@ -356,7 +356,7 @@ module.exports = ->
       testData.fileName?=testData.fn or cutofTest(@fileName)
       testData.method?="select"
       testData.reverse?=testData.fail
-      testData.timeout?=10000
+      testData.timeout?=@timeouts.compile
       testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
      
       unless path.extname(testData.fileName) 
@@ -405,7 +405,7 @@ module.exports = ->
         testData.reverse?=testData.fail
         testData.errorCode?=(testData.error or testData.err)
 
-        if testData.errorCode? then testData.reverse = true 
+        if testData.errorCode? then testData.reverse = true
         
         delete testData.fail
         delete testData.fn
@@ -427,7 +427,6 @@ module.exports = ->
           data:
             kind: "compile"+testData.ext.toLowerCase()
           testData: testData
-            
           promise: runner.toolfuns.regCompile 
         return ->
           nop=0
