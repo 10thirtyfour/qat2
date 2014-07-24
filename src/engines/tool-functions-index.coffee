@@ -431,7 +431,7 @@ module.exports = ->
         return ->
           nop=0
        
-    Build: (arg, additionalParams) ->
+    Build: (arg, additionalParams={}) ->
       yp.frun =>
         if typeof arg is "string"
           testData = additionalParams
@@ -441,7 +441,7 @@ module.exports = ->
 
         testData.testFileName = @fileName
         testData = getTestData(testData)
-        
+
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
