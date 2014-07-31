@@ -1,17 +1,28 @@
+if process.argv.length < 3 
+  console.log "no file"
+  return
 fs = require "fs"
-logfname = process.argv[2]
-lines = fs.readFileSync(logfname).toString().split("\n");
-objs =[]
+logData = fs.readFileSync(process.argv[2],"utf8")
+lines = logData.split("\n")
+
+errorReport = ''
+result={}
 for line in lines
-  if line.length>1
-    objs.push JSON.parse(line)
+  if line.length<1 then continue
+  tmpObj=JSON.parse(line)
+  result[tmpObj.level]?={}
+  result[tmpObj.level][tmpObj.kind]?=0
+  result[tmpObj.level][tmpObj.kind]+=1
 
-
-for obj in objs
-  if obj.level == "fail"
-    console.log "====="+obj.kind+"====="
-    console.log obj
-#    console.log obj.message
-#    console.log obj.failReason
-
+  if tmpObj.level is 'fail'
+    errorReport+=tmpObj.message+'\n'
   
+console.log "Passed :"
+for testType,t of result.pass
+  console.log "  #{testType} : #{t}"
+  
+console.log "Failed :"
+for testType,t of result.fail
+  console.log "  #{testType} : #{t}"
+
+fs.writeFileSync("errors.txt", errorReport, 'utf8');
