@@ -15,7 +15,7 @@ for line in lines
   result[tmpObj.level][tmpObj.kind]+=1
 
   if tmpObj.level is 'fail'
-    errorReport+=tmpObj.message+'\n'
+    errorReport+=tmpObj.message+'\n=======\n'
   
 console.log "Passed :"
 for testType,t of result.pass

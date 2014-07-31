@@ -211,7 +211,12 @@ module.exports = ->
         switch (path.extname(@testData.fileName)).toLowerCase()
           when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
           when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
+          
+        if @testData.options? then @data.cmdLine+=" #{@testData.options}"
+        
         [command,args...] = @data.cmdLine.split(" ")
+        
+        
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
         
@@ -359,7 +364,8 @@ module.exports = ->
         testData.reverse?=testData.fail
         testData.timeout?=10000
         testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
-       
+        testData.options?=testData.opts
+        
         unless path.extname(testData.fileName) 
           if fs.existsSync(testData.fileName+".fm2")
             testData.fileName+=".fm2"
@@ -376,6 +382,7 @@ module.exports = ->
               kind: "compile"+path.extname(testData.fileName).toLowerCase()
             testData: 
               fileName: testData.fileName
+              options: testData.options
             promise: runner.toolfuns.regCompile 
           testData.fileName = testData.fileName.substring(0,testData.fileName.lastIndexOf(".per"))+".fm2"
         
@@ -405,7 +412,8 @@ module.exports = ->
         testData.fileName?=(testData.fn or cutofTest(@fileName))
         testData.reverse?=testData.fail
         testData.errorCode?=(testData.error or testData.err)
-
+        testData.options?=testData.opts
+        
         if testData.errorCode? then testData.reverse = true 
         
         delete testData.fail
