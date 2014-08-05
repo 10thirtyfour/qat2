@@ -13,22 +13,8 @@
 # if no extension (or per extension as default one) form will be compiled prior (once per file)
 # default output path for fm2 if "./../output" or temp folder will be used if output folder in not accessible
 
-CheckXML
-  fileName:"15158/15158_complex_includes"
-  query:"//textfield[@identifier='f1']/preferredsize"
-  sample:'<preferredsize width="32" height="22"/>'
+#CheckXML
+#  fileName:"15158/15158_complex_includes"
+#  query:"//textfield[@identifier='f1']/preferredsize"
+#  sample:'<preferredsize width="32" height="22"/>'
 
-CheckXML
-  fileName:"15158/15158_complex_includes"
-  query:"//textfield[@identifier='f1']/preferredsize"
-  sample:'<preferredsize width="32" height="22"/>'
-
-CheckXML
-  fileName:"15158/15158_complex_includes"
-  query:"//textfield[@identifier='f1']/preferredsize"
-  sample:'<preferredsize width="32" height="22"/>'
-
-CheckXML
-  fileName:"15158/15158_complex_includes"
-  query:"//textfield[@identifier='f1']/preferredsize"
-  sample:'<preferredsize width="32" height="22"/>'

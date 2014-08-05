@@ -372,7 +372,7 @@ module.exports = ->
           else
             testData.fileName+=".per"
 
-        compileTestName=[]
+        #compileTestName=[]
         
         if path.extname(testData.fileName).toLowerCase() is ".per"
           compileTestName=["headless$#{@fileName}$compile$#{testData.fileName}"]
