@@ -414,7 +414,7 @@ module.exports = ->
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
         
-        if testData.errorCode? then testData.reverse = true 
+        if testData.errorCode? then testData.reverse = true  
         
         delete testData.fail
         delete testData.fn

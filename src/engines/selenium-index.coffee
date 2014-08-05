@@ -79,7 +79,7 @@ module.exports = ->
             .waitIdle()) 
       wd.addPromiseMethod(
         "formField"
-        (name) -> @elementByCss ".qx-ident-#{name}")
+        (name) -> @elementByCss ".qx-identifier-#{name}")
      
       wd.addPromiseMethod(
         "waitExit"
@@ -108,7 +108,7 @@ module.exports = ->
         "remoteCall"
         (el,nm) ->
           if _.isString el 
-            @execute("return $().#{nm}.apply($('.qx-ident-#{el}'),arguments)")
+            @execute("return $().#{nm}.apply($('.qx-identifier-#{el}'),arguments)")
           else
             @execute(
               "return $().#{nm}.apply($(arguments[0]))"
@@ -117,13 +117,13 @@ module.exports = ->
       wd.addPromiseMethod(
         "fieldWidth"
         (el) -> 
-          @execute("return $('.qx-ident-#{el}').width()")
+          @execute("return $('.qx-identifier-#{el}').width()")
         )   
         
       wd.addPromiseMethod(
         "fieldHeight"
         (el) -> 
-          @execute("return $('.qx-ident-#{el}').height()")
+          @execute("return $('.qx-identifier-#{el}').height()")
         )          
       wd.addPromiseMethod(
         "fieldText"
