@@ -49,7 +49,7 @@ module.exports = ->
     name: "lycia$install"
     setup: true 
     disabled: true
-    before: ["globLoader"]
+    before: ["globLoader","read$environ"]
     promise: ->
       precursors = ["lycia$install"]
       commandIndex = 1
