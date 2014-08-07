@@ -62,7 +62,7 @@ module.exports = ->
     testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
  
     #looks like on win32 shown also for x64 platform
-    if process.platform is "win32" then testData.programExecutable+=".exe" 
+    if process.platform is "ia32" or process.platform is "x64" then testData.programExecutable+=".exe" 
 
     return testData
   
@@ -79,9 +79,6 @@ module.exports = ->
 
     {stdout,stdin} = child 
    
-    stdout.setEncoding('utf8')
-    stdin.setEncoding('utf8')
-    
     nextLogLine = lineFromStream fs.createReadStream(logFileName, encoding: "utf8")
     nextOutLine = lineFromStream stdout
     # reading headless greeting delimeter
@@ -148,16 +145,15 @@ module.exports = ->
     regGetEnviron: ->
       runner = @runner
       name = @name
-      
       [command,args...] = @data.command.split(" ")
       
       def = Q.defer()
-      child = spawn command,args,@data.options
-      child.stdout.setEncoding('utf8')
-      
+      child = spawn command,args
+
+	      
       child.on "exit", (code) ->
         runner.info name
-        runner.tests[name].env = JSON.parse(child.stdout.read())
+        runner.tests[name].env = JSON.parse(child.stdout.read().toString('utf8'))
         def.resolve code
         
       child.on "error", (e) -> def.reject("environ.bat execution failed")
@@ -167,7 +163,7 @@ module.exports = ->
     regExecPromise: ->
       @info @data.command   
       [command,args...] = @data.command.split(" ")
-      child = spawn command,args,@data.options
+      {stdout,stdin} = child = spawn command,args,@data.options
       exitPromise child
       
     regDownloadPromise: ->
@@ -209,24 +205,22 @@ module.exports = ->
         @testData.timeout?=20000
         
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{@options.commondb.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
-          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{@options.commondb.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
-          
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
+          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
+
         if @testData.options? then @data.cmdLine+=" #{@testData.options}"
         
         [command,args...] = @data.cmdLine.split(" ")
-        
-        
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
         
         try
           {stderr} = child = spawn( command , args , opt) 
-          stderr.setEncoding('utf8')
           
           result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
-            errorMessage = parceError(stderr.read())
+            txt = stderr.read().toString('utf8')
+            errorMessage = parceError(txt)
             
             if @testData.reverse
               if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
@@ -261,13 +255,12 @@ module.exports = ->
         params = [ "-M", @testData.buildMode, @testData.projectPath, path.basename(@testData.programName) ]
         @data.commandLine = "qbuild " + params.join(" ")
         try
-          {stdout} = child = spawn( exename , params , opt) 
-          stdout.setEncoding('utf8')
+          child = spawn( exename , params , opt) 
           result = (yp exitPromise(child).timeout(@testData.timeout))
           if result
             if @testData.reverse 
               return "Build has been failed as expected."
-            throw stdout.read()
+            throw child.stdout.read().toString('utf8')
         catch e
           @data.failReason = e
           throw "Build failed!"

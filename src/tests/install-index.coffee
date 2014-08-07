@@ -1,5 +1,5 @@
 platforms =
-  win32:
+  ia32:
     url:"/repository/downloadAll/bt80/.lastSuccessful"
     environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
     commands: [
@@ -12,8 +12,18 @@ platforms =
       "lycia2.exe /S"
     ]
    
-  win64:
+  x64:
     url:"/repository/downloadAll/bt7/.lastSuccessful"
+    environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
+    commands: [
+      "cvs.exe -d :pserver:seza@cvs.qx:/demo co ."
+      "unzip.exe -j package.zip *LyciaDesktop-1.1-*.msi"
+      "cmd /c ren LyciaDesktop-1.1-*.msi ldnet.msi"
+      "cmd /c ldnet.msi /quiet"
+      "unzip.exe -j package.zip *Lycia-nt-64*.exe"
+      "cmd /c ren Lycia-nt-64*.exe lycia2.exe"
+      "lycia2.exe /S"
+    ]
     
   lnx32:
     url:"/repository/downloadAll/bt45/.lastSuccessful"
@@ -23,7 +33,7 @@ platforms =
 
 
 module.exports = ->
-  {path,Q,utils,toolfuns,yp} = runner = @
+  {os,path,Q,utils,toolfuns,yp} = runner = @
   auth = "Basic " + new Buffer("qx\\robot:2p4u-Zz").toString("base64")
   
   precursor = []
@@ -40,7 +50,7 @@ module.exports = ->
       retries: 3
       options:
         host: "buildsystem.qx"
-        path: platforms.win32.url
+        path: platforms[os.arch()].url
         headers:
           "Authorization": auth
     promise: toolfuns.regDownloadPromise
@@ -53,7 +63,7 @@ module.exports = ->
     promise: ->
       precursors = ["lycia$install"]
       commandIndex = 1
-      for command in platforms.win32.commands
+      for command in platforms[os.arch()].commands
         runner.reg
           name: "lycia$install$command"+commandIndex
           after: precursors
@@ -75,7 +85,7 @@ module.exports = ->
     setup: true
     before: ["globLoader"]
     data:
-      command: platforms.win32.environ
+      command: platforms[os.arch()].environ
     promise: toolfuns.regGetEnviron
     
   runner.sync()
