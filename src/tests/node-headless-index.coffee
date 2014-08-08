@@ -1,7 +1,7 @@
 process.maxTickDepth = Infinity
 
 module.exports = ->
-  {Q,yp,toolfuns} = runner = @
+  {path,Q,yp,toolfuns} = runner = @
   
   @reg
     name: "tlogLoader"
@@ -26,19 +26,22 @@ module.exports = ->
               return ->
                 "projectPath undefined"
 
+            progRelativeName = path.relative(runner.tests.globLoader.root, testData.fileName)
             buildPromiseName=[]
-
-            unless runner.argv["skip-build"]
-              buildPromiseName=["headless$build$#{testData.projectPath}$#{testData.programName}"]
-              runner.reg 
-                name: buildPromiseName[0]
-                data:
-                  kind: "build" 
-                testData : testData  
-                promise: toolfuns.regBuild
+                          
+            unless runner.argv["skip-build"] 
+              buildPromiseName=["headless$#{progRelativeName}$build"]
+              unless buildPromiseName[0] of runner.tests
+                runner.reg 
+                  name: buildPromiseName[0]
+                  data:
+                    kind: "build" 
+                  testData : testData  
+                  promise: toolfuns.regBuild
               
+            logRelativeName = path.relative(runner.tests.globLoader.root, fn)
             runner.reg
-              name: "headless$play$#{testData.projectName}$#{testData.programName}$"+testData.fileName
+              name: "headless$#{logRelativeName}$play"
               data:
                 kind: "common-tlog"
               testData : testData  

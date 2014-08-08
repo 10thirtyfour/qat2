@@ -78,6 +78,7 @@ module.exports = ->
       writeLine line for line in message
 
     {stdout,stdin} = child 
+    stdout.setEncoding('utf8')
    
     nextLogLine = lineFromStream fs.createReadStream(logFileName, encoding: "utf8")
     nextOutLine = lineFromStream stdout
@@ -106,6 +107,7 @@ module.exports = ->
   lineFromStream = (stream) ->
     options = 
       keepEmptyLines : 1
+      
     splitted = byline.createStream(stream , options)
     iter = new CallbackReadWrapper splitted
     lineCount = 0
@@ -359,29 +361,34 @@ module.exports = ->
         testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
         testData.options?=testData.opts
         
-        unless path.extname(testData.fileName) 
-          if fs.existsSync(testData.fileName+".fm2")
-            testData.fileName+=".fm2"
-          else
-            testData.fileName+=".per"
+        
+        
+        testData.ext = path.extname(testData.fileName).toLowerCase()
+        unless testData.ext
+          testData.ext= if fs.existsSync(testData.fileName+".fm2") then ".fm2" else ".per"
+        else  
+          testData.fileName = path.join(path.dirname(testData.fileName), path.basename(testData.fileName,testData.ext))
 
-        #compileTestName=[]
+        suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
         
-        if path.extname(testData.fileName).toLowerCase() is ".per"
-          compileTestName=["headless$#{@fileName}$compile$#{testData.fileName}"]
-          runner.reg
-            name: compileTestName[0]
-            data:
-              kind: "compile"+path.extname(testData.fileName).toLowerCase()
-            testData: 
-              fileName: testData.fileName
-              options: testData.options
-            promise: runner.toolfuns.regCompile 
-          testData.fileName = testData.fileName.substring(0,testData.fileName.lastIndexOf(".per"))+".fm2"
-        
+        if testData.ext is ".per"
+          
+          compileTestName=["advanced$#{@relativeName}$compile$#{suspectTestName}"]
+          unless compileTestName[0] of runner.tests
+            runner.reg
+              name: compileTestName[0]
+              data:
+                kind: "compile"+testData.ext
+              testData: 
+                fileName: testData.fileName+".per"
+                options: testData.options
+              promise: runner.toolfuns.regCompile 
+          testData.ext = ".fm2"
+          
+        testData.fileName = testData.fileName+".fm2"
         n = 0
         loop
-          testName="headless$#{@fileName}$xpath$#{testData.fileName}$#{n}"
+          testName="advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}"
           n+=1
           unless testName of @runner.tests then break
         
@@ -407,7 +414,7 @@ module.exports = ->
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
         
-        if testData.errorCode? then testData.reverse = true  
+        if testData.errorCode? then testData.reverse = true 
         
         delete testData.fail
         delete testData.fn
@@ -419,13 +426,16 @@ module.exports = ->
           testData.ext=".4gl"
         testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
         
-        unless path.extname(testData.fileName) 
+        unless path.extname(testData.fileName).length 
           testData.fileName+=testData.ext
         else
           testData.ext=path.extname(testData.fileName)
-        
+
+        suspectTestName = path.relative path.dirname(@fileName), testData.fileName
+          
+          
         runner.reg
-          name: "headless$#{@fileName}$compile$#{testData.fileName}"
+          name: "advanced$#{@relativeName}$compile$#{suspectTestName}"
           data:
             kind: "compile"+testData.ext.toLowerCase()
           testData: testData
@@ -447,8 +457,10 @@ module.exports = ->
         unless testData.programName? then throw "Can not read programName from "+testData.fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
+        suspectTestName = path.relative path.dirname(@fileName), testData.fileName
+
         runner.reg 
-          name: "headless$build$#{testData.projectPath}$#{testData.programName}"
+          name: "advanced$#{@relativeName}$build$#{suspectTestName}"
           data:
             kind: if testData.reverse then "build-reverse" else "build"
           testData: testData  

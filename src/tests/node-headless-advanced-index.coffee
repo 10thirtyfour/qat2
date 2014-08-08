@@ -17,6 +17,7 @@ module.exports = ->
           yp.frun( =>
             contextParams = 
               fileName: fn
+              relativeName: path.relative(runner.tests.globLoader.root, fn)
               runner: runner
               
             for n,f of runner.extfuns
