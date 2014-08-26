@@ -40,3 +40,4 @@ module.exports = ->
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
   @tempPath = "c:/temp"
+  @deployPath = "C:/ProgramData/Querix/Lycia 6/progs"

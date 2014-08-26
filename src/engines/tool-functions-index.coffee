@@ -1,6 +1,7 @@
 byline = require "byline"
 spawn = require("child_process").spawn
 http = require "http"
+fse = require "fs-extra"
 
 {CallbackReadWrapper} = require "./readercallback"
 
@@ -453,14 +454,54 @@ module.exports = ->
 
         testData.testFileName = @fileName
         testData = getTestData(testData)
-
-        unless testData.programName? then throw "Can not read programName from "+testData.fileName
+        unless testData.programName? then throw "Can not read programName from "+@fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
-        suspectTestName = path.relative path.dirname(@fileName), testData.fileName
+        testData.fileName = path.join(testData.projectPath,"source","."+testData.programName+".fgltarget")
+        testData.relativeFileName =  path.relative runner.tests.globLoader.root, testData.fileName
 
+        # ------  deploy workaround
+        if testData.buildMode is "all"
+          testData.buildMode = "rebuild"
+          runner.reg
+            name:"advanced$#{@relativeName}$deploy$#{testData.relativeFileName}"
+            after:["advanced$#{@relativeName}$build$#{testData.relativeFileName}"]
+            data:
+              kind: "deploy-workaround"
+            promise: ->
+              yp.frun( =>
+                try 
+                  rawxml=fs.readFileSync(testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
+                  xml = new dom().parseFromString(rawxml)
+                  filesToCopy = [testData.programName+".exe"]
+                  
+                  # 
+                  formExtCare = (fn) -> 
+                    unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
+    
+                  filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
+                  filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+                  tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
+
+                  for fn in filesToCopy
+                    sourceFile = path.join(testData.projectPath,"output",fn)
+                    targetFile = path.join(runner.deployPath,fn)
+                    fse.ensureDirSync path.dirname(targetFile)
+                    fse.copySync(sourceFile,targetFile)
+                    tr2file+='  <Resource path="'+fn+'"/>\n'
+                  tr2file+='</Resources>\n'
+                  fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
+
+                                        
+                catch e
+                  throw e
+                
+              )
+             
+        # ------ end of deploy workaround
+        
         runner.reg 
-          name: "advanced$#{@relativeName}$build$#{suspectTestName}"
+          name: "advanced$#{@relativeName}$build$#{testData.relativeFileName}"
           data:
             kind: if testData.reverse then "build-reverse" else "build"
           testData: testData  
