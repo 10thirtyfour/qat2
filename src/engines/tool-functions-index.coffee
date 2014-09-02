@@ -293,7 +293,9 @@ module.exports = ->
             @testData.programExecutable
             "-d"
             @options.commondb.LYCIA_DB_DRIVER
-          ]
+          ].concat( @testData.programArgs )
+          
+          
           
           @data.commandLine = "qrun "+ params.join(" ")
           child = spawn( exename, params, opt)
@@ -307,37 +309,47 @@ module.exports = ->
           child.kill('SIGTERM')
       )
       
-    regLoadHeaderData : (logFileName) ->
+    LoadHeaderData : (logFileName) ->
       testData =
         fileName: logFileName
-    
+
       logStream = fs.createReadStream(logFileName, encoding: "utf8")
       nextLogLine = lineFromStream logStream
-    
-      while (line=nextLogLine())
-        break if line is "<<<"
-        # << "something.exe" whatever >> turn to 'something' and can handle names with or without .exe
-        if (matches=(line.match /^<< "?(.*?)(?:.exe)?"? -d.*>>/))
-          testData.programName = matches[1]
-        #if (matches=(line.match /^<< "?(.*?)(?:.exe)?"? -d.*>>/))
-          #testData.programName = matches[1]
-        # TODO : ticket number search here and some other params
-        # also can be placed inside testData
-   
-      #looking for .fglproject file. Moving up from logFname
-      tempPath = path.resolve(logFileName)
-      while (tempPath != ( tempPath = path.dirname tempPath ))
-        if fs.existsSync(path.join(tempPath,".fglproject")) 
-          testData.projectPath = tempPath
-          break
-      if testData.projectPath?
-        testData.projectName = path.basename testData.projectPath  
-    
-      testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
-      #looks like on win32 shown also for x64 platform
-      if process.platform is "win32" then testData.programExecutable+=".exe"
-      #testData.projectPath = path.resolve(testData.projectPath)
+      try
+        while (line=nextLogLine())
+          break if line is "<<<"
+          if (matches=(line.match "^<< *(.*?) *>>$"))
+            cmd = matches[1]
+            # handling both, quoted and unquoted program name
+            if (matches=(cmd.match '"(.*?)" *(.*)'))
+              testData.programName=matches[1]
+              testData.programArgs=matches[2].split(" ")
+            else
+              [testData.programName,testData.programArgs...]=cmd.split(" ")
+            break
+
+        # removing database arg if found one
+        if testData.programArgs.indexOf("-d")>-1
+          testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
+          
+        tempPath = path.resolve(logFileName)
+
+        while (tempPath != ( tempPath = path.dirname tempPath ))
+          if fs.existsSync(path.join(tempPath,".fglproject")) 
+            testData.projectPath = tempPath
+            break
+
+        if testData.projectPath?
+          testData.projectName = path.basename testData.projectPath  
+
+        testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
+        #looks like on win32 shown also for x64 platform
+        if process.platform is "win32" then testData.programExecutable+=".exe"
+        #testData.projectPath = path.resolve(testData.projectPath)
+      catch e
+        console.log e
       return testData    
+  
 
     regXPath : ->
       yp.frun => 
