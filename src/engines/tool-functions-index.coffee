@@ -327,11 +327,13 @@ module.exports = ->
             else
               [testData.programName,testData.programArgs...]=cmd.split(" ")
             break
-
         # removing database arg if found one
         if testData.programArgs.indexOf("-d")>-1
           testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
-          
+
+        # removing ".exe"  
+        if testData.programName.lastIndexOf(".exe")>testData.programName.length - 5
+           testData.programName=testData.programName.substr(0,testData.programName.length - 4)
         tempPath = path.resolve(logFileName)
 
         while (tempPath != ( tempPath = path.dirname tempPath ))
@@ -385,8 +387,7 @@ module.exports = ->
         suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
         
         if testData.ext is ".per"
-          
-          compileTestName=["advanced$#{@relativeName}$compile$#{suspectTestName}"]
+          compileTestName=["advanced$#{@relativeName}$compile$#{suspectTestName}.per"]
           unless compileTestName[0] of runner.tests
             runner.reg
               name: compileTestName[0]
