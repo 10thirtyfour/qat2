@@ -77,6 +77,47 @@ module.exports = ->
             .elementById("qx-home-form")
             .submit()
             .waitIdle()) 
+
+      wd.addPromiseMethod(
+        "justStartApp"
+        (command,instance) ->
+          instance ?= runner.qatDefaultInstance
+          @get(runner.lyciaWebUrl)
+            .then((i) ->
+              plugin.trace "Starting #{command} at #{instance}"
+              i)
+            .elementById("qx-home-instance")
+            .type(instance)
+            .elementById("qx-home-command")
+            .type(command)
+            .elementById("qx-home-form")
+            .submit())
+             
+      
+      wd.addPromiseMethod(
+        "waitMessageBox",
+        (timeout) ->
+          timeout ?= plugin.defaultWaitTimeout
+          @waitForElementByCssSelector(
+            ".qx-message-box"
+            timeout))
+
+      wd.addPromiseMethod(
+        "waitAppReady"
+        () ->
+          @get(runner.lyciaWebUrl)
+            .waitIdle())   
+
+      wd.addPromiseMethod(
+        "dragNDrop"
+        (el, left, top) -> 
+          el
+            .moveTo()
+            .buttonDown()
+            .moveTo(left,top)
+            .buttonUp()
+      )
+
       wd.addPromiseMethod(
         "formField"
         (name) -> @elementByCss ".qx-identifier-#{name}")
