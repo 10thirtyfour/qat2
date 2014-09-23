@@ -44,7 +44,7 @@ module.exports = ->
       projectPath : (params.projectPath or params.project or params.prj)
       reverse : (params.reverse or params.fail)
       timeout : params.timeout
-      buildMode : if params.deploy? then "all" else "rebuild"
+      buildMode : if params.deploy is true then "all" else "rebuild"
       
     unless testData.programName?
       # cutting filename by 12 chars
@@ -75,7 +75,7 @@ module.exports = ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent=true
+        delimeterSent=true 
       writeLine line for line in message
 
     {stdout,stdin} = child 
@@ -155,7 +155,7 @@ module.exports = ->
 
 	      
       child.on "exit", (code) ->
-        runner.info name
+        runner.info name+" "+runner.platform
         runner.tests[name].env = JSON.parse(child.stdout.read().toString('utf8'))
         def.resolve code
         
@@ -522,9 +522,11 @@ module.exports = ->
         return ->
           nop=0
           
-    RegWD : (obj) ->
+    RegWD : (obj,testId) ->
+      testName = path.relative runner.tests.globLoader.root,@fileName
+      if testId then testName+="$"+testId 
       runner.regWD
         syn: obj
-        name: @fileName
+        name: testName
         
       
