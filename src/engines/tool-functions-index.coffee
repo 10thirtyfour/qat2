@@ -493,7 +493,8 @@ module.exports = ->
                     unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
     
                   filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
-                  filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+                  #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+                  filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
                   tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
 
                   for fn in filesToCopy
