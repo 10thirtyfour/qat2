@@ -498,10 +498,13 @@ module.exports = ->
                   tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
 
                   for fn in filesToCopy
-                    sourceFile = path.join(testData.projectPath,"output",fn)
-                    targetFile = path.join(runner.deployPath,fn)
-                    fse.ensureDirSync path.dirname(targetFile)
-                    fse.copySync(sourceFile,targetFile)
+                    try
+                      sourceFile = path.join(testData.projectPath,"output",fn)
+                      targetFile = path.join(runner.deployPath,fn)
+                      fse.ensureDirSync path.dirname(targetFile)
+                      fse.copySync(sourceFile,targetFile)
+                    catch e
+                      runner.info "Failed to copy file : "+fn
                     tr2file+='  <Resource path="'+fn+'"/>\n'
                   tr2file+='</Resources>\n'
                   fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
