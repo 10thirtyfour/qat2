@@ -37,21 +37,19 @@ module.exports = ->
     
     errorMessage
 
-  getTestData = (params) ->
+  combTestData = (testData) ->
     
-    testData = 
-      programName : (params.programName or params.program)
-      projectPath : (params.projectPath or params.project or params.prj)
-      reverse : (params.reverse or params.fail)
-      timeout : params.timeout
-      buildMode : if params.deploy is true then "all" else "rebuild"
+    testData.programName ?= testData.program
+    testData.projectPath ?= (testData.project or testData.prj)
+    testData.reverse ?= testData.fail
+    testData.buildMode = if testData.deploy is true then "all" else "rebuild"
       
     unless testData.programName?
       # cutting filename by 12 chars
-      testData.programName = cutofTest(params.testFileName)
+      testData.programName = cutofTest(testData.testFileName)
 
     unless testData.projectPath?
-      tempPath = params.testFileName
+      tempPath = testData.testFileName
       while (tempPath != ( tempPath = path.dirname tempPath ))
         if fs.existsSync(path.join(tempPath,".fglproject")) 
           testData.projectPath = tempPath
@@ -66,13 +64,12 @@ module.exports = ->
     if process.platform is "ia32" or process.platform is "x64" then testData.programExecutable+=".exe" 
 
     return testData
-  
-  runLog = (child,logFileName,linetimeout,setCurrentStatus) ->
 
+  runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
     delimeterSent = false 
-    writeBlock = ( stream , message, linetimeout=20000 ) ->
+    writeBlock = ( stream , message, lineTimeout) ->
       writeLine = ( line ) ->
-        yp Q.ninvoke(stream,"write",line+"\n").timeout( linetimeout )
+        yp Q.ninvoke(stream,"write",line+"\n").timeout(lineTimeout, "Log line timed out")
       unless delimeterSent
         writeLine( ">>>" )
         delimeterSent=true 
@@ -95,7 +92,7 @@ module.exports = ->
           # TODO : ensure that nothing in the output
           #if (block = readBlock(nextOutLine,"<<<")).length>1
           #  throw "ERROR : Program output not empty in sending point at line: " + nextLogLine("LineCount")
-          writeBlock( stdin , block , linetimeout )
+          writeBlock( stdin , block , lineTimeout )
         when "<<<"
           actualLine = readBlock(nextOutLine,"<<<").join "\n"
           expectedLine = block.join "\n"
@@ -205,7 +202,7 @@ module.exports = ->
           
         _.merge opt.env, @options.commondb
         
-        @testData.timeout?=20000
+        @testData.compileTimeout?=20000
         
         switch (path.extname(@testData.fileName)).toLowerCase()
           when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
@@ -220,7 +217,7 @@ module.exports = ->
         try
           {stderr} = child = spawn( command , args , opt) 
           
-          result = (yp exitPromise(child).timeout(@testData.timeout))
+          result = (yp exitPromise(child).timeout(@testData.compileTimeout))
           if result
             txt = stderr.read().toString('utf8')
             errorMessage = parceError(txt)
@@ -254,19 +251,19 @@ module.exports = ->
         exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
         
         @testData.buildMode ?= @options.buildMode 
-        @testData.timeout ?= @timeouts.build
+        @testData.buildTimeout ?= @timeouts.build
         params = [ "-M", @testData.buildMode, @testData.projectPath, path.basename(@testData.programName) ]
         @data.commandLine = "qbuild " + params.join(" ")
         try
           child = spawn( exename , params , opt) 
-          result = (yp exitPromise(child).timeout(@testData.timeout))
+          result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
           if result
             if @testData.reverse 
               return "Build has been failed as expected."
             throw child.stdout.read().toString('utf8')
         catch e
           @data.failReason = e
-          throw "Build failed!"
+          throw "Build failed! "+e
         finally 
           child.kill('SIGTERM')
         if @testData.reverse then throw "Build OK but fail expected!"
@@ -293,7 +290,7 @@ module.exports = ->
           params = [
             @testData.programExecutable
             "-d"
-            @options.commondb.LYCIA_DB_DRIVER
+            opt.env.LYCIA_DB_DRIVER
           ].concat( @testData.programArgs )
           
           
@@ -302,11 +299,15 @@ module.exports = ->
                        
           @testData.ignoreHeadlessErrorlevel = true; #????
           
-          childPromise = exitPromise(child, @testData.ignoreHeadlessErrorlevel ).timeout(@timeouts.run, "Log timeout")
-          logPromise = yp.frun( => runLog( child , @testData.fileName, @timeouts.line, setCurrentStatus) )
+          @testData.runTimeout ?= @timeouts.run
+          @testData.lineTimeout ?= @timeouts.line
+          
+          childPromise = exitPromise(child, @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
+          logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
           yp Q.all( [ childPromise, logPromise ] )
         finally
           child.kill('SIGTERM')
+          
       )
       
     LoadHeaderData : (logFileName) ->
@@ -322,7 +323,11 @@ module.exports = ->
           
           # environment variable search
           if (matches=(line.match "^<< *var *# *(.*?)=(.*?) *>>$"))
-            testData.env[matches[1]]=matches[2]
+            # inserting params into testData with path
+            matches[1].split('.').reduce( (prev,curr,i,ar)-> 
+              if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
+            , testData)
+
           else
             # trying to find programName only if it is not yet defined
             unless testData.programName?
@@ -334,7 +339,7 @@ module.exports = ->
                   testData.programArgs=matches[2].split(" ")
                 else
                   [testData.programName,testData.programArgs...]=cmd.split(" ")
-              
+ 
         # removing database arg if found one
         if testData.programArgs.indexOf("-d")>-1
           testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
@@ -383,8 +388,6 @@ module.exports = ->
         testData.timeout?=10000
         testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
         testData.options?=testData.opts
-        
-        
         
         testData.ext = path.extname(testData.fileName).toLowerCase()
         unless testData.ext
@@ -455,7 +458,6 @@ module.exports = ->
 
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
           
-          
         runner.reg
           name: "advanced$#{@relativeName}$compile$#{suspectTestName}"
           data:
@@ -474,7 +476,7 @@ module.exports = ->
           testData = arg
 
         testData.testFileName = @fileName
-        testData = getTestData(testData)
+        testData = combTestData(testData)
         unless testData.programName? then throw "Can not read programName from "+@fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
