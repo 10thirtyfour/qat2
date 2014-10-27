@@ -282,6 +282,7 @@ module.exports = ->
  
           _.merge opt.env, @options.commondb
           _.merge opt.env, @options.headless
+          _.merge opt.env, @testData.env
 
           setCurrentStatus = (logLine,outLine) =>
             @data.logLine = logLine
@@ -294,7 +295,6 @@ module.exports = ->
             "-d"
             @options.commondb.LYCIA_DB_DRIVER
           ].concat( @testData.programArgs )
-          
           
           
           @data.commandLine = "qrun "+ params.join(" ")
@@ -312,21 +312,29 @@ module.exports = ->
     LoadHeaderData : (logFileName) ->
       testData =
         fileName: logFileName
+        env : {}
 
       logStream = fs.createReadStream(logFileName, encoding: "utf8")
       nextLogLine = lineFromStream logStream
       try
         while (line=nextLogLine())
           break if line is "<<<"
-          if (matches=(line.match "^<< *(.*?) *>>$"))
-            cmd = matches[1]
-            # handling both, quoted and unquoted program name
-            if (matches=(cmd.match '"(.*?)" *(.*)'))
-              testData.programName=matches[1]
-              testData.programArgs=matches[2].split(" ")
-            else
-              [testData.programName,testData.programArgs...]=cmd.split(" ")
-            break
+          
+          # environment variable search
+          if (matches=(line.match "^<< *var *# *(.*?)=(.*?) *>>$"))
+            testData.env[matches[1]]=matches[2]
+          else
+            # trying to find programName only if it is not yet defined
+            unless testData.programName?
+              if (matches=(line.match "^<< *(.*?) *>>$"))
+                cmd = matches[1]
+                # handling both, quoted and unquoted program name
+                if (matches=(cmd.match '"(.*?)" *(.*)'))
+                  testData.programName=matches[1]
+                  testData.programArgs=matches[2].split(" ")
+                else
+                  [testData.programName,testData.programArgs...]=cmd.split(" ")
+              
         # removing database arg if found one
         if testData.programArgs.indexOf("-d")>-1
           testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
@@ -428,7 +436,7 @@ module.exports = ->
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
         
-        if testData.errorCode? then testData.reverse = true 
+        if testData.errorCode? then testData.reverse = true
         
         delete testData.fail
         delete testData.fn
