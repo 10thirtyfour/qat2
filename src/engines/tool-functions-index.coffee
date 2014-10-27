@@ -322,7 +322,7 @@ module.exports = ->
           break if line is "<<<"
           
           # environment variable search
-          if (matches=(line.match "^<< *var *# *(.*?)=(.*?) *>>$"))
+          if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>$"))
             # inserting params into testData with path
             matches[1].split('.').reduce( (prev,curr,i,ar)-> 
               if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
