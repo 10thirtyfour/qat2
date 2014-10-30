@@ -199,15 +199,15 @@ module.exports = ->
       yp.frun( =>
         opt = 
           env: @runner.tests["read$environ"].env
+          cwd: path.dirname(@testData.fileName)
           
         _.merge opt.env, @options.commondb
         
         @testData.compileTimeout?=20000
         
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o --xml-errors"
+          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
           when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
-
         if @testData.options? then @data.cmdLine+=" #{@testData.options}"
         
         [command,args...] = @data.cmdLine.split(" ")
