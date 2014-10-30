@@ -198,9 +198,10 @@ module.exports = ->
     regCompile: ->
       yp.frun( =>
         opt = 
-          env: @runner.tests["read$environ"].env
+          env: {}
           cwd: path.dirname(@testData.fileName)
-          
+
+        _.merge opt.env, @runner.tests["read$environ"].env
         _.merge opt.env, @options.commondb
         
         @testData.compileTimeout?=20000
@@ -243,9 +244,10 @@ module.exports = ->
     regBuild: ->
       yp.frun( => 
         opt = 
-          env: @runner.tests["read$environ"].env
+          env: {}
           cwd: @testData.projectPath
         
+        _.merge opt.env, @runner.tests["read$environ"].env
         _.merge opt.env, @options.commondb
 
         exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
@@ -273,10 +275,12 @@ module.exports = ->
     regLogRun : ->
       yp.frun( => 
         try
+          
           opt = 
-            env: @runner.tests["read$environ"].env
+            env: {}
             cwd: path.join(@testData.projectPath,"output")
- 
+
+          _.merge opt.env, @runner.tests["read$environ"].env
           _.merge opt.env, @options.commondb
           _.merge opt.env, @options.headless
           _.merge opt.env, @testData.env
