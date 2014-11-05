@@ -145,6 +145,7 @@ module.exports = ->
             @remoteCall el, "click"
           else
             el.click())
+            
       wd.addPromiseMethod(
         "remoteCall"
         (el,nm) ->
@@ -156,30 +157,15 @@ module.exports = ->
               [el]))
               
       wd.addPromiseMethod(
-        "fieldWidth"
-        (el) -> 
-          @execute("return $('.qx-identifier-#{el}').width()")
-        )   
-        
-      wd.addPromiseMethod(
-        "fieldHeight"
-        (el) -> 
-          @execute("return $('.qx-identifier-#{el}').height()")
-        )          
-      wd.addPromiseMethod(
-        "fieldText"
-        (el) -> @remoteCall el, "fieldText")
-     
-
-      wd.addPromiseMethod(
-        "checkSize"           
-        (el,w,h) -> 
-          if _.isString el then el = @elementByCss ".#{el}"
-          el.getSize().then( (i) ->
-            unless w is i.width and h is i.height 
-              Q.reject("size mismatch. Expected #{w}x#{h}. Actual #{i.width}x#{i.height}")
-          )
-      )            
+        "cssProperty"
+        (el,cls) ->
+          if _.isString el 
+            @execute("return $().css.apply($('.qx-identifier-#{el}'),['#{cls}'])")
+          else
+            @execute(
+              "return $().css.apply($(arguments[0]),['#{cls}'])"
+              [el]))        
+              
       synproto = {}
       wrap = (m,n) ->
         (args...) ->
