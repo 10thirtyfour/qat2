@@ -86,7 +86,7 @@ class Runner
     if not t.disabled and t.promise? and (not error or t.runAnyway)
       r = r.then(-> t.promise())
         .catch (e) ->
-          t.error = true
+          t.error = true 
           throw e
     else
       @trace "skipping #{node}"
@@ -96,7 +96,7 @@ class Runner
         process.exit -1
     else
       r = r.catch (e) =>
-        @info "error", @prettyjson e
+        #@info "error", @prettyjson e
         Q {}
     r = r.finally =>
           @trace "done #{node}, next", @graph.successors node
