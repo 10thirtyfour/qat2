@@ -1,7 +1,5 @@
 exec = require('child_process').exec
 
-
-
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -66,6 +64,7 @@ module.exports = ->
         "startApplication"
         (command,instance) ->
           instance ?= runner.qatDefaultInstance
+          runner.wd.lastExecuted = command + ".exe"
           @get(runner.lyciaWebUrl)
             .then((i) ->
               plugin.trace "Starting #{command} at #{instance}"
@@ -126,8 +125,8 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector("#qx-home-form, #qx-application-restart",
-            timeout))
+          @waitForElementByCssSelector("#qx-home-form, #qx-application-restart",timeout))
+             
       wd.addPromiseMethod(
         "fglFocused",
         -> @elementByCss(".qx-focused"))
@@ -145,6 +144,18 @@ module.exports = ->
             @remoteCall el, "click"
           else
             el.click())
+
+      wd.addPromiseMethod(
+        "invokeElement",
+        (el) ->
+          unless el.click? then el = @elementByCss ".qx-identifier-#{el}"
+          if plugin.hacks.invoke[@qx$browserName]
+            @remoteCall(el, "click")
+              .waitIdle()
+          else
+            el
+              .click()
+              .waitIdle())
             
       wd.addPromiseMethod(
         "remoteCall"
@@ -192,8 +203,10 @@ module.exports = ->
                 binfo.name="wd$#{i}$#{info.name}"
                 promise = (browser) ->
                   yp.frun ->
-                    binfo.syn.call _.create binfo,
-                    _.assign {browser:browser}, synproto
+                    try 
+                      binfo.syn.call _.create binfo,_.assign {browser:browser}, synproto
+                    finally
+                      exec('taskkill /F /T /IM '+ runner.wd.lastExecuted)
               else
                 promise = ->
             binfo.promise = ->
@@ -203,17 +216,12 @@ module.exports = ->
                 browser = wd.promiseChainRemote()
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
-                browser.on("command", (meth, path, data) ->
-                plugin.trace "> #{meth.yellow}", path.grey, data || '')
+                browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
-              unless binfo.closeBrowser is false or plugin.closeBrowser is false 
+              unless binfo.closeBrowser is false or plugin.closeBrowser is false  
                 r = r.finally ->
-                  # taskkill                
-                  processName = runner.path.basename(info.name).split("-test")[0]+".exe"
-                  exec('taskkill /F /T /IM '+ processName, (error, stdout, stderr) -> 
-                    browser.quit() )
-
+                  browser.quit()
               return r.then(-> "OK")
             @reg binfo
             binfo.data.browser = i
