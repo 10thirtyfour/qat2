@@ -45,7 +45,7 @@ module.exports = ->
       justType:
         safari: true
       invoke:
-        firefox: true
+        firefox: true 
     promise: ->
       plugin = @
       wd.addPromiseMethod(
@@ -120,7 +120,29 @@ module.exports = ->
       wd.addPromiseMethod(
         "formField"
         (name) -> @elementByCss ".qx-identifier-#{name}")
-     
+
+      # alias for formField. should be used instead!        
+      wd.addPromiseMethod(
+        "getElement"
+        (name) -> @elementByCss ".qx-identifier-#{name}")
+        
+      wd.addPromiseMethod(
+        "getWindow"
+        (name) -> @elementByCss ".qx-o-identifier-#{name}")
+
+      wd.addPromiseMethod(
+        "resizeWindow"
+        (wnd,dx,dy,h) -> 
+          h?="se"
+          yp(@elementByCss(".qx-o-identifier-#{wnd} .ui-resizable-#{h}").then( (p)->
+            p
+              .moveTo()
+              .buttonDown()
+              .moveTo(dx,dy)
+              .buttonUp()
+          ))
+        )
+        
       wd.addPromiseMethod(
         "waitExit"
         (timeout) ->
