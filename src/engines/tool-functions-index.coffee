@@ -145,7 +145,7 @@ module.exports = ->
     regGetEnviron: ->
       runner = @runner
       name = @name
-      [command,cc,args...] = @data.command.split(" ")
+      [command,cc,args...] = _.compact @data.command.split(" ")
       
       def = Q.defer()
       child = spawn command,[cc,args.join(" ")]
@@ -162,7 +162,7 @@ module.exports = ->
       
     regExecPromise: ->
       @info @data.command   
-      [command,args...] = @data.command.split(" ")
+      [command,args...] = _.compact @data.command.split(" ")
       {stdout,stdin} = child = spawn command,args,@data.options
       exitPromise child
       
@@ -211,14 +211,13 @@ module.exports = ->
           when ".per" then @data.cmdLine = "qform #{@testData.fileName} -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
         if @testData.options? then @data.cmdLine+=" #{@testData.options}"
         
-        [command,args...] = @data.cmdLine.split(" ")
+        [command,args...] = _.compact @data.cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
         #looks like on win32 shown also for x64 platform
         if process.platform is "ia32" or process.platform is "x64" then command+=".exe" 
 
-        
         try
           {stderr} = child = spawn( command , args , opt )
           result = (yp exitPromise(child).timeout(@testData.compileTimeout))
