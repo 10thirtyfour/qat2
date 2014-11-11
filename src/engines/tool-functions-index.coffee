@@ -220,13 +220,14 @@ module.exports = ->
 
         
         try
-          {stderr} = child = spawn( command , args , opt) 
-          
+          {stderr} = child = spawn( command , args , opt )
           result = (yp exitPromise(child).timeout(@testData.compileTimeout))
           if result
-            txt = stderr.read().toString('utf8')
-            errorMessage = parceError(txt)
-            
+            txt = stderr.read()
+            if txt?
+              errorMessage = parceError(txt.toString('utf8'))
+
+            errorMessage?= { text:txt, code:-1, line:-1 }
             if @testData.reverse
               if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
                 return "Code matched:#{errorMessage.code}. Line:#{errorMessage.line}."
@@ -526,8 +527,7 @@ module.exports = ->
                     tr2file+='  <Resource path="'+fn+'"/>\n'
                   tr2file+='</Resources>\n'
                   fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
-
-                                        
+                  "Files deployed : #{filesToCopy.length}"                          
                 catch e
                   throw e
                 
