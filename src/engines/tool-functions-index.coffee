@@ -66,7 +66,7 @@ module.exports = ->
     return testData
 
   runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
-    delimeterSent = false 
+    delimeterSent = false
     writeBlock = ( stream , message, lineTimeout) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout(lineTimeout, "Log line timed out")
@@ -145,10 +145,10 @@ module.exports = ->
     regGetEnviron: ->
       runner = @runner
       name = @name
-      [command,args...] = @data.command.split(" ")
+      [command,cc,args...] = @data.command.split(" ")
       
       def = Q.defer()
-      child = spawn command,args
+      child = spawn command,[cc,args.join(" ")]
 
 	      
       child.on "exit", (code) ->
@@ -207,22 +207,27 @@ module.exports = ->
         @testData.compileTimeout?=20000
         
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl.exe #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
-          when ".per" then @data.cmdLine = "qform.exe #{@testData.fileName} -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
+          when ".4gl" then @data.cmdLine = "qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
+          when ".per" then @data.cmdLine = "qform #{@testData.fileName} -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}"
         if @testData.options? then @data.cmdLine+=" #{@testData.options}"
         
         [command,args...] = @data.cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
+
+        #looks like on win32 shown also for x64 platform
+        if process.platform is "ia32" or process.platform is "x64" then command+=".exe" 
+
         
         try
-          {stderr} = child = spawn( command , args , opt) 
-          
+          {stderr} = child = spawn( command , args , opt )
           result = (yp exitPromise(child).timeout(@testData.compileTimeout))
           if result
-            txt = stderr.read().toString('utf8')
-            errorMessage = parceError(txt)
-            
+            txt = stderr.read()
+            if txt?
+              errorMessage = parceError(txt.toString('utf8'))
+
+            errorMessage?= { text:txt, code:-1, line:-1 }
             if @testData.reverse
               if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
                 return "Code matched:#{errorMessage.code}. Line:#{errorMessage.line}."
@@ -245,7 +250,7 @@ module.exports = ->
       yp.frun( => 
         opt = 
           env: {}
-          cwd: @testData.projectPath
+          cwd: path.resolve(@testData.projectPath)
         
         _.merge opt.env, @runner.tests["read$environ"].env
         _.merge opt.env, @options.commondb
@@ -254,7 +259,7 @@ module.exports = ->
         
         @testData.buildMode ?= @options.buildMode 
         @testData.buildTimeout ?= @timeouts.build
-        params = [ "-M", @testData.buildMode, @testData.projectPath, path.basename(@testData.programName) ]
+        params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
         @data.commandLine = "qbuild " + params.join(" ")
         try
           child = spawn( exename , params , opt) 
@@ -278,7 +283,7 @@ module.exports = ->
           
           opt = 
             env: {}
-            cwd: path.join(@testData.projectPath,"output")
+            cwd: path.resolve(@testData.projectPath,"output")
 
           _.merge opt.env, @runner.tests["read$environ"].env
           _.merge opt.env, @options.commondb
@@ -366,7 +371,7 @@ module.exports = ->
         if process.platform is "win32" then testData.programExecutable+=".exe"
         #testData.projectPath = path.resolve(testData.projectPath)
       catch e
-        console.log e
+        @info e
       return testData    
   
 
@@ -522,8 +527,7 @@ module.exports = ->
                     tr2file+='  <Resource path="'+fn+'"/>\n'
                   tr2file+='</Resources>\n'
                   fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
-
-                                        
+                  "Files deployed : #{filesToCopy.length}"                          
                 catch e
                   throw e
                 
