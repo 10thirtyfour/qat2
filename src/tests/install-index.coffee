@@ -21,11 +21,11 @@ platforms =
     
   linia32:
     url:"/repository/downloadAll/bt45/.lastSuccessful"
-    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env.LYCIA_DIR))"'
+    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env))"'
   
   linx64:
     url:"/repository/downloadAll/bt51/.lastSuccessful"
-    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env.LYCIA_DIR))"'
+    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env))"'
 
 module.exports = ->
   {os,path,Q,utils,toolfuns,yp} = runner = @
