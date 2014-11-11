@@ -20,9 +20,8 @@ module.exports = ->
           INFORMIXSERVER: "querix_tcp"
           LOGNAME: "informix"
           INFORMIXPASS: "default2375"
-          INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+          INFORMIXDIR: "/opt/IBM/informix"
           DBDATE: "MDY4/"
-          TNS_ADMIN: "c:\\Oracle"
           QX_REFRESH_LEVEL: 2
           #LYCIA_LEAVE_WS: 1
         headless:
@@ -40,4 +39,4 @@ module.exports = ->
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
   @tempPath = "./tests"
-  @deployPath = "C:/ProgramData/Querix/Lycia 6/progs"
+  @deployPath = "/opt/Querix/Lycia/progs"
