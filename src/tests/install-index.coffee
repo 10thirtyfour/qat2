@@ -3,10 +3,7 @@ platforms =
     url:"/repository/downloadAll/bt80/.lastSuccessful"
     environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
     commands: [
-      "cvs.exe -d :pserver:seza@cvs.qx:/demo co ."
-      "unzip.exe -j package.zip *LyciaDesktop-1.1-*.msi"
-      "cmd /c ren LyciaDesktop-1.1-*.msi ldnet.msi"
-      "cmd /c ldnet.msi /quiet"
+      "cvs -d :pserver:seza@cvs.qx:/demo co ."
       "unzip.exe -j package.zip *Lycia-nt-32*.exe"
       "cmd /c ren Lycia-nt-32*.exe lycia2.exe"
       "lycia2.exe /S"
@@ -16,10 +13,7 @@ platforms =
     url:"/repository/downloadAll/bt7/.lastSuccessful"
     environ: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIAI~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
     commands: [
-      "cvs.exe -d :pserver:seza@cvs.qx:/demo co ."
-      "unzip.exe -j package.zip *LyciaDesktop-1.1-*.msi"
-      "cmd /c ren LyciaDesktop-1.1-*.msi ldnet.msi"
-      "cmd /c ldnet.msi /quiet"
+      "cvs -d :pserver:seza@cvs.qx:/demo co ."
       "unzip.exe -j package.zip *Lycia-nt-64*.exe"
       "cmd /c ren Lycia-nt-64*.exe lycia2.exe"
       "lycia2.exe /S"
@@ -27,11 +21,11 @@ platforms =
     
   linia32:
     url:"/repository/downloadAll/bt45/.lastSuccessful"
+    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env.LYCIA_DIR))"'
   
   linx64:
     url:"/repository/downloadAll/bt51/.lastSuccessful"
-    environ: '. /opt/Querix/Lycia/environ >nul && node -e "console.log(JSON.stringify(process.env))"'
-
+    environ : 'sh -c source /opt/Querix/Lycia/environ ; node -e "console.log(JSON.stringify(process.env.LYCIA_DIR))"'
 
 module.exports = ->
   {os,path,Q,utils,toolfuns,yp} = runner = @
@@ -79,7 +73,6 @@ module.exports = ->
               cwd: path.resolve(tempPath)
               stdio:"ignore"
           promise: toolfuns.regExecPromise
-          
         precursors = ["lycia$install$command"+commandIndex]
         commandIndex++    
       runner.sync()

@@ -145,10 +145,10 @@ module.exports = ->
     regGetEnviron: ->
       runner = @runner
       name = @name
-      [command,args...] = @data.command.split(" ")
+      [command,cc,args...] = @data.command.split(" ")
       
       def = Q.defer()
-      child = spawn command,args
+      child = spawn command,[cc,args.join(" ")]
 
 	      
       child.on "exit", (code) ->
