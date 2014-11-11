@@ -76,7 +76,7 @@ module.exports = ->
           data:
             command: command
             options:
-              cwd: tempPath
+              cwd: path.resolve(tempPath)
               stdio:"ignore"
           promise: toolfuns.regExecPromise
           
