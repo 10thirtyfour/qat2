@@ -197,7 +197,34 @@ module.exports = ->
           else
             @execute(
               "return $().css.apply($(arguments[0]),['#{cls}'])"
-              [el]))        
+              [el]))  
+
+      wd.addPromiseMethod(
+        "getText"
+        (el) ->
+          switch
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+            else throw "Isn't implemented for this widget yet"
+        )
+   
+      wd.addPromiseMethod(
+        "getFromMessageBox"
+        (mb) ->
+          switch
+            when mb is "text" then yp(@execute("return $('.qx-message-box:visible pre').text()")) 
+            else
+              throw "Isn't implemented for this messageBox element yet"
+        ) 
+
+      wd.addPromiseMethod(
+        "getImage"
+        (el) ->
+            switch
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
+              else throw "Isn't implemented for this widget yet"
+        )
+      
               
       synproto = {}
       wrap = (m,n) ->
