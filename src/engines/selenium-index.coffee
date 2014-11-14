@@ -1,3 +1,4 @@
+log = console.log
 exec = require('child_process').exec
 
 module.exports = ->
@@ -43,9 +44,9 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: true
+        safari: true  
       invoke:
-        firefox: true 
+        firefox: true
     promise: ->
       plugin = @
       wd.addPromiseMethod(
@@ -200,12 +201,54 @@ module.exports = ->
               [el]))  
 
       wd.addPromiseMethod(
+        "check"
+        (el,params) ->
+          if _.isString el then el=@getElement(el)
+          unless params? then el          
+          params.mess?="Error"
+          
+          # TODO : make calculations optional
+          # must be done, prior to add more attributes
+          size = yp el.getSize()
+          loc =  yp el.getLocationInView()
+          
+          errmsg = ""
+          for attr,expected of params
+            actual = switch attr
+              when "mess" then expected
+              when "w","width" then size.width
+              when "h","height" then size.height
+              when "x" then loc.x
+              when "y" then loc.y
+              else   
+                @info "no method for #{attr}"
+                expected
+            unless expected is actual
+              errmsg+="#{attr} mismatch! Actual : <#{actual}>, Expected : <#{expected}>"
+
+          params.mess?="Error"
+          
+          unless errmsg is ""
+            throw params.mess+":\n"+errmsg
+          el
+      )
+      wd.addPromiseMethod(
         "getText"
-        (el) ->
-          switch
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
-            else throw "Isn't implemented for this widget yet"
+        (id) ->
+        
+          #a = ["calendar","textfield"]
+
+          log yp @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
+          
+          @assert.deepEqual(@getGeometry("f1"),{x:10,y:60,w:50,h:50})
+          
+          
+          #el = switch
+          #  when @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
+          #switch
+          #when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
+          #when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+          #throw "Isn't implemented for this widget yet"
         )
    
       wd.addPromiseMethod(
