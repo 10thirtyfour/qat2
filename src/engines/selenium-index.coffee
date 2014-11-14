@@ -234,28 +234,30 @@ module.exports = ->
       )
       wd.addPromiseMethod(
         "getText"
-        (id) ->
+        (el) ->
         
           #a = ["calendar","textfield"]
 
-          log yp @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
+          #log yp @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
           
-          @assert.deepEqual(@getGeometry("f1"),{x:10,y:60,w:50,h:50})
+          #@assert.deepEqual(@getGeometry("f1"),{x:10,y:60,w:50,h:50})
           
           
           #el = switch
           #  when @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
-          #switch
-          #when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
-          #when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
-          #throw "Isn't implemented for this widget yet"
+          switch
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+            else throw "Isn't implemented for this widget yet"
         )
    
       wd.addPromiseMethod(
         "getFromMessageBox"
         (mb) ->
           switch
-            when mb is "text" then yp(@execute("return $('.qx-message-box:visible pre').text()")) 
+            when mb is "text" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
+            when mb is "value" then yp(@execute("return $('.qx-message-box:visible input').value()"))
+            when mb is "submit" then yp(@execute ("$('.qx-button-ok').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
         ) 
@@ -265,6 +267,7 @@ module.exports = ->
         (el) ->
             switch
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')")) 
               else throw "Isn't implemented for this widget yet"
         )
       
