@@ -248,6 +248,7 @@ module.exports = ->
           switch
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             else throw "Isn't implemented for this widget yet"
         )
    
@@ -267,6 +268,7 @@ module.exports = ->
         (el) ->
             switch
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')")) 
               else throw "Isn't implemented for this widget yet"
         )
