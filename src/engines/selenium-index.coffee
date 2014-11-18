@@ -257,12 +257,18 @@ module.exports = ->
         )
    
       wd.addPromiseMethod(
-        "getFromMessageBox"
-        (mb) ->
-          switch
-            when mb is "text" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
-            when mb is "value" then yp(@execute("return $('.qx-message-box:visible input').value()"))
-            when mb is "submit" then yp(@execute ("$('.qx-button-ok').click()")) 
+        "messageBox"
+        (action,params) ->
+          switch action
+            when "getText" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
+            when "getValue" then yp(@execute("return $('.qx-message-box:visible input').value()"))
+            when "wait"
+             (timeout) ->
+                timeout ?= plugin.defaultWaitTimeout
+                @waitForElementByCssSelector(
+                  ".qx-message-box"
+                  timeout)
+            when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
         ) 
