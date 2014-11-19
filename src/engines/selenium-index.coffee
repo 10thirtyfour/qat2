@@ -44,7 +44,7 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: true  
+        safari: true
       invoke:
         firefox: true
     promise: ->
@@ -93,7 +93,12 @@ module.exports = ->
             .elementById("qx-home-form")
             .submit())
              
-      
+      wd.addPromiseMethod(
+        "elementExists"
+        (el) ->
+          yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
+          )
+         
       wd.addPromiseMethod(
         "waitMessageBox",
         (timeout) ->
@@ -120,7 +125,10 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "formField"
-        (name) -> @elementByCss ".qx-identifier-#{name}")
+        (name) -> 
+          console.log "Deprecated!!! Use getElement"
+          @info "Deprecated!!! Use getElement"
+          @elementByCss ".qx-identifier-#{name}")
 
       # alias for formField. should be used instead!        
       wd.addPromiseMethod(
