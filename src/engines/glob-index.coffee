@@ -56,22 +56,8 @@ module.exports = ->
                         continue 
                     do (i) =>
                       fullname = "#{d}/#{i}"
-                      dir = path.dirname(i).replace(/\//g, "$")
-                        .replace(/\W/g,"")
-                      nm = name + "$"
-                      if dir.length isnt 0
-                        nm += dir + "$"
-                      nm += path.basename(i,path.extname(i))
-                      chainPromise = chainPromise.then(() -> parseFile(fullname)).then((mod) =>
-                        @trace "parsing file: ", fullname
-                        if not mod? or not mod.call
-                          throw new Error "wrong test format for #{fullname}"
-                        @_curName = nm
-                        @_curCnt = 0
-                        res = mod.call runner
-                        @_curName = null 
-                        res)
-                  chainPromise.then(=>
+                      chainPromise = chainPromise.then(() -> parseFile(fullname))
+                  chainPromise.then( =>
                       runner.sync()
                       true)
                   )
