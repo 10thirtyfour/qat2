@@ -127,7 +127,6 @@ module.exports = ->
         "formField"
         (name) -> 
           console.log "Deprecated!!! Use getElement"
-          @info "Deprecated!!! Use getElement"
           @elementByCss ".qx-identifier-#{name}")
 
       # alias for formField. should be used instead!        
@@ -260,7 +259,7 @@ module.exports = ->
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             else 
               if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
-                return null 
+                return null
               else throw "Isn't implemented for this widget yet"
         )
    
@@ -289,7 +288,10 @@ module.exports = ->
                 else throw "Isn't implemented for this widget yet"
         )      
               
-      synproto = {}
+      # Adding properties for wd test' this
+      synproto = 
+        SPECIAL_KEYS:wd.SPECIAL_KEYS
+      #
       wrap = (m,n) ->
         (args...) ->
           yp @browser[n].apply @browser, args
