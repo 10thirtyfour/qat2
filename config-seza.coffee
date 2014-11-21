@@ -28,10 +28,13 @@ module.exports = ->
         headless:
           QX_HEADLESS_MODE: 1  
     logger:
-      conf:
-        transports:
-          console:
-            level: "trace"
+      transports:
+        console:
+          level: "info"
+        couchdb:
+          host: "10.38.57.138"
+          port: 5984
+          level: 'pass'
     globLoader:
       root: "./tests"
 

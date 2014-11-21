@@ -33,6 +33,7 @@ module.exports = ->
         colorize: true
       couchdb:
         host: "localhost"
+        port: 5984
         db: "qat_log"
         level: "pass"
     levels:

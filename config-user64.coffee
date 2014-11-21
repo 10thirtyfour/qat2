@@ -28,10 +28,9 @@ module.exports = ->
         headless:
           QX_HEADLESS_MODE: 1  
     logger:
-      conf:
-        transports:
-          console:
-            level: "trace"
+      transports:
+        console:
+          level: "trace"
     globLoader:
       root: "./tests"
 
