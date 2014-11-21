@@ -150,7 +150,20 @@ module.exports = ->
               .buttonUp()
           ))
         )
-        
+
+      wd.addPromiseMethod(
+        "resizeElement"
+        (el,dx,dy,h) -> 
+          h?="e"
+          yp(@elementByCss(".qx-identifier-#{el} .ui-resizable-#{h}").then( (p)->
+            p
+              .moveTo()
+              .buttonDown()
+              .moveTo(dx,dy)
+              .buttonUp()
+          ))
+        )
+
       wd.addPromiseMethod(
         "waitExit"
         (timeout) ->
