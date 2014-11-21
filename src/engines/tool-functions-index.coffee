@@ -205,13 +205,13 @@ module.exports = ->
         _.merge opt.env, @options.commondb
         
         @testData.compileTimeout?=20000
-        
+        cmdLine = ""
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then @data.cmdLine = "qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
-          when ".per" then @data.cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
-        if @testData.options? then @data.cmdLine+=" #{@testData.options}"
+          when ".4gl" then cmdLine = "qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
+          when ".per" then cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
+        if @testData.options? then cmdLine+=" #{@testData.options}"
         
-        [command,args...] = _.compact @data.cmdLine.split(" ")
+        [command,args...] = _.compact cmdLine.split(" ")
         
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
