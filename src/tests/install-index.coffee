@@ -83,7 +83,7 @@ module.exports = ->
     before: ["globLoader"]
     data:
       command: platforms[runner.platform].environ
-    promise: toolfuns.regGetEnviron
+    promise: toolfuns.getEnviron
     
   runner.sync()
 

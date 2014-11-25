@@ -120,15 +120,20 @@ module.exports = ->
       return lineText
     return line
 
-  exitPromise = (child, ignoreError = false) ->
+  exitPromise = (child, opt={}) ->
     def = Q.defer()
-    child.on "exit", (code) -> def.resolve code
-    if ignoreError?
+    child.on "exit", (code) ->
+      if opt.returnOutput?
+        def.resolve child.stdout.read()
+      else 
+        def.resolve code
+    if opt.ignoreError?
       child.on "error", (code) -> def.resolve code
     else
       child.on "error", (code) -> def.reject code
     def.promise
-   
+
+    
   readBlock = (nextLine, dir) ->
     mess=[]
     while (line=nextLine())
@@ -142,23 +147,28 @@ module.exports = ->
     return mess
     
   runner.toolfuns =
-    regGetEnviron: ->
+    getEnviron: ->
       runner = @runner
       name = @name
+      
+
+      runner.tests[name].osinfo = 
+        platform : process.platform
+        arch : process.arch
+        os : runner.os.release()
+        build : "unknown" 
+      
       [command,cc,args...] = _.compact @data.command.split(" ")
       
-      def = Q.defer()
-      child = spawn command,[cc,args.join(" ")]
-
-	      
-      child.on "exit", (code) ->
-        runner.info name+" "+runner.platform
-        runner.tests[name].env = JSON.parse(child.stdout.read().toString('utf8'))
-        def.resolve code
-        
-      child.on "error", (e) -> def.reject("environ.bat execution failed")
+      exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 
+      .then( (envtext)->
+        runner.tests[name].env = JSON.parse(envtext.toString('utf8'))
+        exitPromise( spawn("qfgl",["-V"], env:runner.tests[name].env ), returnOutput:true))
+      .then( (qfglout)->
+        if qfglout?
+          runner.tests[name].osinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
+        return true)
       
-      return def.promise
       
     regExecPromise: ->
       @info @data.command   
@@ -310,7 +320,7 @@ module.exports = ->
           @testData.runTimeout ?= @timeouts.run
           @testData.lineTimeout ?= @timeouts.line
           
-          childPromise = exitPromise(child, @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
+          childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
           logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
           yp Q.all( [ childPromise, logPromise ] )
         finally
