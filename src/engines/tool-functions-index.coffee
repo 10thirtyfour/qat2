@@ -158,6 +158,8 @@ module.exports = ->
         os : runner.os.release()
         build : "unknown" 
       
+      @info process.platform
+      
       [command,cc,args...] = _.compact @data.command.split(" ")
       
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 

@@ -30,7 +30,7 @@ module.exports = ->
     logger:
       transports:
         console:
-          level: "trace"
+          level: "info"
     globLoader:
       root: "./tests"
 
