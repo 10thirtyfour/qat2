@@ -96,7 +96,7 @@ module.exports = ->
         when "<<<"
           actualLine = readBlock(nextOutLine,"<<<").join "\n"
           expectedLine = block.join "\n"
-          if actualLine!=expectedLine
+          if actualLine isnt expectedLine
             throw "ERROR in line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
     if (block = readBlock(nextOutLine,"<<<")).length>1
       throw "ERROR : Program output not empty at the end of scenario. " + block
@@ -133,7 +133,6 @@ module.exports = ->
       child.on "error", (code) -> def.reject code
     def.promise
 
-    
   readBlock = (nextLine, dir) ->
     mess=[]
     while (line=nextLine())
@@ -149,28 +148,24 @@ module.exports = ->
   runner.toolfuns =
     getEnviron: ->
       runner = @runner
-      name = @name
       
-
-      runner.tests[name].osinfo = 
-        platform : process.platform
-        arch : process.arch
-        os : runner.os.release()
+      runner.sysinfo = 
+        platform : process.platform.substring(0,3)+'_'+process.arch
+        ver : runner.os.release()
         build : "unknown" 
       
-      @info process.platform
+      @info runner.sysinfo.platform + " " + runner.sysinfo.ver
       
       [command,cc,args...] = _.compact @data.command.split(" ")
       
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 
       .then( (envtext)->
-        runner.tests[name].env = JSON.parse(envtext.toString('utf8'))
-        exitPromise( spawn( path.join(runner.tests[name].env.LYCIA_DIR,"bin","qfgl"),["-V"], env:runner.tests[name].env ), returnOutput:true))
+        runner.environ = JSON.parse(envtext.toString('utf8'))
+        exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
-          runner.tests[name].osinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
+          runner.sysinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
         return true)
-      
       
     regExecPromise: ->
       @info @data.command   
@@ -213,8 +208,10 @@ module.exports = ->
           env: {}
           cwd: path.dirname(@testData.fileName)
 
-        _.merge opt.env, @runner.tests["read$environ"].env
+        _.merge opt.env, @runner.environ
         _.merge opt.env, @options.commondb
+        
+        #@data.sysinfo = @runner.sysinfo
         
         @testData.compileTimeout?=20000
         cmdLine = ""
@@ -229,11 +226,9 @@ module.exports = ->
 
         #looks like on win32 shown also for x64 platform
         #if process.platform is "ia32" or process.platform is "x64" then command+=".exe"
-        
-
         try
           {stderr} = child = spawn( command , args , opt )
-          result = (yp exitPromise(child).timeout(@testData.compileTimeout))
+          result = (yp exitPromise(child, ignoreError:true ).timeout(@testData.compileTimeout))
           if result
             txt = stderr.read()
             if txt?
@@ -264,7 +259,7 @@ module.exports = ->
           env: {}
           cwd: path.resolve(@testData.projectPath)
         
-        _.merge opt.env, @runner.tests["read$environ"].env
+        _.merge opt.env, @runner.environ
         _.merge opt.env, @options.commondb
 
         exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
@@ -272,17 +267,19 @@ module.exports = ->
         @testData.buildMode ?= @options.buildMode 
         @testData.buildTimeout ?= @timeouts.build
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
-        @data.commandLine = "qbuild " + params.join(" ")
+        #@data.commandLine = "qbuild " + params.join(" ")
         try
           child = spawn( exename , params , opt) 
           result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
           if result
             if @testData.reverse 
               return "Build has been failed as expected."
-            throw child.stdout.read().toString('utf8')
+            message = ""
+            text = child.stdout.read()
+            if text? then message=text.toString('utf8')
+            throw text
         catch e
-          @data.failReason = e
-          throw "Build failed! "+e
+          throw "Build failed with message : "+e
         finally 
           child.kill('SIGTERM')
         if @testData.reverse then throw "Build OK but fail expected!"
@@ -297,14 +294,17 @@ module.exports = ->
             env: {}
             cwd: path.resolve(@testData.projectPath,"output")
 
-          _.merge opt.env, @runner.tests["read$environ"].env
+          _.merge opt.env, @runner.environ
           _.merge opt.env, @options.commondb
           _.merge opt.env, @options.headless
           _.merge opt.env, @testData.env
 
-          setCurrentStatus = (logLine,outLine) =>
-            @data.logLine = logLine
-            @data.outLine = outLine
+          logLine = 0
+          outLine = 0
+          
+          setCurrentStatus = (logL,outL) =>
+            logLine = logL
+            outLine = outL
             
           exename = path.join(opt.env.LYCIA_DIR, "bin", "qrun")
           
@@ -314,8 +314,7 @@ module.exports = ->
             opt.env.LYCIA_DB_DRIVER
           ].concat( @testData.programArgs )
           
-          
-          @data.commandLine = "qrun "+ params.join(" ")
+          #@data.commandLine = "qrun "+ params.join(" ")
           child = spawn( exename, params, opt)
                        
           @testData.ignoreHeadlessErrorlevel = true; #????
@@ -326,6 +325,7 @@ module.exports = ->
           childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
           logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
           yp Q.all( [ childPromise, logPromise ] )
+          "Lines [ tlog : #{logLine}, stdout : #{outLine} ]"
         finally
           child.kill('SIGTERM')
           
