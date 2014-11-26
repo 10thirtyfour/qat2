@@ -165,7 +165,7 @@ module.exports = ->
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 
       .then( (envtext)->
         runner.tests[name].env = JSON.parse(envtext.toString('utf8'))
-        exitPromise( spawn("qfgl",["-V"], env:runner.tests[name].env ), returnOutput:true))
+        exitPromise( spawn( path.join(runner.tests[name].env.LYCIA_DIR,"bin","qfgl"),["-V"], env:runner.tests[name].env ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
           runner.tests[name].osinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
@@ -228,7 +228,8 @@ module.exports = ->
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
         #looks like on win32 shown also for x64 platform
-        if process.platform is "ia32" or process.platform is "x64" then command+=".exe" 
+        #if process.platform is "ia32" or process.platform is "x64" then command+=".exe"
+        
 
         try
           {stderr} = child = spawn( command , args , opt )
