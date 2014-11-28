@@ -150,6 +150,8 @@ module.exports = ->
       runner = @runner
       
       runner.sysinfo = 
+        host : runner.os.hostname()
+        timeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
         ver : runner.os.release()
         build : "unknown" 
@@ -165,7 +167,9 @@ module.exports = ->
       .then( (qfglout)->
         if qfglout?
           runner.sysinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
-        return true)
+          runner.logger.pass "qatstart",runner.sysinfo
+        return runner.sysinfo)
+        
       
     regExecPromise: ->
       @info @data.command   

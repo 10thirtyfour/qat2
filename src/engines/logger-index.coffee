@@ -72,7 +72,7 @@ module.exports = ->
     basePromise = descr.promise
     if basePromise? and not descr.setup and not descr.silent
       descr.promise = ->
-        @data.sysinfo = runner.sysinfo
+        @data.timeid = runner.sysinfo.timeid
         @info "starting"
         basePromise.call(this).then(
           (t) =>
