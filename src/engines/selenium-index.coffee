@@ -1,6 +1,35 @@
 log = console.log
 exec = require('child_process').exec
-
+widgets = {
+  "calendar" :
+    text : (el) -> @execute("return $('.qx-identifier-#{el} input').val()")
+  "text-field" :
+    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').text()")
+  "button" :
+    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').html()")
+    image : (el) -> @execute("return $('.qx-identifier-#{el} .qx-image-cell img')[0].src")
+  "browser" :
+    image : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
+  "toolbar-button" :
+    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').html()")
+  "check-box" :
+    text : (el) -> yp(@execute("return $('.qx-identifier-#{el} label').text()"))
+    value : (el) ->
+      if yp(@execute("return $('.qx-identifier-#{el} input').prop('indeterminate')")) then return "indeterminate"
+      if yp(@execute("return $('.qx-identifier-#{el} input').prop('checked')")) then return "checked"
+      if (yp(@execute("return $('.qx-identifier-#{el} input').prop('checked')")))? then return "unchecked"
+      false
+  "canvas" :
+    image : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
+  "browser" :
+    text : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
+  "spinner"
+  "text-area"
+  "function-field-abs"
+  "slider"
+  "scroll-bar"
+  "time-edit-field"
+}
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -235,7 +264,7 @@ module.exports = ->
           errmsg = ""
           for attr,expected of params
             actual = switch attr
-              when "mess" then expected
+              when "mess","precision" then expected
               when "w","width" then size.width
               when "h","height" then size.height
               when "x" then loc.x
@@ -256,26 +285,17 @@ module.exports = ->
         "getText"
         (el) ->
         
-          #a = ["calendar","textfield"]
-
-          #log yp @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
-          
-          #@assert.deepEqual(@getGeometry("f1"),{x:10,y:60,w:50,h:50})
-          
-          
-          #el = switch
-          #  when @elementByCss(".qx-identifier-#{elId}.qx-aum-calendar")
           switch
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-text-field')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
             else 
               if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
                 return null
               else throw "Isn't implemented for this widget yet"
         )
-   
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
@@ -286,7 +306,13 @@ module.exports = ->
             when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
-        ) 
+      )        
+      wd.addPromiseMethod(
+        "getElementType"
+        (el) ->
+          for widget of widgets
+            if yp(@execute("return $('.qx-identifier-#{el}.qx-aum-#{widget}').length"))
+              return widget        ) 
 
       wd.addPromiseMethod(
         "getImage"
@@ -304,6 +330,7 @@ module.exports = ->
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
+        defaults:require("./widget-defaults")
       #
       wrap = (m,n) ->
         (args...) ->
