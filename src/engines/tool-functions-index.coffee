@@ -166,7 +166,7 @@ module.exports = ->
         exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
-          runner.sysinfo.build = qfglout.toString('utf8').split("\r\n")[2].substring(7)
+          runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
           runner.logger.pass "qatstart",runner.sysinfo
         return runner.sysinfo)
         
