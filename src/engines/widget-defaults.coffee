@@ -7,7 +7,7 @@ module.exports =
     "text-area" :
       height : 23
     "function-field-abs" :
-      height : 22
+      height : 24
     "button" :
       height : 25
     "check-box" : 

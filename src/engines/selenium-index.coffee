@@ -1,6 +1,7 @@
 log = console.log
 exec = require('child_process').exec
 widgets = {
+  "function-field-abs"
   "calendar" :
     text : (el) -> @execute("return $('.qx-identifier-#{el} input').val()")
   "text-field" :
@@ -25,7 +26,6 @@ widgets = {
     text : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
   "spinner"
   "text-area"
-  "function-field-abs"
   "slider"
   "scroll-bar"
   "time-edit-field"
@@ -312,7 +312,8 @@ module.exports = ->
         (el) ->
           for widget of widgets
             if yp(@execute("return $('.qx-identifier-#{el}.qx-aum-#{widget}').length"))
-              return widget        ) 
+              return widget
+      ) 
 
       wd.addPromiseMethod(
         "getImage"
