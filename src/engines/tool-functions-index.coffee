@@ -151,7 +151,7 @@ module.exports = ->
       
       runner.sysinfo = 
         host : runner.os.hostname()
-        timeid : (new Date()).toISOString()
+        starttimeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
         ver : runner.os.release()
         build : "unknown" 
