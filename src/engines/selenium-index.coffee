@@ -319,10 +319,11 @@ module.exports = ->
         "getImage"
         (el) ->
             switch
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-image-cell>img')[0].src"))
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-browser')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')")) 			  else 
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-browser')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')")) 			  
+              else 
                 if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
                   return null
                 else throw "Isn't implemented for this widget yet"
@@ -332,6 +333,7 @@ module.exports = ->
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
         defaults:require("./widget-defaults")
+        properties:require("./widget-properties")
       #
       wrap = (m,n) ->
         (args...) ->
