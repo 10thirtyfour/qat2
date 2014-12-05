@@ -7,8 +7,8 @@ module.exports = ->
         _.assign {name: @name}, @data
       trace: (args...) -> @logger.trace @logPrefix(), args...
       info: (args...) -> @logger.info @logPrefix(), args...
-      pass: (args...) -> @logger.pass @logPrefix(), args..., @logMeta()
-      fail: (args...) -> @logger.fail @logPrefix(), args..., @logMeta())
+      pass: (args...) -> @logger.pass args..., @logMeta()
+      fail: (args...) -> @logger.fail args..., @logMeta())
   plugin =
     setup: true
     name: "logger"
