@@ -16,7 +16,6 @@ module.exports = ->
           parseFile: (fn) ->
             yp.frun( =>
               testData = toolfuns.LoadHeaderData(fn)
-
               unless testData.programName?
                 runner.info "Can not read programName from "+testData.fileName
                 return ->
@@ -29,12 +28,12 @@ module.exports = ->
 
               progRelativeName = path.relative(runner.tests.globLoader.root, testData.fileName)
               buildPromiseName=[]
-                            
+                             
               unless runner.argv["skip-build"] 
-                buildPromiseName=["headless$#{progRelativeName}$build"]
-                unless buildPromiseName[0] of runner.tests
+                buildPromiseName = runner.extfuns.uniformName("headless$#{progRelativeName}$build")
+                unless buildPromiseName of runner.tests
                   runner.reg 
-                    name: buildPromiseName[0]
+                    name: buildPromiseName
                     data:
                       kind: "build" 
                     testData : testData  
@@ -42,7 +41,7 @@ module.exports = ->
                 
               logRelativeName = path.relative(runner.tests.globLoader.root, fn)
               runner.reg
-                name: "headless$#{logRelativeName}$play"
+                name: runner.extfuns.uniformName("headless$#{logRelativeName}$play")
                 data:
                   kind: "common-tlog"
                 testData : testData  
