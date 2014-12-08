@@ -5,6 +5,9 @@ fse = require "fs-extra"
 
 {CallbackReadWrapper} = require "./readercallback"
 
+uniformName = (tn) ->
+  tn.replace(/\\/g, "/")
+
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
   
@@ -66,13 +69,13 @@ module.exports = ->
     return testData
 
   runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
-    delimeterSent = false
+    delimeterSent = false 
     writeBlock = ( stream , message, lineTimeout) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout(lineTimeout, "Log line timed out")
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent=true 
+        delimeterSent=true  
       writeLine line for line in message
 
     {stdout,stdin} = child 
@@ -148,6 +151,7 @@ module.exports = ->
   runner.toolfuns =
     getEnviron: ->
       runner = @runner
+      _this=@
       
       runner.sysinfo = 
         host : runner.os.hostname()
@@ -169,7 +173,10 @@ module.exports = ->
           runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
           runner.logger.pass "qatstart",runner.sysinfo
         return runner.sysinfo)
-        
+      .catch( (err)->
+        _this.fail err.message
+        throw "Unable to read environ : "+err.message
+      )  
       
     regExecPromise: ->
       @info @data.command   
@@ -404,7 +411,9 @@ module.exports = ->
       
     
   runner.extfuns =  
-  
+    uniformName : uniformName
+
+    
     CheckXML: (testData) ->
       yp.frun => 
         testData.fileName?=testData.fn or cutofTest(@fileName)
@@ -423,10 +432,10 @@ module.exports = ->
         suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
         
         if testData.ext is ".per"
-          compileTestName=["advanced$#{@relativeName}$compile$#{suspectTestName}.per"]
-          unless compileTestName[0] of runner.tests
+          compileTestName= uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
+          unless compileTestName of runner.tests
             runner.reg
-              name: compileTestName[0]
+              name: compileTestName
               data:
                 kind: "compile"+testData.ext
               testData: 
@@ -438,7 +447,7 @@ module.exports = ->
         testData.fileName = testData.fileName+".fm2"
         n = 0
         loop
-          testName="advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}"
+          testName = uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}")
           n+=1
           unless testName of @runner.tests then break
         
@@ -466,7 +475,7 @@ module.exports = ->
         
         if testData.errorCode? then testData.reverse = true
         
-        delete testData.fail
+        delete testData.fail 
         delete testData.fn
        
         if testData.ext?
@@ -484,7 +493,7 @@ module.exports = ->
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
           
         runner.reg
-          name: "advanced$#{@relativeName}$compile$#{suspectTestName}"
+          name: uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
           testData: testData
@@ -512,8 +521,8 @@ module.exports = ->
         if testData.buildMode is "all"
           testData.buildMode = "rebuild"
           runner.reg
-            name:"advanced$#{@relativeName}$deploy$#{testData.relativeFileName}"
-            after:["advanced$#{@relativeName}$build$#{testData.relativeFileName}"]
+            name: uniformName("advanced$#{@relativeName}$deploy$#{testData.relativeFileName}")
+            after: [uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")]
             data:
               kind: "deploy-workaround"
             promise: ->
@@ -552,7 +561,7 @@ module.exports = ->
         # ------ end of deploy workaround
         
         runner.reg 
-          name: "advanced$#{@relativeName}$build$#{testData.relativeFileName}"
+          name: uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")
           data:
             kind: if testData.reverse then "build-reverse" else "build"
           testData: testData  
@@ -561,10 +570,12 @@ module.exports = ->
           nop=0
           
     RegWD : (obj,testId) ->
-      testName = path.relative runner.tests.globLoader.root,@fileName
+      testName = uniformName(path.relative(runner.tests.globLoader.root,@fileName))
       if testId then testName+="$"+testId 
       runner.regWD
         syn: obj
         name: testName
-        
+    
+    reg : (params...) ->
+      runner.reg params...
       
