@@ -5,7 +5,7 @@ module.exports = ->
   
   @reg
     name: "tlogLoader"
-    before: "globLoader"
+    before: ["globLoader"]
     setup: true  
     disabled: false 
     promise: ->

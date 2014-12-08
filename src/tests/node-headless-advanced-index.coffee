@@ -7,7 +7,7 @@ module.exports = ->
 
   @reg
     name: "node-headless-advanced-index"
-    before: "globLoader"
+    before: ["globLoader"]
     setup: true  
     promise: ->
       yp.frun( =>

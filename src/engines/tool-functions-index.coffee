@@ -148,6 +148,7 @@ module.exports = ->
   runner.toolfuns =
     getEnviron: ->
       runner = @runner
+      _this=@
       
       runner.sysinfo = 
         host : runner.os.hostname()
@@ -169,7 +170,10 @@ module.exports = ->
           runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
           runner.logger.pass "qatstart",runner.sysinfo
         return runner.sysinfo)
-        
+      .catch( (err)->
+        _this.fail err.message
+        throw "Unable to read environ : "+err.message
+      )  
       
     regExecPromise: ->
       @info @data.command   
