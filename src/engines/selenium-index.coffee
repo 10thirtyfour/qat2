@@ -291,6 +291,7 @@ module.exports = ->
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-text-field')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-combo-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             else 
               if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
                 return null
