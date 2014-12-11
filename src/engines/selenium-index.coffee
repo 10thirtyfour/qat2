@@ -316,7 +316,13 @@ module.exports = ->
             if yp(@execute("return $('.qx-identifier-#{el}.qx-aum-#{widget}').length"))
               return widget
       ) 
-
+      
+      wd.addPromiseMethod(
+        "switchTab"
+        (el) ->
+          @execute("$('.qx-h-identifier-#{el}').click()"))
+                
+      
       wd.addPromiseMethod(
         "getImage"
         (el) ->
@@ -334,8 +340,8 @@ module.exports = ->
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
-        defaults:require("./widget-defaults")
-        properties:require("./widget-properties")
+        defaults:require("./defaults")
+        properties:require("./properties")
       #
       wrap = (m,n) ->
         (args...) ->
