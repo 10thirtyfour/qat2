@@ -523,6 +523,7 @@ module.exports = ->
           runner.reg
             name: uniformName("advanced$#{@relativeName}$deploy$#{testData.relativeFileName}")
             after: [uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")]
+            silent: true
             data:
               kind: "deploy-workaround"
             promise: ->

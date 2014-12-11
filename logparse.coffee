@@ -25,7 +25,7 @@ for line in lines
     
     #errorReport+=tmpObj.toString()
     errorReport+="\n<hr>\n"
-    errorReport+= tmpObj.name + "<br>\n" + tmpObj.message.substring(tmpObj.message.indexOf("\u001b[39m: ")+7)
+    errorReport+= tmpObj.name + "<br>\n" + tmpObj.message
     if tmpObj.failMessage?
       errorReport+="<br><code>"+escapeHtml(tmpObj.failMessage).replace(/(?:\r\n|\r|\n)/g, '<br/>\n')+"</code>"
 
