@@ -249,6 +249,28 @@ module.exports = ->
               "return $().css.apply($(arguments[0]),['#{cls}'])"
               [el]))  
 
+
+      wd.addPromiseMethod(
+        "propProperty"
+        (el,prp) ->
+          if _.isString el 
+            @execute("return $().prop.apply($('.qx-identifier-#{el}'),['#{prp}'])")
+          else
+            @execute(
+              "return $().prop.apply($(arguments[0]),['#{prp}'])"
+              [el]))  
+              
+      wd.addPromiseMethod(
+        "attrProperty"
+        (el,atr) ->
+          if _.isString el 
+            @execute("return $().attr.apply($('.qx-identifier-#{el}'),['#{atr}'])")
+          else
+            @execute(
+              "return $().attr.apply($(arguments[0]),['#{atr}'])"
+              [el])) 
+
+
       wd.addPromiseMethod(
         "check"
         (el,params) ->
@@ -286,13 +308,14 @@ module.exports = ->
         (el) ->
         
           switch
+            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-combo-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-combo-content .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-group-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-text-field')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
             when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-combo-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
+
             else 
               if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
                 return null
@@ -323,6 +346,7 @@ module.exports = ->
           @execute("$('.qx-h-identifier-#{el}').click()"))
                 
       
+
       wd.addPromiseMethod(
         "getImage"
         (el) ->
