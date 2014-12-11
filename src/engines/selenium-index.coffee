@@ -364,8 +364,8 @@ module.exports = ->
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
-        defaults:require("./defaults")
-        properties:require("./properties")
+        defaults:require("./widget-defaults")
+        properties:require("./widget-properties")
       #
       wrap = (m,n) ->
         (args...) ->
