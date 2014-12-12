@@ -158,6 +158,7 @@ module.exports = ->
         starttimeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
         ver : runner.os.release()
+        user : process.env.USER ? process.env.USERNAME
         build : "unknown" 
       
       @info runner.sysinfo.platform + " " + runner.sysinfo.ver
