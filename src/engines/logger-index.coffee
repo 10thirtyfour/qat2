@@ -32,7 +32,7 @@ module.exports = ->
         handleExceptions: true
         colorize: true
       couchdb:
-        #host: "localhost"
+        host: "localhost"
         port: 5984
         db: "qat_log"
         level: "pass"
