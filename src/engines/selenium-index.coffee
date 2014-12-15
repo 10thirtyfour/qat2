@@ -99,8 +99,8 @@ module.exports = ->
             .then((i) ->
               plugin.trace "Starting #{command} at #{instance}"
               i)
-            #.elementById("qx-home-instance")
-            #.type(instance)
+            .elementById("qx-home-instance")
+            .type(instance)
             .elementById("qx-home-command")
             .type(command)
             .elementById("qx-home-form")
