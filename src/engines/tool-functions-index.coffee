@@ -532,9 +532,10 @@ module.exports = ->
                 try 
                   rawxml=fs.readFileSync(testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
                   xml = new dom().parseFromString(rawxml)
-                  filesToCopy = [testData.programName+".exe"]
+                  filesToCopy = [testData.programName]
+                  if process.platform[0] is "w" then filesToCopy[0]+='.exe'
                   
-                  # 
+                   
                   formExtCare = (fn) -> 
                     unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
     
@@ -554,6 +555,11 @@ module.exports = ->
                     tr2file+='  <Resource path="'+fn+'"/>\n'
                   tr2file+='</Resources>\n'
                   fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
+
+                  if process.platform[0] is "l"
+                    ffn = path.join(runner.deployPath,filesToCopy[0])
+                    fs.chmodSync( ffn , "755")
+                  
                   "Files deployed : #{filesToCopy.length}"                          
                 catch e
                   throw e
