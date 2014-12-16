@@ -348,9 +348,9 @@ module.exports = ->
         fileName: logFileName
         env : {}
 
-      logStream = fs.createReadStream(logFileName, encoding: "utf8")
-      nextLogLine = lineFromStream logStream
       try
+        logStream = fs.createReadStream(logFileName, encoding: "utf8")
+        nextLogLine = lineFromStream logStream
         while (line=nextLogLine())
           break if line is "<<<"
           
@@ -395,7 +395,7 @@ module.exports = ->
         if process.platform is "win32" then testData.programExecutable+=".exe"
         #testData.projectPath = path.resolve(testData.projectPath)
       catch e
-        @info e
+        testData.errorMessage = e
       return testData    
   
 
