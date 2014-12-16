@@ -32,7 +32,7 @@ module.exports = ->
         console:
           level: "info"
         couchdb:
-          #host: "10.38.57.138"
+          host: "10.38.57.138"
           port: 5984
           level: 'pass'
     globLoader:
