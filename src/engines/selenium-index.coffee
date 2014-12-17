@@ -343,7 +343,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "switchTab"
         (el) ->
-          @execute("$('.qx-h-identifier-#{el}').click()"))
+          @execute("$('.qx-h-identifier-#{el} .qx-focus-target').click()"))
                 
       
 
