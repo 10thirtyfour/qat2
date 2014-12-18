@@ -94,17 +94,19 @@ module.exports = ->
         "startApplication"
         (command,instance) ->
           instance ?= runner.qatDefaultInstance
-          runner.wd.lastExecuted = command + ".exe"
-          @get(runner.lyciaWebUrl)
-            .then((i) ->
-              plugin.trace "Starting #{command} at #{instance}"
-              i)
-            .elementById("qx-home-instance")
-            .type(instance)
-            .elementById("qx-home-command")
-            .type(command)
-            .elementById("qx-home-form")
-            .submit()
+          programUrl = runner.lyciaWebUrl + instance + "/" + command
+          programUrl += ".exe" if process.platform[0] is "w"
+          #runner.wd.lastExecuted = command + ".exe"
+          @get(programUrl)
+            #.then((i) ->
+            #  plugin.trace "Starting #{command} at #{instance}"
+            #  i)
+            #.elementById("qx-home-instance")
+            #.type(instance)
+            #.elementById("qx-home-command")
+            #.type(command)
+            #.elementById("qx-home-form")
+            #.submit()
             .waitIdle()) 
 
       wd.addPromiseMethod(
@@ -389,12 +391,14 @@ module.exports = ->
             promise = binfo.promise
             unless promise?
               if binfo.syn?
-                binfo.name="wd$#{i}$#{info.name}"
+                binfo.name= "wd$#{i}$#{info.name}"
                 promise = (browser) ->
                   yp.frun ->
-                    try 
-                      binfo.syn.call _.create binfo,_.assign {browser:browser}, synproto
+                    try
+                      testContext = _.create binfo,_.assign {browser:browser}, synproto
+                      binfo.syn.call testContext
                     finally
+                      console.log testContext.applicationName
                       exec('taskkill /F /T /IM '+ runner.wd.lastExecuted)
               else
                 promise = ->
