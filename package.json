@@ -24,7 +24,7 @@
     "colors": "~0.6.2",
     "chai": "~1.8.1",
     "chai-as-promised": "~4.1.0",
-    "fibers": "~1.0.1",
+    "fibers": "1.0.1",
     "yield-on-promise": "0.0.1",
     "minimatch": "~0.2.14",
     "winston-couchdb": "~0.6.1",
