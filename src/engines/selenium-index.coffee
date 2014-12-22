@@ -84,7 +84,7 @@ module.exports = ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(
             ".qx-application.qx-state-idle"
-            timeout))
+            timeout).sleep(300))
       wd.addPromiseMethod(
         "toolbutton"
         (title) ->
