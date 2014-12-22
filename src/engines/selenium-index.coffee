@@ -113,16 +113,10 @@ module.exports = ->
         "justStartApp"
         (command,instance) ->
           instance ?= runner.qatDefaultInstance
-          @get(runner.lyciaWebUrl)
-            .then((i) ->
-              plugin.trace "Starting #{command} at #{instance}"
-              i)
-            .elementById("qx-home-instance")
-            .type(instance)
-            .elementById("qx-home-command")
-            .type(command)
-            .elementById("qx-home-form")
-            .submit())
+          programUrl = runner.lyciaWebUrl + instance + "/" + command
+          programUrl += ".exe" if process.platform[0] is "w"
+          #runner.wd.lastExecuted = command + ".exe"
+          @get(programUrl))
              
       wd.addPromiseMethod(
         "elementExists"
