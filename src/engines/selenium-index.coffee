@@ -347,6 +347,7 @@ module.exports = ->
         "getImage"
         (el) ->
             switch
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
