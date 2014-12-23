@@ -356,7 +356,8 @@ module.exports = ->
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-browser')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')")) 			  
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-browser')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img').prop('src')"))
               else 
                 if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
                   return null
