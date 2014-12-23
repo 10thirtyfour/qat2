@@ -84,7 +84,7 @@ module.exports = ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(
             ".qx-application.qx-state-idle"
-            timeout))
+            timeout).sleep(300))
       wd.addPromiseMethod(
         "toolbutton"
         (title) ->
@@ -113,16 +113,10 @@ module.exports = ->
         "justStartApp"
         (command,instance) ->
           instance ?= runner.qatDefaultInstance
-          @get(runner.lyciaWebUrl)
-            .then((i) ->
-              plugin.trace "Starting #{command} at #{instance}"
-              i)
-            .elementById("qx-home-instance")
-            .type(instance)
-            .elementById("qx-home-command")
-            .type(command)
-            .elementById("qx-home-form")
-            .submit())
+          programUrl = runner.lyciaWebUrl + instance + "/" + command
+          programUrl += ".exe" if process.platform[0] is "w"
+          #runner.wd.lastExecuted = command + ".exe"
+          @get(programUrl))
              
       wd.addPromiseMethod(
         "elementExists"
@@ -353,6 +347,7 @@ module.exports = ->
         "getImage"
         (el) ->
             switch
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-toolbar-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
