@@ -1,6 +1,7 @@
 byline = require "byline"
 spawn = require("child_process").spawn
 http = require "http"
+qs = require "querystring"
 fse = require "fs-extra"
 
 {CallbackReadWrapper} = require "./readercallback"
@@ -149,6 +150,11 @@ module.exports = ->
     return mess
     
   runner.toolfuns =
+    spammer: (fun,params)->
+      params.function = fun
+      params.contact = "REST protocol"
+      http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params)).on "error", (e)-> console.log(fun+" post failed")
+    
     getEnviron: ->
       runner = @runner
       _this=@
@@ -173,6 +179,7 @@ module.exports = ->
         if qfglout?
           runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
           runner.logger.pass "qatstart",runner.sysinfo
+          runner.toolfuns.spammer "sendMessage", message:"!! "+runner.sysinfo.starttimeid+"\nQAT started on #{runner.sysinfo.host}\nPlatform : #{runner.sysinfo.platform}\nLycia build : "+runner.sysinfo.build
         return runner.sysinfo)
       .catch( (err)->
         _this.fail err.message
