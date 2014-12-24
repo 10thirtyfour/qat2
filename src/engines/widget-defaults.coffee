@@ -5,7 +5,7 @@ module.exports =
     "spinner" : 
       height : 19
     "text-area" :
-      height : 23
+      height : 22
     "function-field-abs" :
       height : 24
     "button" :
