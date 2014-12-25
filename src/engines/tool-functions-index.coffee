@@ -265,7 +265,7 @@ module.exports = ->
             throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}"
             
         finally 
-          child.kill('SIGTERM')
+          child.kill('SIGKILL')
         if @testData.reverse then throw "Successful compilation, but fail expected!"
         return "Successful compilation."
 
@@ -300,7 +300,7 @@ module.exports = ->
         catch e
           throw "Build failed with message : "+e
         finally 
-          child.kill('SIGTERM')
+          child.kill('SIGKILL')
         if @testData.reverse then throw "Build OK but fail expected!"
         return "Build OK."
       )
@@ -346,7 +346,7 @@ module.exports = ->
           yp Q.all( [ childPromise, logPromise ] )
           "Lines [ tlog : #{logLine}, stdout : #{outLine} ]"
         finally
-          child.kill('SIGTERM')
+          child.kill('SIGKILL')
           
       )
       
