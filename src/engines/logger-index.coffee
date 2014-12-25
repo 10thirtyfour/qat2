@@ -51,7 +51,7 @@ module.exports = ->
   init = (obj) =>
     {transports,levels,colors} = plugin
     runner.logger = logger = logger = new winston.Logger
-      exitOnError: false  
+      exitOnError: false
     for n, v of transports # unless plugin.disable[n]
       switch n
         when "file" then logger.add winston.transports.File, v
@@ -71,12 +71,16 @@ module.exports = ->
     extend descr
     basePromise = descr.promise
     if basePromise? and not descr.setup and not descr.silent
+      {failOnly} = descr
       descr.promise = ->
         @data.timeid = runner.sysinfo.starttimeid
         @info "starting"
         basePromise.call(this).then(
           (t) =>
-            @pass t
+            if failOnly 
+              @info t
+            else
+              @pass t
             t
           (f) =>
             @fail f
