@@ -34,6 +34,7 @@ module.exports = ->
                 unless buildPromiseName of runner.tests
                   runner.reg 
                     name: buildPromiseName
+                    failOnly: true
                     data:
                       kind: "build" 
                     testData : testData  
