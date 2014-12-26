@@ -578,7 +578,7 @@ module.exports = ->
         runner.reg 
           name: uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")
           data:
-            kind: if testData.reverse then "build-reverse" else "build"
+            kind: "build"
           testData: testData  
           promise: runner.toolfuns.regBuild
         return ->
