@@ -70,6 +70,7 @@ module.exports = ->
     return testData
 
   runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
+    passMessage = ""
     delimeterSent = false 
     writeBlock = ( stream , message, lineTimeout) ->
       writeLine = ( line ) ->
@@ -98,13 +99,21 @@ module.exports = ->
           #  throw "ERROR : Program output not empty in sending point at line: " + nextLogLine("LineCount")
           writeBlock( stdin , block , lineTimeout )
         when "<<<"
-          actualLine = readBlock(nextOutLine,"<<<").join "\n"
+          actualBlock = readBlock(nextOutLine,"<<<")
+          actualLine = actualBlock.join "\n"
           expectedLine = block.join "\n"
           if actualLine isnt expectedLine
-            throw "ERROR in line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
+            # report double EOL workaround. Skip empty lines
+            a1=_.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
+            e1=_.remove(block, (i)-> (typeof i is 'string')).join '\n'
+            if a1 is e1
+              # passed with caveat
+              passMessage=" WARNING : Empty lines was skipped!"
+            else
+              throw "ERROR in line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
     if (block = readBlock(nextOutLine,"<<<")).length>1
       throw "ERROR : Program output not empty at the end of scenario. " + block
-    return nextLogLine("LineCount")
+    return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   lineFromStream = (stream) ->
     options = 
@@ -153,7 +162,9 @@ module.exports = ->
     spammer: (fun,params)->
       params.function = fun
       params.contact = "REST protocol"
-      http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params)).on "error", (e)-> console.log(fun+" post failed")
+      http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
+      .on "error", (e)-> 
+        console.log fun+" post failed"
     
     getEnviron: ->
       runner = @runner
@@ -343,8 +354,10 @@ module.exports = ->
           
           childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
           logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
-          yp Q.all( [ childPromise, logPromise ] )
-          "Lines [ tlog : #{logLine}, stdout : #{outLine} ]"
+          res = yp Q.all( [ childPromise, logPromise ] )
+          
+          "Code : "+res.join ". "
+                
         finally
           child.kill('SIGKILL')
           
@@ -594,3 +607,5 @@ module.exports = ->
     reg : (params...) ->
       runner.reg params...
       
+
+
