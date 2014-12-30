@@ -93,10 +93,11 @@ module.exports = ->
       wd.addPromiseMethod(
         "startApplication"
         (command,instance) ->
+          @cmd = command
           instance ?= runner.qatDefaultInstance
+          command += ".exe" if process.platform[0] is "w"
           programUrl = runner.lyciaWebUrl + instance + "/" + command
-          programUrl += ".exe" if process.platform[0] is "w"
-          #runner.wd.lastExecuted = command + ".exe"
+          
           @get(programUrl)
             #.then((i) ->
             #  plugin.trace "Starting #{command} at #{instance}"
@@ -108,17 +109,7 @@ module.exports = ->
             #.elementById("qx-home-form")
             #.submit()
             .waitIdle()) 
-         
-      wd.addPromiseMethod(
-        "startApplicationConsole"
-        (command,instance) ->
-          instance ?= runner.qatDefaultInstance
-          programUrl = runner.lyciaWebUrl + instance + "/" + command
-          programUrl += ".exe" if process.platform[0] is "w"
-          programUrl += "?console=page"
-          @get(programUrl)
-            .waitIdle())
-         
+
       wd.addPromiseMethod(
         "justStartApp"
         (command,instance) ->
@@ -405,8 +396,11 @@ module.exports = ->
                       testContext = _.create binfo,_.assign {browser:browser}, synproto
                       binfo.syn.call testContext
                     finally
-                      console.log testContext.applicationName
-                      exec('taskkill /F /T /IM '+ runner.wd.lastExecuted)
+                      #task kill. command stored in browser.cmd
+                      if process.platform[0] is "w" 
+                        exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
+                      else
+                        exec('pkill -9 '+ browser.cmd )
               else
                 promise = ->
             binfo.promise = ->
