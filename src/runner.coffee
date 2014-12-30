@@ -74,16 +74,16 @@ class Runner
     @trace "crawling #{node}"
     if t.started
       throw new Error "trying to crawl already started node: #{node}"
-    error = false 
+    t.error = false
     for i in @graph.predecessors(node)
       pt = tests[i]
       unless pt.done
         @trace "not all dependencies satisfied #{i}"
         return Q({})
-      error = error or pt.error is true
+      t.error = t.error or pt.error is true
     t.started = true
     r = @prePromise()
-    if not t.disabled and t.promise? and (not error or t.runAnyway)
+    if not t.disabled and t.promise? and (not t.error or t.runAnyway)
       r = r.then(-> t.promise())
         .catch (e) ->
           t.error = true 
