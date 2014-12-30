@@ -71,6 +71,7 @@ module.exports = ->
 
   runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
     passMessage = ""
+    errMessage = ""
     delimeterSent = false 
     writeBlock = ( stream , message, lineTimeout) ->
       writeLine = ( line ) ->
@@ -80,8 +81,11 @@ module.exports = ->
         delimeterSent=true  
       writeLine line for line in message
 
-    {stdout,stdin} = child 
+    {stderr,stdout,stdin} = child 
     stdout.setEncoding('utf8')
+
+    stderr.on "data", (e)->
+      errMessage+=e.toString('utf8')
    
     nextLogLine = lineFromStream fs.createReadStream(logFileName, encoding: "utf8")
     nextOutLine = lineFromStream stdout
@@ -110,9 +114,9 @@ module.exports = ->
               # passed with caveat
               passMessage=" WARNING : Empty lines was skipped!"
             else
-              throw "ERROR in line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
+              throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
     if (block = readBlock(nextOutLine,"<<<")).length>1
-      throw "ERROR : Program output not empty at the end of scenario. " + block
+      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + block
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   lineFromStream = (stream) ->
