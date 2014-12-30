@@ -108,7 +108,17 @@ module.exports = ->
             #.elementById("qx-home-form")
             #.submit()
             .waitIdle()) 
-
+         
+      wd.addPromiseMethod(
+        "startApplicationConsole"
+        (command,instance) ->
+          instance ?= runner.qatDefaultInstance
+          programUrl = runner.lyciaWebUrl + instance + "/" + command
+          programUrl += ".exe" if process.platform[0] is "w"
+          programUrl += "?console=page"
+          @get(programUrl)
+            .waitIdle())
+         
       wd.addPromiseMethod(
         "justStartApp"
         (command,instance) ->
