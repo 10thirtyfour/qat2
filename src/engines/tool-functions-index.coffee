@@ -597,6 +597,7 @@ module.exports = ->
           data:
             kind: "build"
           testData: testData  
+          failOnly : testData.failOnly
           promise: runner.toolfuns.regBuild
         return ->
           nop=0
