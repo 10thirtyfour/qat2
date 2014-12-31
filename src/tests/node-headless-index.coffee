@@ -26,8 +26,9 @@ module.exports = ->
                 return ->
                   "projectPath undefined"
 
-              progRelativeName = path.relative(runner.tests.globLoader.root, path.join(path.dirname(fn),testData.programName))
+              progRelativeName = path.relative(runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource,testData.programName))
               buildPromiseName = []
+
               unless runner.argv["skip-build"] 
                 buildPromiseName = runner.extfuns.uniformName("headless$#{progRelativeName}$build")
                 unless buildPromiseName of runner.tests
