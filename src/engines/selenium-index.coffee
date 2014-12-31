@@ -30,6 +30,7 @@ widgets = {
   "scroll-bar"
   "time-edit-field"
 }
+
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -78,6 +79,7 @@ module.exports = ->
         firefox: true
     promise: ->
       plugin = @
+      
       wd.addPromiseMethod(
         "waitIdle",
         (timeout) ->
@@ -85,6 +87,7 @@ module.exports = ->
           @waitForElementByCssSelector(
             ".qx-application.qx-state-idle"
             timeout).sleep(300))
+            
       wd.addPromiseMethod(
         "toolbutton"
         (title) ->
@@ -92,33 +95,30 @@ module.exports = ->
           
       wd.addPromiseMethod(
         "startApplication"
-        (command,instance) ->
+        (command, params) ->
           @cmd = command
-          instance ?= runner.qatDefaultInstance
-          command += ".exe" if process.platform[0] is "w"
-          programUrl = runner.lyciaWebUrl + instance + "/" + command
+          params ?= {}
+          params.wait ?= true
+          params.instance ?= runner.qatDefaultInstance
           
-          @get(programUrl)
-            #.then((i) ->
-            #  plugin.trace "Starting #{command} at #{instance}"
-            #  i)
-            #.elementById("qx-home-instance")
-            #.type(instance)
-            #.elementById("qx-home-command")
-            #.type(command)
-            #.elementById("qx-home-form")
-            #.submit()
-            .waitIdle()) 
+          command += ".exe" if process.platform[0] is "w"
+          programUrl = runner.lyciaWebUrl + params.instance + "/" + command
+
+          if params.args then programUrl+=params.args
+          
+          if params.wait
+            return @get(programUrl).waitIdle()
+          else
+            return @get(programUrl)
+          ) 
 
       wd.addPromiseMethod(
-        "justStartApp"
-        (command,instance) ->
-          instance ?= runner.qatDefaultInstance
-          programUrl = runner.lyciaWebUrl + instance + "/" + command
-          programUrl += ".exe" if process.platform[0] is "w"
-          #runner.wd.lastExecuted = command + ".exe"
-          @get(programUrl))
-             
+        "waitExit"
+        (timeout) ->
+          timeout ?= plugin.defaultWaitTimeout
+          @waitForElementByCssSelector("#qx-home-form, #qx-application-restart",timeout))
+           
+          
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
@@ -190,12 +190,7 @@ module.exports = ->
           ))
         )
 
-      wd.addPromiseMethod(
-        "waitExit"
-        (timeout) ->
-          timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector("#qx-home-form, #qx-application-restart",timeout))
-             
+            
       wd.addPromiseMethod(
         "fglFocused",
         -> @elementByCss(".qx-focused"))
@@ -228,46 +223,17 @@ module.exports = ->
             
       wd.addPromiseMethod(
         "remoteCall"
-        (el,nm) ->
+        (el, nm, args...) ->
           if _.isString el 
-            @execute("return $().#{nm}.apply($('.qx-identifier-#{el}'),arguments)")
+            @execute(
+              "return $().#{nm}.apply($('.qx-identifier-#{el}'),arguments)"
+              args)
           else
             @execute(
-              "return $().#{nm}.apply($(arguments[0]))"
-              [el]))
-              
-      wd.addPromiseMethod(
-        "cssProperty"
-        (el,cls) ->
-          if _.isString el 
-            @execute("return $().css.apply($('.qx-identifier-#{el}'),['#{cls}'])")
-          else
-            @execute(
-              "return $().css.apply($(arguments[0]),['#{cls}'])"
-              [el]))  
-
-
-      wd.addPromiseMethod(
-        "propProperty"
-        (el,prp) ->
-          if _.isString el 
-            @execute("return $().prop.apply($('.qx-identifier-#{el}'),['#{prp}'])")
-          else
-            @execute(
-              "return $().prop.apply($(arguments[0]),['#{prp}'])"
-              [el]))  
-              
-      wd.addPromiseMethod(
-        "attrProperty"
-        (el,atr) ->
-          if _.isString el 
-            @execute("return $().attr.apply($('.qx-identifier-#{el}'),['#{atr}'])")
-          else
-            @execute(
-              "return $().attr.apply($(arguments[0]),['#{atr}'])"
-              [el])) 
-
-
+              "return $().#{nm}.apply($(arguments[0]),arguments[1])"
+              [el,args])
+            )
+      
       wd.addPromiseMethod(
         "check"
         (el,params) ->
