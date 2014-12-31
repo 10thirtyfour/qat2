@@ -63,8 +63,8 @@ module.exports = ->
     if testData.projectPath?
       testData.projectName = path.basename testData.projectPath  
       # here can be implemented XML parce of project file. Currently using default paths
-      #testData.projectSource = 'source' 
-      #testData.projectOutput = 'output'
+      testData.projectSource = 'source' 
+      testData.projectOutput = 'output'
 
 
 
