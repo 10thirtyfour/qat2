@@ -49,7 +49,7 @@ module.exports = ->
     testData.buildMode = if testData.deploy is true then "all" else "rebuild"
       
     unless testData.programName?
-      # cutting filename by 12 chars
+      # cutting filename by 12 chars ("-test.coffee")
       testData.programName = cutofTest(testData.testFileName)
 
     unless testData.projectPath?
@@ -58,11 +58,18 @@ module.exports = ->
         if fs.existsSync(path.join(tempPath,".fglproject")) 
           testData.projectPath = tempPath
           break
+
         
     if testData.projectPath?
       testData.projectName = path.basename testData.projectPath  
+      # here can be implemented XML parce of project file. Currently using default paths
+      #testData.projectSource = 'source' 
+      #testData.projectOutput = 'output'
+
+
+
  
-    testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
+    testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
  
     #looks like on win32 shown also for x64 platform
     if process.platform is "ia32" or process.platform is "x64" then testData.programExecutable+=".exe" 
@@ -326,7 +333,7 @@ module.exports = ->
           
           opt = 
             env: {}
-            cwd: path.resolve(@testData.projectPath,"output")
+            cwd: path.resolve(@testData.projectPath,@testData.projectOutput)
 
           _.merge opt.env, @runner.environ
           _.merge opt.env, @options.commondb
@@ -413,8 +420,11 @@ module.exports = ->
 
         if testData.projectPath?
           testData.projectName = path.basename testData.projectPath  
+          # here can be implemented XML parce of project file. Currently using default paths
+          testData.projectSource = 'source' 
+          testData.projectOutput = 'output'
 
-        testData.programExecutable = path.join(testData.projectPath,"output",path.basename(testData.programName))
+        testData.programExecutable = path.join(testData.projectPath , testData.projectOutput , path.basename(testData.programName))
         #looks like on win32 shown also for x64 platform
         if process.platform is "win32" then testData.programExecutable+=".exe"
         #testData.projectPath = path.resolve(testData.projectPath)
@@ -539,7 +549,7 @@ module.exports = ->
         unless testData.programName? then throw "Can not read programName from "+@fileName
         unless testData.projectPath? then throw "projectPath undefined"
 
-        testData.fileName = path.join(testData.projectPath,"source","."+testData.programName+".fgltarget")
+        testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
         testData.relativeFileName =  path.relative runner.tests.globLoader.root, testData.fileName
 
         # ------  deploy workaround
@@ -570,7 +580,7 @@ module.exports = ->
 
                   for fn in filesToCopy
                     try
-                      sourceFile = path.join(testData.projectPath,"output",fn)
+                      sourceFile = path.join(testData.projectPath,testData.projectOutput,fn)
                       targetFile = path.join(runner.deployPath,fn)
                       fse.ensureDirSync path.dirname(targetFile)
                       fse.copySync(sourceFile,targetFile)
