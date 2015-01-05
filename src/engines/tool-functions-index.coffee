@@ -100,30 +100,31 @@ module.exports = ->
     # TODO - check it
     readBlock(nextOutLine,"<<<")
       
-    while (block = readBlock(nextLogLine))[0]
+    while (actualBlock = readBlock(nextLogLine))[0]
       setCurrentStatus(nextLogLine("getLine"),nextOutLine("getLine"))
-      #log block.join "\n"
-      switch block[block.length-1]
+      #log actualBlock.join "\n"
+      switch actualBlock[actualBlock.length-1]
         when ">>>" 
           # TODO : ensure that nothing in the output
-          #if (block = readBlock(nextOutLine,"<<<")).length>1
+          #if (actualBlock = readBlock(nextOutLine,"<<<")).length>1
           #  throw "ERROR : Program output not empty in sending point at line: " + nextLogLine("LineCount")
-          writeBlock( stdin , block , lineTimeout )
+          writeBlock( stdin , actualBlock , lineTimeout )
         when "<<<"
           actualBlock = readBlock(nextOutLine,"<<<")
           actualLine = actualBlock.join "\n"
-          expectedLine = block.join "\n"
+          expectedLine = actualBlock.join "\n"
           if actualLine isnt expectedLine
+            
             # report double EOL workaround. Skip empty lines
             a1=_.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
-            e1=_.remove(block, (i)-> (typeof i is 'string')).join '\n'
+            e1=_.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
             if a1 is e1
               # passed with caveat
               passMessage=" WARNING : Empty lines was skipped!"
             else
               throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
-    if (block = readBlock(nextOutLine,"<<<")).length>1
-      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + block
+    if (actualBlock = readBlock(nextOutLine,"<<<")).length>1
+      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + actualBlock
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   lineFromStream = (stream) ->
