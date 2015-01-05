@@ -168,7 +168,7 @@ module.exports = ->
         "resizeWindow"
         (wnd,dx,dy,h) -> 
           h?="se"
-          yp(@elementByCss(".qx-o-identifier-#{wnd} .ui-resizable-#{h}").then( (p)->
+          yp(@elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}").then( (p)->
             p
               .moveTo()
               .buttonDown()
