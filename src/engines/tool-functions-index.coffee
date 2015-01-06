@@ -42,7 +42,6 @@ module.exports = ->
     errorMessage
 
   combTestData = (testData) ->
-    
     testData.programName ?= testData.program
     testData.projectPath ?= (testData.project or testData.prj)
     testData.reverse ?= testData.fail
@@ -67,22 +66,20 @@ module.exports = ->
       testData.projectOutput = 'output'
 
 
-
- 
     testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
  
     #looks like on win32 shown also for x64 platform
-    if process.platform is "ia32" or process.platform is "x64" then testData.programExecutable+=".exe" 
+    if process.platform[0] is "w" then testData.programExecutable+=".exe" 
 
     return testData
 
-  runLog = (child,logFileName,lineTimeout,setCurrentStatus) ->
+  runLog = (child, testData, setCurrentStatus) ->
     passMessage = ""
     errMessage = ""
     delimeterSent = false 
-    writeBlock = ( stream , message, lineTimeout) ->
+    writeBlock = ( stream , message, lineTimeout ) ->
       writeLine = ( line ) ->
-        yp Q.ninvoke(stream,"write",line+"\n").timeout(lineTimeout, "Log line timed out")
+        yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
       unless delimeterSent
         writeLine( ">>>" )
         delimeterSent=true  
@@ -94,37 +91,47 @@ module.exports = ->
     stderr.on "data", (e)->
       errMessage+=e.toString('utf8')
    
-    nextLogLine = lineFromStream fs.createReadStream(logFileName, encoding: "utf8")
+    nextLogLine = lineFromStream fs.createReadStream( testData.fileName , encoding: "utf8")
     nextOutLine = lineFromStream stdout
     # reading headless greeting delimeter
     # TODO - check it
     readBlock(nextOutLine,"<<<")
       
-    while (actualBlock = readBlock(nextLogLine))[0]
+    while (logBlock = readBlock(nextLogLine))[0]
       setCurrentStatus(nextLogLine("getLine"),nextOutLine("getLine"))
-      #log actualBlock.join "\n"
-      switch actualBlock[actualBlock.length-1]
+      #log expectedBlock.join "\n"
+      switch logBlock[logBlock.length-1]
         when ">>>" 
           # TODO : ensure that nothing in the output
-          #if (actualBlock = readBlock(nextOutLine,"<<<")).length>1
+          #if (logBlock = readBlock(nextOutLine,"<<<")).length>1
           #  throw "ERROR : Program output not empty in sending point at line: " + nextLogLine("LineCount")
-          writeBlock( stdin , actualBlock , lineTimeout )
+          writeBlock( stdin , logBlock , testData.lineTimeout )
         when "<<<"
           actualBlock = readBlock(nextOutLine,"<<<")
           actualLine = actualBlock.join "\n"
-          expectedLine = actualBlock.join "\n"
+          expectedLine = logBlock.join "\n"
+          fail = false
           if actualLine isnt expectedLine
-            
+            fail = true 
             # report double EOL workaround. Skip empty lines
-            a1=_.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
-            e1=_.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
+            a1 = _.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
+            e1 = _.remove(logBlock, (i)-> (typeof i is 'string')).join '\n'
             if a1 is e1
-              # passed with caveat
               passMessage=" WARNING : Empty lines was skipped!"
-            else
-              throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
-    if (actualBlock = readBlock(nextOutLine,"<<<")).length>1
-      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + actualBlock
+              fail = (false)
+
+            # executable check workaround
+            if fail and process.platform[0] is "l" 
+              modulename = path.basename testData.programExecutable
+              e1 = expectedLine.replace( new RegExp(modulename+'.exe','g'),modulename)
+              if actualLine is e1 
+                passMessage=" WARNING : .exe removed!"
+                fail = (false)
+
+          if fail then throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
+          
+    if (logBlock = readBlock(nextOutLine,"<<<")).length>1
+      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   lineFromStream = (stream) ->
@@ -176,7 +183,8 @@ module.exports = ->
       params.contact = "REST protocol"
       http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
       .on "error", (e)-> 
-        console.log fun+" post failed"
+        #console.log fun+" post failed"
+        return true   
     
     getEnviron: ->
       runner = @runner
@@ -365,7 +373,8 @@ module.exports = ->
           @testData.lineTimeout ?= @timeouts.line
           
           childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
-          logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
+          #logPromise = yp.frun( => runLog( child , @testData.fileName, @testData.lineTimeout, setCurrentStatus) )
+          logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
           res = yp Q.all( [ childPromise, logPromise ] )
           
           "Code : "+res.join ". "
@@ -509,12 +518,12 @@ module.exports = ->
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
         
-        if testData.errorCode? then testData.reverse = true
+        if testData.errorCode? then testData.reverse = true  
         
         delete testData.fail 
         delete testData.fn
        
-        if testData.ext?
+        if testData.ext? 
           unless testData.ext[0] is "." then testData.ext="."+testData.ext
         else
           # .4gl used as default extension"
@@ -559,7 +568,7 @@ module.exports = ->
           runner.reg
             name: uniformName("advanced$#{@relativeName}$deploy$#{testData.relativeFileName}")
             after: [uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")]
-            silent: true
+            silent: true 
             data:
               kind: "deploy-workaround"
             promise: ->
