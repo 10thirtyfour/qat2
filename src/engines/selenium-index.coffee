@@ -314,6 +314,7 @@ module.exports = ->
         "getImage"
         (el) ->
             switch
+              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-blob-viewer')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-blob-content>img')[0].src"))
               when (yp(@execute("return $('.qx-h-identifier-#{el}').hasClass('qx-h-aum-tab-page')"))).toString() == "true" then yp(@execute("return $('.qx-h-identifier-#{el} .qx-image')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img')[0].src"))
               when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
