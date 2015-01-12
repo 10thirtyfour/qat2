@@ -561,13 +561,14 @@ module.exports = ->
 
         testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
         testData.relativeFileName =  path.relative runner.tests.globLoader.root, testData.fileName
+        progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
 
         # ------  deploy workaround
         if testData.buildMode is "all"
           testData.buildMode = "rebuild"
           runner.reg
-            name: uniformName("advanced$#{@relativeName}$deploy$#{testData.relativeFileName}")
-            after: [uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")]
+            name: uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
+            after: [uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")]
             silent: true 
             data:
               kind: "deploy-workaround"
@@ -613,7 +614,7 @@ module.exports = ->
         # ------ end of deploy workaround
         
         runner.reg 
-          name: uniformName("advanced$#{@relativeName}$build$#{testData.relativeFileName}")
+          name: uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
           data:
             kind: "build"
           testData: testData  
@@ -634,3 +635,4 @@ module.exports = ->
       
 
 
+ 
