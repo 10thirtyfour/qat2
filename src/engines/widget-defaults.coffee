@@ -18,5 +18,6 @@ module.exports =
       height : 9
     "time-edit-field" :
       height : 17
-
+    "progress-bar" :
+      height : 26
     

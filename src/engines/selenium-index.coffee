@@ -29,6 +29,7 @@ widgets = {
   "slider"
   "scroll-bar"
   "time-edit-field"
+  "progress-bar"
 }
 
 module.exports = ->
@@ -289,7 +290,7 @@ module.exports = ->
         (action,params) ->
           switch action
             when "getText" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
-            when "getValue" then yp(@execute("return $('.qx-message-box:visible input').value()"))
+            when "getValue" then yp(@execute("return $('.qx-message-box:visible input').val()"))
             when "wait" then yp(@waitMessageBox())
             when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
