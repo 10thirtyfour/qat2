@@ -1,36 +1,7 @@
 log = console.log
 exec = require('child_process').exec
-widgets = {
-  "function-field-abs"
-  "calendar" :
-    text : (el) -> @execute("return $('.qx-identifier-#{el} input').val()")
-  "text-field" :
-    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').text()")
-  "button" :
-    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').html()")
-    image : (el) -> @execute("return $('.qx-identifier-#{el} .qx-image-cell img')[0].src")
-  "browser" :
-    image : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
-  "toolbar-button" :
-    text : (el) -> @execute("return $('.qx-identifier-#{el} .qx-text').html()")
-  "check-box" :
-    text : (el) -> yp(@execute("return $('.qx-identifier-#{el} label').text()"))
-    value : (el) ->
-      if yp(@execute("return $('.qx-identifier-#{el} input').prop('indeterminate')")) then return "indeterminate"
-      if yp(@execute("return $('.qx-identifier-#{el} input').prop('checked')")) then return "checked"
-      if (yp(@execute("return $('.qx-identifier-#{el} input').prop('checked')")))? then return "unchecked"
-      false
-  "canvas" :
-    image : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
-  "browser" :
-    text : (el) -> @execute("return $('.qx-identifier-#{el}').attr('src')")
-  "spinner"
-  "text-area"
-  "slider"
-  "scroll-bar"
-  "time-edit-field"
-  "progress-bar"
-}
+
+UI_elements = require "./ui-element-defaults"
 
 module.exports = ->
   {Q,_,EventEmitter,yp} = runner = @
@@ -54,7 +25,7 @@ module.exports = ->
     name: "wd"
     # CFGOPT: default wait timeout
     defaultWaitTimeout: 30000
-    setup: true
+    setup: true  
     before: "globLoader"
     enable:
       browser:
@@ -75,9 +46,9 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: true
+        safari: true 
       invoke:
-        firefox: true
+        firefox: true 
     promise: ->
       plugin = @
       
@@ -234,57 +205,85 @@ module.exports = ->
               "return $().#{nm}.apply($(arguments[0]),arguments[1])"
               [el,args])
             )
-      
+            
       wd.addPromiseMethod(
         "check"
         (el,params) ->
-          if _.isString el then el=@getElement(el)
-          unless params? then el          
-          params.mess?="Error"
-          
-          # TODO : make calculations optional
-          # must be done, prior to add more attributes
-          size = yp el.getSize()
-          loc =  yp el.getLocationInView()
-          
-          errmsg = ""
-          for attr,expected of params
-            actual = switch attr
-              when "mess","precision" then expected
-              when "w","width" then size.width
-              when "h","height" then size.height
-              when "x" then loc.x
-              when "y" then loc.y
-              else   
-                @info "no method for #{attr}"
-                expected
-            unless expected is actual
-              errmsg+="#{attr} mismatch! Actual : <#{actual}>, Expected : <#{expected}>"
+          if _.isString el
+            el_id = el
+            el = @getElement(el)
 
-          params.mess?="Error"
+          unless params? then return           
+
+          _this = @
+
+          actual =
+            get : ( attr ) ->
+              unless @[attr] 
+                switch attr
+                  when "type" then @type = yp _this.getElementType( el_id ) 
+                  when "text" then @text = yp _this.getText( el_id, @get("type") )
+                  when "value" then @value = yp _this.getValue( el_id, @get("type") )
+                  when "width","height","w","h" 
+                    {@width,@height} = yp el.getSize()
+                    @w = @width
+                    @h = @height
+                  when "x","y" then {@x,@y} = yp el.getLocationInView()
+              return @[attr]
+
+          errmsg = ""
+          infoMessage = params.mess
           
-          unless errmsg is ""
+          delete params.precision
+          delete params.mess
+          
+          for attr,expected of params
+            if expected is "default"
+              expected = UI_elements[actual.get("type")].getDefault(attr, @qx$browserName + "$" + process.platform[0])
+            if actual.get(attr) isnt expected
+              errmsg+="#{attr} mismatch! Actual : <#{actual.get(attr)}>, Expected : <#{expected}>"
+
+          if errmsg isnt ""
             throw params.mess+":\n"+errmsg
-          el
+          return (true)
       )
+      
       wd.addPromiseMethod(
         "getText"
-        (el) ->
-        
-          switch
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-combo-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-combo-content .qx-text-outer .qx-text').html()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-group-box')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} input').val()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-text-field')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').html()"))
-            when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-text').text()"))
+        (el,el_type) -> 
+          el_type ?= yp @getElementType(el)
+          return yp @execute UI_elements[el_type].getText(el)
+      )
+      
+      wd.addPromiseMethod(
+        "getImage"
+        (el,el_type) -> 
+          el_type ?= yp @getElementType(el)
+          return yp @execute UI_elements[el_type].getImage(el)
+      )
 
-            else 
-              if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
-                return null
-              else throw "Isn't implemented for this widget yet"
-        )
+      wd.addPromiseMethod(
+        "getValue"
+        (el,el_type) -> 
+          el_type ?= yp @getElementType(el)
+          return yp @execute UI_elements[el_type].getValue(el)
+      )      
+      
+      wd.addPromiseMethod(
+        "getElementType"
+        (el) ->
+          for name,element of UI_elements
+            if yp @execute element.selector(el)
+              return name
+          "unknown"
+      ) 
+      
+      wd.addPromiseMethod(
+        "switchTab"
+        (el) ->
+          @execute("$('.qx-h-identifier-#{el} .qx-focus-target').click()"))
+                
+      
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
@@ -295,46 +294,16 @@ module.exports = ->
             when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
-      )        
-      wd.addPromiseMethod(
-        "getElementType"
-        (el) ->
-          for widget of widgets
-            if yp(@execute("return $('.qx-identifier-#{el}.qx-aum-#{widget}').length"))
-              return widget
       ) 
-      
-      wd.addPromiseMethod(
-        "switchTab"
-        (el) ->
-          @execute("$('.qx-h-identifier-#{el} .qx-focus-target').click()"))
-                
-      
 
-      wd.addPromiseMethod(
-        "getImage"
-        (el) ->
-            switch
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-blob-viewer')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-blob-content>img')[0].src"))
-              when (yp(@execute("return $('.qx-h-identifier-#{el}').hasClass('qx-h-aum-tab-page')"))).toString() == "true" then yp(@execute("return $('.qx-h-identifier-#{el} .qx-image')[0].src"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-calendar')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img')[0].src"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-toolbar-button')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} .qx-tal>img')[0].src"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-canvas')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-browser')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el}').prop('src')"))
-              when (yp(@execute("return $('.qx-identifier-#{el}').hasClass('qx-aum-label')"))).toString() == "true" then yp(@execute("return $('.qx-identifier-#{el} img').prop('src')"))
-              else 
-                if (yp(@execute("return $('.qx-identifier-#{el}').length"))) is 0
-                  return null
-                else throw "Isn't implemented for this widget yet"
-        )      
+     
               
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
-        defaults:require("./widget-defaults")
-        properties:require("./widget-properties")
-      #
+        #defaults:require("./widget-defaults")
+        #properties:require("./widget-properties")
+      
       wrap = (m,n) ->
         (args...) ->
           yp @browser[n].apply @browser, args
@@ -381,7 +350,7 @@ module.exports = ->
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
-              unless binfo.closeBrowser is false or plugin.closeBrowser is false  
+              unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally ->
                   browser.quit()
               return r.then(-> "OK")
