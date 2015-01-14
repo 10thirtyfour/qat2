@@ -457,7 +457,6 @@ module.exports = ->
     
   runner.extfuns =  
     uniformName : uniformName
-
     
     CheckXML: (testData) ->
       yp.frun => 
@@ -518,7 +517,7 @@ module.exports = ->
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
         
-        if testData.errorCode? then testData.reverse = true  
+        if testData.errorCode? then testData.reverse = (true)  
         
         delete testData.fail 
         delete testData.fn
@@ -547,89 +546,94 @@ module.exports = ->
           nop=0
        
     Build: (arg, additionalParams={}) ->
-      yp.frun =>
-        if typeof arg is "string"
-          testData = additionalParams
-          testData.program = arg
-        else
-          testData = arg
+      if typeof arg is "string"
+        testData = additionalParams
+        testData.programName = arg
+      else
+        testData = arg
 
-        testData.testFileName = @fileName
-        testData = combTestData(testData)
-        unless testData.programName? then throw "Can not read programName from "+@fileName
-        unless testData.projectPath? then throw "projectPath undefined"
+      testData.testFileName = @fileName
+      testData = combTestData(testData)
+      
+      unless testData.programName? then throw "Can not read programName from "+@fileName
+      unless testData.projectPath? then throw "projectPath undefined"
 
-        testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
-        testData.relativeFileName =  path.relative runner.tests.globLoader.root, testData.fileName
-        progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
-
-        # ------  deploy workaround
-        if testData.buildMode is "all"
-          testData.buildMode = "rebuild"
-          runner.reg
-            name: uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
-            after: [uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")]
-            silent: true 
-            data:
-              kind: "deploy-workaround"
-            promise: ->
-              yp.frun( =>
-                try 
-                  rawxml=fs.readFileSync(testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
-                  xml = new dom().parseFromString(rawxml)
-                  filesToCopy = [testData.programName]
-                  if process.platform[0] is "w" then filesToCopy[0]+='.exe'
-                  
-                   
-                  formExtCare = (fn) -> 
-                    unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
-    
-                  filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
-                  #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
-                  filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
-                  tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
-
-                  for fn in filesToCopy
-                    try
-                      sourceFile = path.join(testData.projectPath,testData.projectOutput,fn)
-                      targetFile = path.join(runner.deployPath,fn)
-                      fse.ensureDirSync path.dirname(targetFile)
-                      fse.copySync(sourceFile,targetFile)
-                    catch e
-                      runner.info "Failed to copy file : "+fn
-                    tr2file+='  <Resource path="'+fn+'"/>\n'
-                  tr2file+='</Resources>\n'
-                  fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
-
-                  if process.platform[0] is "l"
-                    ffn = path.join(runner.deployPath,filesToCopy[0])
-                    fs.chmodSync( ffn , "755")
-                  
-                  "Files deployed : #{filesToCopy.length}"                          
-                catch e
-                  throw e
-                
-              )
-             
-        # ------ end of deploy workaround
-        
-        runner.reg 
-          name: uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
+      testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
+      progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
+      testData.buildTestName = uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
+      @lastBuiltApp = testData.buildTestName
+      
+      if testData.buildMode is "all"
+        testData.deployTestName = uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")        
+        testData.buildMode = "rebuild"
+        @lastBuiltApp = testData.deployTestName
+      
+      # ------  deploy workaround
+      if testData.deployTestName?
+        runner.reg
+          name: testData.deployTestName
+          after: [ testData.buildTestName ]
+          failOnly : (true)
           data:
-            kind: "build"
-          testData: testData  
-          failOnly : testData.failOnly
-          promise: runner.toolfuns.regBuild
-        return ->
-          nop=0
+            kind: "deploy"
+          promise: ->
+            yp.frun( =>
+              try 
+                rawxml=fs.readFileSync(testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
+                xml = new dom().parseFromString(rawxml)
+                filesToCopy = [testData.programName]
+                if process.platform[0] is "w" then filesToCopy[0]+='.exe'
+                
+                formExtCare = (fn) -> 
+                  unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
+  
+                filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
+                #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+                filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
+                tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
+
+                for fn in filesToCopy
+                  try
+                    sourceFile = path.join(testData.projectPath,testData.projectOutput,fn)
+                    targetFile = path.join(runner.deployPath,fn)
+                    fse.ensureDirSync path.dirname(targetFile)
+                    fse.copySync(sourceFile,targetFile)
+                  catch e
+                    runner.info "Failed to copy file : "+fn
+                  tr2file+='  <Resource path="'+fn+'"/>\n'
+                tr2file+='</Resources>\n'
+                fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
+
+                if process.platform[0] is "l"
+                  ffn = path.join(runner.deployPath,filesToCopy[0])
+                  fs.chmodSync( ffn , "755")
+                
+                "Files deployed : #{filesToCopy.length}"                          
+              catch e
+                throw e
+            )
+      # ------ end of deploy workaround
+
+      testData.failOnly ?= testData.deploy
+      
+      runner.reg 
+        name: testData.buildTestName
+        data:
+          kind: "build"
+        testData: testData  
+        failOnly : testData.failOnly
+        promise: runner.toolfuns.regBuild
+      return ->
+        nop=0
           
     RegWD : (obj,testId) ->
+      @lastBuiltApp?=[]
       testName = uniformName(path.relative(runner.tests.globLoader.root,@fileName))
       if testId then testName+="$"+testId 
       runner.regWD
         syn: obj
         name: testName
-    
+        after : @lastBuiltApp
     reg : (params...) ->
       runner.reg params...
       
