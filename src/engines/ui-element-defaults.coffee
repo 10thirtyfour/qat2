@@ -49,6 +49,8 @@ elements =
     qxclass : "qx-aum-function-field-abs" 
     defaults:
       height : 24
+      chrome$l :
+        height : 23
     
   "group-box" :
     qxclass : "qx-aum-group-box"  
