@@ -14,6 +14,8 @@ elements =
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
     defaults :
       height : 25
+      chrome$l:
+        height : 23
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -38,6 +40,8 @@ elements =
                         return 'unchecked';"
     defaults :
       height : 16
+      chrome$l:
+        height : 15
       
   "function-field-abs" :
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
@@ -53,11 +57,17 @@ elements =
     qxclass  : "qx-aum-label"
     getImage : (el) -> "return $('.qx-identifier-#{el} img').prop('src')"
     getText  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+    defaults :
+      height : 22
+      chrome$l :
+        height : 21
     
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     defaults :
-      height : 26    
+      height : 26
+      chrome$l :
+        height : 27
 
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
@@ -68,11 +78,15 @@ elements =
     qxclass : "qx-aum-slider"
     defaults : 
       height : 16
+      chrome$l :
+        height : 15
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
     defaults :
       height : 19
+      chrome$l :
+        height : 17
       
   "tab-page-header" :
     qxclass : "qx-h-aum-tab-page"
@@ -81,40 +95,30 @@ elements =
   "text-area" :
     qxclass : "qx-aum-text-area"
     #getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-    defaults :  
-      height : 22    
+    defaults :
+      height : 22
+      chrome$l :
+        height : 21
     
   "text-field" :   
     qxclass : "qx-aum-text-field"
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
     defaults :
       height : 22
+      chrome$l :
+        height : 21
 
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     defaults :
-      height : 17   
+      height : 17
+      chrome$l :
+        height : 15
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
     getImage : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
-
-  "time-edit-field" :
-    qxclass : "qx-aum-time-edit-field"
-    defaults :
-      height : 17
-     
-  #"time-edit-field" :
-  #  defaults:
-  #    height : 10
-  #    chrome$l:
-  #      height : 15      
-      
-  "progress-bar" :
-    qxclass : "qx-aum-progress-bar"
-    defaults :
-      height : 26    
 
   "unknown" :
     qxclass : "unknown"
