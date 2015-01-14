@@ -68,9 +68,7 @@ elements =
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     defaults :
-      height : 27
-      chrome$l :
-        height : 26.65625
+      height : 26.65625
 
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
