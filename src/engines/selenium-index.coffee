@@ -122,13 +122,6 @@ module.exports = ->
       )
 
       wd.addPromiseMethod(
-        "formField"
-        (name) -> 
-          console.log "Deprecated!!! Use getElement"
-          @elementByCss ".qx-identifier-#{name}")
-
-      # alias for formField. should be used instead!        
-      wd.addPromiseMethod(
         "getElement"
         (name) -> @elementByCss ".qx-identifier-#{name}")
         
