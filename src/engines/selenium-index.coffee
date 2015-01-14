@@ -232,6 +232,7 @@ module.exports = ->
               return @[attr]
 
           errmsg = ""
+          
           infoMessage = params.mess
           
           delete params.precision
@@ -244,7 +245,7 @@ module.exports = ->
               errmsg+="#{attr} mismatch! Actual : <#{actual.get(attr)}>, Expected : <#{expected}>"
 
           if errmsg isnt ""
-            throw params.mess+":\n"+errmsg
+            throw infoMessage + ":\n"+errmsg
           return (true)
       )
       
@@ -301,8 +302,6 @@ module.exports = ->
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
-        #defaults:require("./widget-defaults")
-        #properties:require("./widget-properties")
       
       wrap = (m,n) ->
         (args...) ->
