@@ -10,6 +10,7 @@ elements =
     
   "button" :
     qxclass : "qx-aum-button"
+    selector : (el)-> "return ($(':not(div.qx-ff-button) > .qx-identifier-#{el}.qx-aum-button').length > 0)"
     getImage : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
     defaults :
@@ -58,14 +59,14 @@ elements =
     getImage : (el) -> "return $('.qx-identifier-#{el} img').prop('src')"
     getText  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
     defaults :
-      height : 22
+      height : 23
       chrome$l :
         height : 21
     
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     defaults :
-      height : 26
+      height : 27
       chrome$l :
         height : 27
 
