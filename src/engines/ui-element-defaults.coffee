@@ -70,7 +70,7 @@ elements =
     defaults :
       height : 27
       chrome$l :
-        height : 27
+        height : 26.65625
 
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"

@@ -210,49 +210,48 @@ module.exports = ->
         "check"
         (el,params) ->
           if _.isString el
-            el_id = el
-            el = @getElement(el)
-
-          unless params? then return
-
-          if params.w?
-            params.width?=params.w
+            itemType = yp @getElementType el
+            itemSelector = ".qx-identifier-#{el}"
+          else
+            itemType = "unknown"
+            itemSelector = params.selector
+            #delete params.selector
+            
+          res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
+          res.type = itemType
+          
+          if params.w? 
+            params.width=params.w
             delete params.w
-
           if params.h?
-            params.height?=params.h
+            params.height=params.h
             delete params.h
-            
-            
-          _this = @
-
-          actual =
-            get : ( attr ) ->
-              unless @[attr] 
-                switch attr
-                  when "type" then @type = yp _this.getElementType( el_id ) 
-                  when "text" then @text = yp _this.getText( el_id, @get("type") )
-                  when "value" then @value = yp _this.getValue( el_id, @get("type") )
-                  when "width","height" then {@width,@height} = yp el.getSize()
-                  when "x","y" then {@x,@y} = yp el.getLocationInView()
-              return @[attr]
-
+          if params.x?
+            params.left=params.x
+            delete params.x
+          if params.y?
+            params.top=params.y
+            delete params.y
+        
+          mess = params.mess ?= itemType + " " + itemSelector
           errmsg = ""
           
-          infoMessage = params.mess?= actual.get("type")+" "+ el_id
-          
-          delete params.precision
-          delete params.mess
-
           for attr,expected of params
+            switch attr 
+              when "mess","precision","selector" then continue
+              when "text" then res.text = yp @getText(el, itemType)
+              when "value" then res.value = yp @getValue(el, itemType)
+              #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
+              
             if expected is "default"
-              expected = UI_elements[actual.get("type")].getDefault(attr, @qx$browserName + "$" + process.platform[0])
-            if actual.get(attr) isnt expected
-              errmsg+="#{attr} mismatch! Actual : <#{actual.get(attr)}>, Expected : <#{expected}>"
+              expected = UI_elements[itemType].getDefault(attr, @qx$browserName + "$" + process.platform[0])
+            
+            if expected isnt res[attr]
+              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>"
 
           if errmsg isnt ""
-            throw infoMessage + " : "+errmsg
-          return (true)
+            throw mess + " : "+errmsg
+          return mess
       )
       
       wd.addPromiseMethod(
