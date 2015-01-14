@@ -213,8 +213,17 @@ module.exports = ->
             el_id = el
             el = @getElement(el)
 
-          unless params? then return           
+          unless params? then return
 
+          if params.w?
+            params.width?=params.w
+            delete params.w
+
+          if params.h?
+            params.height?=params.h
+            delete params.h
+            
+            
           _this = @
 
           actual =
@@ -224,20 +233,17 @@ module.exports = ->
                   when "type" then @type = yp _this.getElementType( el_id ) 
                   when "text" then @text = yp _this.getText( el_id, @get("type") )
                   when "value" then @value = yp _this.getValue( el_id, @get("type") )
-                  when "width","height","w","h" 
-                    {@width,@height} = yp el.getSize()
-                    @w = @width
-                    @h = @height
+                  when "width","height" then {@width,@height} = yp el.getSize()
                   when "x","y" then {@x,@y} = yp el.getLocationInView()
               return @[attr]
 
           errmsg = ""
           
-          infoMessage = params.mess
+          infoMessage = params.mess?= actual.get("type")+" "+ el_id
           
           delete params.precision
           delete params.mess
-          
+
           for attr,expected of params
             if expected is "default"
               expected = UI_elements[actual.get("type")].getDefault(attr, @qx$browserName + "$" + process.platform[0])
@@ -245,7 +251,7 @@ module.exports = ->
               errmsg+="#{attr} mismatch! Actual : <#{actual.get(attr)}>, Expected : <#{expected}>"
 
           if errmsg isnt ""
-            throw infoMessage + ":\n"+errmsg
+            throw infoMessage + " : "+errmsg
           return (true)
       )
       
