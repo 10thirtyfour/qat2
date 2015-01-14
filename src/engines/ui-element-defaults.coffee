@@ -100,12 +100,6 @@ elements =
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
     getImage : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
 
-
-  "scroll-bar" :
-    qxclass : "qx-aum-scroll-bar"
-    defaults :
-      height : 9
-      
   "time-edit-field" :
     qxclass : "qx-aum-time-edit-field"
     defaults :
