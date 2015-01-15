@@ -133,14 +133,15 @@ module.exports = ->
         "resizeWindow"
         (wnd,dx,dy,h) -> 
           h?="se"
-          yp(@elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}").then( (p)->
-            p
-              .moveTo()
-              .buttonDown()
-              .moveTo(dx,dy)
-              .buttonUp()
-          ))
+          r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
+          h = yp @elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
+         
+          yp @moveTo( h )
+              .buttonDown(0)
+              .moveTo(null, Math.floor(dx) , Math.floor(dy) )
+              .buttonUp(0)
         )
+
 
       wd.addPromiseMethod(
         "resizeElement"
@@ -268,6 +269,14 @@ module.exports = ->
           el_type ?= yp @getElementType(el)
           return yp @execute UI_elements[el_type].getValue(el)
       )      
+      
+      wd.addPromiseMethod(
+        "getRect"
+        (el) ->
+          {selector} = el
+          selector?= '.qx-identifier-' + el
+          return yp @execute "return $('#{selector}')[0].getBoundingClientRect()"
+      )
       
       wd.addPromiseMethod(
         "getElementType"
