@@ -237,7 +237,8 @@ module.exports = ->
               #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
               
             if expected is "default"
-              expected = UI_elements[itemType].getDefault(attr, @qx$browserName + "$" + process.platform[0])
+              expected = UI_elements[itemType].getDefault(attr, @qx$browserName + "$" + 
+                         process.platform[0])
             
             if expected isnt res[attr]
               errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>"
@@ -293,9 +294,9 @@ module.exports = ->
             when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
-      ) 
+      )
 
-     
+      
               
       # Adding properties for wd test' this
       synproto = 

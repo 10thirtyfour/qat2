@@ -123,6 +123,9 @@ elements =
 
   "unknown" :
     qxclass : "unknown"
+    getText : () -> "return;"
+    getImage : () -> "return;"
+    getValue : () -> "return;"
 
       
 for name,item of elements
