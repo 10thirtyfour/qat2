@@ -624,17 +624,22 @@ module.exports = ->
         testData: testData  
         failOnly : testData.failOnly
         promise: runner.toolfuns.regBuild
-      return ->
-        nop=0
+      return @lastBuiltApp
+        
           
-    RegWD : (obj,testId) ->
+    RegWD : (obj, params) ->
+      
       @lastBuiltApp?=[]
-      testName = uniformName(path.relative(runner.tests.globLoader.root,@fileName))
-      if testId then testName+="$"+testId 
+      params ?= {}
+      params.after?=@lastBuiltApp
+      params.testName?= uniformName(path.relative(runner.tests.globLoader.root,@fileName))
+      if params.testId then params.testName+="$"+params.testId 
       runner.regWD
         syn: obj
-        name: testName
-        after : @lastBuiltApp
+        name: params.testName
+        after : params.after
+        
+        
     reg : (params...) ->
       runner.reg params...
       
