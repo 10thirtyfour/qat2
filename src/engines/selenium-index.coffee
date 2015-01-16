@@ -134,11 +134,12 @@ module.exports = ->
         (wnd,dx,dy,h) -> 
           h?="se"
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
-          h = yp @elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
-         
-          yp @moveTo( h )
+          #h = yp @elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
+
+          yp @elementById("qx-home-form",0,0).
+               moveTo( Math.floor(r.left + r.width / 2),Math.floor(r.top + r.height / 2))
               .buttonDown(0)
-              .moveTo(null, Math.floor(dx) , Math.floor(dy) )
+              .moveTo( null, Math.floor(dx) , Math.floor(dy) )
               .buttonUp(0)
         )
 
@@ -204,35 +205,27 @@ module.exports = ->
         "check"
         (el,params) ->
           if _.isString el
-            itemType = yp @getElementType el
+            itemType = yp @getType el
             itemSelector = ".qx-identifier-#{el}"
           else
             itemType = "unknown"
             itemSelector = params.selector
-            #delete params.selector
             
           res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
           res.type = itemType
           
-          if params.w? 
-            params.width=params.w
-            delete params.w
-          if params.h?
-            params.height=params.h
-            delete params.h
-          if params.x?
-            params.left=params.x
-            delete params.x
-          if params.y?
-            params.top=params.y
-            delete params.y
+          params.width = params.w if (params.w?)
+          params.height = params.h if (params.h?)
+          params.left = params.x if (params.x?)
+          params.top = params.y if (params.y?)
         
-          mess = params.mess ?= itemType + " " + itemSelector
+          params.mess?=""
+          mess = [params.mess,itemType,itemSelector].join " "
           errmsg = ""
           
           for attr,expected of params
             switch attr 
-              when "mess","precision","selector" then continue
+              when "mess","precision","selector","w","h","x","y" then continue
               when "text" then res.text = yp @getText(el, itemType)
               when "value" then res.value = yp @getValue(el, itemType)
               #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
@@ -252,23 +245,34 @@ module.exports = ->
       wd.addPromiseMethod(
         "getText"
         (el,el_type) -> 
-          el_type ?= yp @getElementType(el)
+          el_type ?= yp @getType(el)
           return yp @execute UI_elements[el_type].getText(el)
       )
       
       wd.addPromiseMethod(
         "getImage"
         (el,el_type) -> 
-          el_type ?= yp @getElementType(el)
+          el_type ?= yp @getType(el)
           return yp @execute UI_elements[el_type].getImage(el)
       )
 
       wd.addPromiseMethod(
+        "setValue"
+        (el, value) -> 
+          try
+            yp UI_elements[ yp @getType(el) ].setValue.apply(@,[el,value])
+          catch e
+            return (false)
+          (true)
+            
+      )      
+      
+      wd.addPromiseMethod(
         "getValue"
         (el,el_type) -> 
-          el_type ?= yp @getElementType(el)
+          el_type ?= yp @getType(el)
           return yp @execute UI_elements[el_type].getValue(el)
-      )      
+      )
       
       wd.addPromiseMethod(
         "getRect"
@@ -279,20 +283,19 @@ module.exports = ->
       )
       
       wd.addPromiseMethod(
-        "getElementType"
+        "getType"
         (el) ->
           for name,element of UI_elements
             if yp @execute element.selector(el)
               return name
           "unknown"
       ) 
-      
+
       wd.addPromiseMethod(
         "switchTab"
         (el) ->
           @execute("$('.qx-h-identifier-#{el} .qx-focus-target').click()"))
                 
-      
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
