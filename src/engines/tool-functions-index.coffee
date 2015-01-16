@@ -110,9 +110,9 @@ module.exports = ->
           actualBlock = readBlock(nextOutLine,"<<<")
           actualLine = actualBlock.join "\n"
           expectedLine = logBlock.join "\n"
-          fail = false
+          fail = (false)
           if actualLine isnt expectedLine
-            fail = true 
+            fail = (true)
             # report double EOL workaround. Skip empty lines
             a1 = _.remove(actualBlock, (i)-> (typeof i is 'string')).join '\n'
             e1 = _.remove(logBlock, (i)-> (typeof i is 'string')).join '\n'
@@ -184,7 +184,7 @@ module.exports = ->
       http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
       .on "error", (e)-> 
         #console.log fun+" post failed"
-        return true   
+        return (true)  
     
     getEnviron: ->
       runner = @runner
@@ -457,6 +457,7 @@ module.exports = ->
     
   runner.extfuns =  
     uniformName : uniformName
+    log : console.log
     
     CheckXML: (testData) ->
       yp.frun => 
