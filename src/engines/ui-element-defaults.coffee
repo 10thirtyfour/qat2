@@ -88,6 +88,16 @@ elements =
       height : 19
       chrome$l :
         height : 17
+
+  "tab" :
+    qxclass : "qx-aum-tab"
+    getValue : (el) -> "return $('div.qx-identifier-#{el}.qx-aum-tab li.ui-tabs-active')[0].className.match(/qx-h-identifier-(.*)/)[1]"
+    setValue : (el,val) -> 
+      return @execute "return $('div.qx-identifier-#{el}.qx-aum-tab li.qx-h-identifier-#{val} > .qx-focus-target')[0].click()"
+    
+  "tab-page" :
+    qxclass : "qx-aum-tab-page"
+    
       
   "tab-page-header" :
     qxclass : "qx-h-aum-tab-page"
