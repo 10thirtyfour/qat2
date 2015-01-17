@@ -173,9 +173,7 @@ elements =
       state : () -> "return;"
 
 
-getState = 
-      
-      
+     
 for name,item of elements
   item.qxclass   ?= "qx-aum-"+name
   item.selector  ?= (el)-> "return ($('.qx-identifier-#{el}."+@qxclass+"').length > 0)"
