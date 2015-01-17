@@ -129,7 +129,7 @@ elements =
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
-    getImage : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
+    getImage : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
 
   "unknown" :
     qxclass : "unknown"
