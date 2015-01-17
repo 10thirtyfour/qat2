@@ -46,9 +46,9 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: true 
+        safari: (true)
       invoke:
-        firefox: true 
+        firefox: (true) 
     promise: ->
       plugin = @
       
@@ -203,16 +203,19 @@ module.exports = ->
             
       wd.addPromiseMethod(
         "check"
-        (el,params) ->
+        (el, options) ->
           if _.isString el
-            itemType = yp @getType el
+            params = options
+            el_type = yp @getType el
             itemSelector = ".qx-identifier-#{el}"
           else
-            itemType = "unknown"
+            params = el
+            el_type = params.type
+            el_type?= "unknown"
             itemSelector = params.selector
             
           res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
-          res.type = itemType
+          res.type = el_type
           
           params.width = params.w if (params.w?)
           params.height = params.h if (params.h?)
@@ -220,67 +223,38 @@ module.exports = ->
           params.top = params.y if (params.y?)
         
           params.mess?=""
-          mess = [params.mess,itemType,itemSelector].join " "
+          mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
           
           for attr,expected of params
             switch attr 
               when "mess","precision","selector","w","h","x","y" then continue
-              when "text" then res.text = yp @getText(el, itemType)
-              when "value" then res.value = yp @getValue(el, itemType)
+              when "text","value","state","image" then res[attr]= yp @execute UI_elements[el_type].get[attr](el)
               #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
               
             if expected is "default"
-              expected = UI_elements[itemType].getDefault(attr, @qx$browserName + "$" + 
+              expected = UI_elements[el_type].get_default(attr, @qx$browserName + "$" + 
                          process.platform[0])
             
             if expected isnt res[attr]
-              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>"
+              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
           if errmsg isnt ""
             throw mess + " : "+errmsg
           return mess
       )
       
-      wd.addPromiseMethod(
-        "getText"
-        (el,el_type) -> 
-          el_type ?= yp @getType(el)
-          return yp @execute UI_elements[el_type].getText(el)
-      )
-      
-      wd.addPromiseMethod(
-        "getImage"
-        (el,el_type) -> 
-          el_type ?= yp @getType(el)
-          return yp @execute UI_elements[el_type].getImage(el)
-      )
-
-      wd.addPromiseMethod(
-        "setValue"
-        (el, value) -> 
-          try
-            yp UI_elements[ yp @getType(el) ].setValue.apply(@,[el,value])
-          catch e
-            return (false)
-          (true)
-            
-      )      
-      
-      wd.addPromiseMethod(
-        "getValue"
-        (el,el_type) -> 
-          el_type ?= yp @getType(el)
-          return yp @execute UI_elements[el_type].getValue(el)
-      )
-      
-      wd.addPromiseMethod(
-        "getRect"
-        (el) ->
-          {selector} = el
-          selector?= '.qx-identifier-' + el
-          return yp @execute "return $('#{selector}')[0].getBoundingClientRect()"
-      )
+      # adding getSomething methods
+      for method of UI_elements.unknown.get
+        do =>
+          name = "get"+method.charAt(0).toUpperCase() + method.slice(1);
+          attr = method
+          wd.addPromiseMethod(
+            name
+            (el,el_type) -> 
+              el_type ?= yp @getType(el)
+              return yp @execute UI_elements[el_type].get[attr](el)
+          )
       
       wd.addPromiseMethod(
         "getType"
@@ -292,10 +266,23 @@ module.exports = ->
       ) 
 
       wd.addPromiseMethod(
-        "switchTab"
+        "setValue"
+        (el, value) -> 
+          try
+            yp UI_elements[ yp @getType(el) ].set.value.apply(@,[el,value])
+          catch e
+            return (false)
+          (true)
+      )      
+      
+      wd.addPromiseMethod(
+        "getRect"
         (el) ->
-          @execute("$('.qx-h-identifier-#{el} .qx-focus-target').click()"))
-                
+          {selector} = el
+          selector?= '.qx-identifier-' + el
+          return yp @execute "return $('#{selector}')[0].getBoundingClientRect()"
+      )
+      
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
