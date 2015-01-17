@@ -16,21 +16,20 @@ elements =
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
-    defaults :
-      height : 24
-      chrome$l:
-        height : 23
+      defaults :
+        height : 24
+        chrome$l:
+          height : 23
     
   "calendar" :
     qxclass : "qx-aum-calendar"
     get :
       image : (el)-> "return $('.qx-identifier-#{el} img')[0].src"
-      text : (el)-> "return $('.qx-identifier-#{el} input').val()"
-      
-    #defaults :
-    #  width : 1
-    #  chrome$w :
-    #    width : 2
+      text : (el)-> "return $('.qx-identifier-#{el} input').val()"   
+      defaults :
+        width : 1
+        chrome$w :
+          width : 2
 
   "canvas" :
     qxclass : "qx-aum-canvas"
@@ -46,25 +45,26 @@ elements =
                         if (cb.prop('checked')) {return 'checked';}
                         if (typeof cb.prop('checked') == 'undefined') {return false;}
                         return 'unchecked';"
-    defaults :
-      height : 16
-      chrome$l:
-        height : 15
+      defaults :
+        height : 22
+        chrome$l:
+          height : 15
         
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-    defaults :
-      height : 22
+      defaults :
+        height : 22
       
   "function-field-abs" :
-    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     qxclass : "qx-aum-function-field-abs" 
-    defaults:
-      height : 24
-      chrome$l :
-        height : 23
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
+    get :
+      defaults:
+        height : 24
+        chrome$l :
+          height : 23
     
   "group-box" :
     qxclass : "qx-aum-group-box"  
@@ -73,23 +73,26 @@ elements =
 
   "label" :
     qxclass  : "qx-aum-label"
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-label').length > 0)"
     get :
       image : (el) -> "return $('.qx-identifier-#{el} img').prop('src')"
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-    defaults :
-      height : 23
-      chrome$l :
-        height : 21
+      defaults :
+        height : 23
+        chrome$l :
+          height : 21
     
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
-    defaults :
-      height : 26.65625
+    get :
+      defaults :
+        height : 26.65625
 
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
-    defaults : 
-      height : 9    
+    get :
+      defaults : 
+        height : 9    
       
   "slider" :
     qxclass : "qx-aum-slider"
@@ -105,17 +108,18 @@ elements =
                       if ($('div.qx-aum-slider.qx-disabled.qx-identifier-#{el}:not(.qx-enabled) > 
                               div.ui-state-disabled.ui-slider-disabled').length > 0) { return 'disabled' }                               
                       return $('div.qx-aum-slider.qx-identifier-#{el}').attr('class');"
-    defaults : 
-      height : 16
-      chrome$l :
-        height : 15
+      defaults : 
+        height : 16
+        chrome$l :
+          height : 15
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
-    defaults :
-      height : 19
-      chrome$l :
-        height : 17
+    get :
+      defaults :
+        height : 19
+        chrome$l :
+          height : 17
 
   "tab" :
     qxclass : "qx-aum-tab"
@@ -137,26 +141,29 @@ elements =
   "text-area" :
     qxclass : "qx-aum-text-area"
     #get_text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-    defaults :
-      height : 22
-      chrome$l :
-        height : 21
+    get :
+      defaults :
+        height : 22
+        chrome$l :
+          height : 21
 
   "text-field" :   
     qxclass : "qx-aum-text-field"
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-text-field').length > 0)"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-    defaults :
-      height : 22
-      chrome$l :
-        height : 21
+      defaults :
+        height : 22
+        chrome$l :
+          height : 21
 
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
-    defaults :
-      height : 17
-      chrome$l :
-        height : 15
+    get :
+      defaults :
+        height : 16
+        chrome$l :
+          height : 15
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
