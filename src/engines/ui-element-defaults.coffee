@@ -14,7 +14,7 @@ elements =
     getImage : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
     getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
     defaults :
-      height : 25
+      height : 24
       chrome$l:
         height : 23
     
