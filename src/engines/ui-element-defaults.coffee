@@ -14,7 +14,7 @@ elements =
     qxclass : "qx-aum-button"
     selector : (el)-> "return ($(':not(div.qx-ff-button) > .qx-identifier-#{el}.qx-aum-button').length > 0)"
     get :
-      image : (el) -> "return $('.qx-identifier-#{el} .qx-tal>img')[0].src"
+      image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       defaults :
         height : 24
@@ -186,6 +186,8 @@ for name,item of elements
   item.selector  ?= (el)-> "return ($('.qx-identifier-#{el}."+@qxclass+"').length > 0)"
   item.get       ?= {}
   item.get.qxclass = item.qxclass 
+  item.get.text  ?= (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
+  item.get.image ?= (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
   item.get.state ?= (el)-> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled).qx-enabled').length > 0) { return 'enabled' }
                    if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled).qx-disabled').length > 0) { return 'disabled' }
                    return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
