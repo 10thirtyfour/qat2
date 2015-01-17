@@ -172,14 +172,18 @@ elements =
       value : () -> "return;"
       state : () -> "return;"
 
+
+getState = 
+      
       
 for name,item of elements
   item.qxclass   ?= "qx-aum-"+name
   item.selector  ?= (el)-> "return ($('.qx-identifier-#{el}."+@qxclass+"').length > 0)"
   item.get       ?= {}
-  item.get.state ?= (el)-> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled).qx-enabled).length > 0) { return 'enabled' }
-                            if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled).qx-disabled).length > 0) { return 'disabled' }
-                          return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
+  item.get.qxclass = item.qxclass 
+  item.get.state ?= (el)-> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled).qx-enabled').length > 0) { return 'enabled' }
+                   if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled).qx-disabled').length > 0) { return 'disabled' }
+                   return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
   
   for method of elements.unknown.get
     item.get[method]?= (el)-> "return 'Warning! id : #{el}, type : #{@qxclass}. get #{method} is not implemented';"
