@@ -43,7 +43,16 @@ elements =
       height : 16
       chrome$l:
         height : 15
-      
+
+  "combo-box" :
+    qxclass : "qx-aum-combo-box"
+    getText : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+    
+    defaults :
+      height : 22
+      chrome$l:
+        height : 22  
+
   "function-field-abs" :
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     qxclass : "qx-aum-function-field-abs" 
