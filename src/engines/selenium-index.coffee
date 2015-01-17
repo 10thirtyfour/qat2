@@ -70,7 +70,7 @@ module.exports = ->
         (command, params) ->
           @cmd = command
           params ?= {}
-          params.wait ?= true
+          params.wait ?= (true)
           params.instance ?= runner.qatDefaultInstance
           
           command += ".exe" if process.platform[0] is "w"
@@ -233,7 +233,7 @@ module.exports = ->
               #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
               
             if expected is "default"
-              expected = UI_elements[el_type].get_default(attr, @qx$browserName + "$" + 
+              expected = UI_elements[el_type].get.default(attr, @qx$browserName + "$" + 
                          process.platform[0])
             
             if expected isnt res[attr]
