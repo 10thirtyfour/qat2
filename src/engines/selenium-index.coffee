@@ -244,7 +244,7 @@ module.exports = ->
           return mess
       )
       
-      # adding getSomething methods
+      # adding getSomething methods 
       for method of UI_elements.unknown.get
         do =>
           name = "get"+method.charAt(0).toUpperCase() + method.slice(1);
