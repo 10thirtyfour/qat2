@@ -68,7 +68,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "startApplication"
         (command, params) ->
-          @cmd = command
+          @executedPrograms?=[]
+          @executedPrograms.push(command)
+          
           params ?= {}
           params.wait ?= (true)
           params.instance ?= runner.qatDefaultInstance
@@ -326,15 +328,17 @@ module.exports = ->
                 binfo.name= "wd$#{i}$#{info.name}"
                 promise = (browser) ->
                   yp.frun ->
-                    try
-                      testContext = _.create binfo,_.assign {browser:browser}, synproto
-                      binfo.syn.call testContext
-                    finally
-                      #task kill. command stored in browser.cmd
-                      if process.platform[0] is "w" 
-                        exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
-                      else
-                        exec('pkill -9 '+ browser.cmd )
+                    #try
+                    testContext = _.create binfo,_.assign {browser:browser}, synproto
+                    binfo.syn.call testContext
+                    #finally
+                    # ======== no more kills here ========
+                      #task kill. command stored in browser.executedPrograms
+                      #if process.platform[0] is "w" 
+                      #  exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
+                      #else
+                      #  exec('pkill -9 '+ browser.cmd )
+                      
               else
                 promise = ->
             binfo.promise = ->
