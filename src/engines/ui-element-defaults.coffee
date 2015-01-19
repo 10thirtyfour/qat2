@@ -116,6 +116,7 @@ elements =
   "spinner" :
     qxclass  : "qx-aum-spinner"
     get :
+      text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
       defaults :
         height : 19
         chrome$l :
