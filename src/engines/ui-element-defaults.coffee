@@ -53,7 +53,7 @@ elements =
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} .qx-combo-content .qx-text').text()"
+      text : (el) -> "return $('.qx-identifier-#{el} .qx-combo-content .qx-text').text()
       defaults :
         height : 22
       
@@ -131,6 +131,11 @@ elements =
     
   "tab-page" :
     qxclass : "qx-aum-tab-page"
+    get :
+      text : (el) -> "return $('li.qx-h-identifier-#{el}.qx-h-aum-tab-page > a').text()"
+      state : (el) -> "var pageHeader = $('li.qx-h-identifier-#{el}.qx-h-aum-tab-page');
+                       if (pageHeader.length == 0 ) { return 'page not found';}
+                       if (pageHeader.hasClass('ui-tabs-active')) { return 'active';} else { return 'inactive';}"
     
   "tab-page-header" :
     qxclass : "qx-h-aum-tab-page"
