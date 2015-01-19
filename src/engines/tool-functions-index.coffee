@@ -551,8 +551,9 @@ module.exports = ->
         testData = additionalParams
         testData.programName = arg
       else
+        arg?={}
         testData = arg
-
+      
       testData.testFileName = @fileName
       testData = combTestData(testData)
       
@@ -562,12 +563,15 @@ module.exports = ->
       testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
       progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
       testData.buildTestName = uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
-      @lastBuiltApp = testData.buildTestName
+      
+      # storing test name and program name in test context for future use in WD test
+      @lastBuiltTestName = testData.buildTestName
+      @lastBuilt = testData.programName
       
       if testData.buildMode is "all"
         testData.deployTestName = uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")        
         testData.buildMode = "rebuild"
-        @lastBuiltApp = testData.deployTestName
+        @lastBuiltTestName = testData.deployTestName
       
       # ------  deploy workaround
       if testData.deployTestName?
@@ -628,16 +632,17 @@ module.exports = ->
         
           
     RegWD : (obj, params) ->
-      
       @lastBuiltApp?=[]
       params ?= {}
-      params.after?=@lastBuiltApp
+      params.after?=@lastBuiltTestName
       params.testName?= uniformName(path.relative(runner.tests.globLoader.root,@fileName))
       if params.testId then params.testName+="$"+params.testId 
       runner.regWD
         syn: obj
         name: params.testName
         after : params.after
+        lastBuilt : @lastBuilt
+            
         
         
     reg : (params...) ->
