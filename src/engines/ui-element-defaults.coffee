@@ -88,6 +88,22 @@ elements =
       defaults :
         height : 26.65625
 
+  "radio-button" :
+    qxclass : "qx-aum-radio-button"
+    get :
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+ 
+  "radio-button-list" :
+    qxclass : "qx-aum-radio-button-list"
+    get :
+      # Warning!!! Need testing it  
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-aum-radio-button-list-item.qx-active .qx-title-cell.qx-text').html()"
+
+  "radio-button-list-item" :
+    qxclass : "qx-aum-radio-button-list-item"
+    get :
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-title-cell.qx-text').html()"
+
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
@@ -177,6 +193,16 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
 
+  "window" :
+    qxclass : "qx-aum-window"
+    get :
+      text : (el) -> "return $('.qx-o-identifier-#{el} span').html()"
+
+  "text-element" :
+    qxclass : "qx-text"
+    get :
+      text : (el) -> "return $('.qx-identifier-#{el}.qx-text').text()"
+  
   "unknown" :
     qxclass : "unknown"
     get :
