@@ -8,7 +8,7 @@ elements =
   "browser" :
     qxclass : "qx-aum-browser"
     get :
-      image : (el) -> "return $('.qx-identifier-#{el}').prop('src')"
+      image : (el) -> "return $('.qx-identifier-#{el} iframe').prop('src')"
     
   "button" :
     qxclass : "qx-aum-button"
