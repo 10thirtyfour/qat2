@@ -185,6 +185,7 @@ elements =
       #Warning!!1 not work 
       value : (el,h,m) -> "return(@execute($('.ui-timepicker-hours .ui-timepicker tbody tr td a')[#{h}].click()).execute($('.ui-timepicker-minutes .ui-timepicker tbody tr td a')[#{m}].click()))"
     get :
+      text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
         height : 16
         chrome$l :
