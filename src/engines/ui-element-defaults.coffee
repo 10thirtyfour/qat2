@@ -193,6 +193,11 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
 
+  "web-component" :
+    qxclass : "qx-aum-web-component"
+    get :
+      image : (el) -> "return $('iframe.qx-identifier-#{el}').prop('src')"
+
   "window" :
     qxclass : "qx-aum-window"
     get :
