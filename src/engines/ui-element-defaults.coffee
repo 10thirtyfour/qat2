@@ -181,6 +181,9 @@ elements =
 
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
+    set :
+      #Warning!!1 not work 
+      value : (el,h,m) -> "return(@execute($('.ui-timepicker-hours .ui-timepicker tbody tr td a')[#{h}].click()).execute($('.ui-timepicker-minutes .ui-timepicker tbody tr td a')[#{m}].click()))"
     get :
       defaults :
         height : 16
