@@ -232,6 +232,8 @@ module.exports = ->
             switch attr 
               when "mess","precision","selector","w","h","x","y" then continue
               when "text","value","state","image" then res[attr]= yp @execute UI_elements[el_type].get[attr](el)
+              when "sch" then res[attr]=(yp @remoteCall(el,"prop","clientWidth") != yp @remoteCall(el,"prop","scrollWidth"))
+              when "scv" then res[attr]=(yp @remoteCall(el,"prop","clientHeight") != yp @remoteCall(el,"prop","scrollHeight"))
               #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
               
             if expected is "default"
