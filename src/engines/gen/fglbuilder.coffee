@@ -18,6 +18,8 @@ mkdirp = require "mkdirp"
 format = require("./formxml")()
 fs = require "fs"
 prettyjson = require "prettyjson"
+dom = require("xmldom").DOMParser
+#builder = require "xmlbuilder"
 
 indent = (str) -> (("  " + i) for i in str.split "\n").join "\n"
 punctuate = (lines) -> 
@@ -95,7 +97,8 @@ class UniqNames
   newName_ : (scope) -> @newName(scope)()
 
 class ProgramBuilder extends Builder 
-  constructor: -> 
+  constructor: (name) -> 
+    @name = name
     @commands = []
     @fglRecords = []
     @globals = []
@@ -153,14 +156,79 @@ class ProgramBuilder extends Builder
     #{(indent(i) for i in @commands).join("\n")}
     END MAIN
     """
+    
   save: (root,name) -> 
     name ?= @name ? "main"
-    root ?= "output"
-    mkdirp.sync "#{root}/form"
-    fs.writeFileSync "#{root}/#{name}.4gl", @end()
+    root ?= "tests/qatproject"
+    mkdirp.sync "#{root}/source/form"
+    fs.writeFileSync "#{root}/source/#{name}.4gl", @end()
     for i in @forms
-      fs.writeFileSync "#{root}/form/#{i._name}.fm2", format.write i
+      fs.writeFileSync "#{root}/source/form/#{i._name}.fm2", format.write i
+    
+    # create or update project file here
+    unless fs.existsSync("#{root}/.project")
+      fs.writeFileSync "#{root}/.project", 
+        """
+          <?xml version="1.0" encoding="UTF-8"?>
+          <projectDescription>
+            <name>project</name>
+            <comment></comment>
+            <projects></projects>
+            <buildSpec>
+              <buildCommand>
+                <name>com.querix.fgl.core.fglbuilder</name>
+                <arguments></arguments>
+              </buildCommand>
+            </buildSpec>
+            <natures>
+              <nature>com.querix.fgl.core.fglnature</nature>
+            </natures>
+          </projectDescription>
+      """ 
+    
+    if fs.existsSync("#{root}/.fglproject")
+      xml = new dom().parseFromString fs.readFileSync("#{root}/.fglproject",'utf8')
+    else 
+      xml = new dom().parseFromString(
+        """
+          <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+          <fglProject name="qatproject">
+            <data>
+              <item id="com.querix.fgl.core.pathentries">
+                <pathentry kind="src" path="source"/>
+                <pathentry kind="out" path="output"/>
+              </item>
+              <item id="com.querix.fgl.core.buildtargets"></item>
+            </data>
+          </fglProject>
+        """
+        )
+        
+    targets = xml.getElementById("com.querix.fgl.core.buildtargets")
+    targets.appendChild( xml.createTextNode("\n      "))
+    targets.appendChild( new dom().parseFromString "<buildTarget location=\"\" name=\"#{name}\" type=\"fgl-program\"/>")
+    fs.writeFileSync "#{root}/.fglproject", xml.toString()
+    
+    # create program file here
+    target =  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <fglBuildTarget name="#{name}" xmlns="http://namespaces.querix.com/lyciaide/target" type="fgl-program">
+                  <sources type="fgl">
+                    <file location="#{name}.4gl"/>
+                  </sources>
+                  <sources type="form">
+              """
+
+    for i in @forms
+      target += "\n    <file location=\"form/#{i._name}.fm2\"/>"
+    target+=  """
+              \n  </sources>
+              </fglBuildTarget>
+              """
+    fs.writeFileSync "#{root}/source/.#{name}.fgltarget", target
+    
+    
     @
 
 module.exports =
-  program: -> new ProgramBuilder()
+  program: (name) -> new ProgramBuilder( name )

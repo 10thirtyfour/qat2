@@ -201,7 +201,7 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false
+      selected = false 
       if i[0] is "+"
         selected = true
         i = i.substr 1
@@ -247,7 +247,7 @@ ElemBuilder::dfs = (fun) ->
       res = null
       if v._type?
         res = fun.call v
-        return false if res is false
+        return false if res is false 
       if res isnt true
         return false if go(v) is false
   go @elem
@@ -323,7 +323,7 @@ ElemBuilder::maxSize = (w,h) -> @attr maxsize: { width: w, height: h }
 event = (name) ->
   (msg) ->
     obj = {}
-    obj[name] = msg ? true
+    obj[name] = msg ? true 
     @attr _actions: obj
 
 ElemBuilder::event = (name,msg) -> event(name).call(@, msg)
@@ -343,4 +343,4 @@ ElemBuilder::uncheck = event "OnUncheck"
 # TODO: the rest
 
 module.exports =
-  form: -> new FormBuilder()
+    form: (name)-> new FormBuilder( {_name:name} )

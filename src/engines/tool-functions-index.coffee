@@ -64,9 +64,8 @@ module.exports = ->
       # here can be implemented XML parce of project file. Currently using default paths
       testData.projectSource = 'source' 
       testData.projectOutput = 'output'
-
-
-    testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
+    
+      testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
  
     #looks like on win32 shown also for x64 platform
     if process.platform[0] is "w" then testData.programExecutable+=".exe" 
@@ -76,7 +75,7 @@ module.exports = ->
   runLog = (child, testData, setCurrentStatus) ->
     passMessage = ""
     errMessage = ""
-    delimeterSent = false 
+    delimeterSent = false
     writeBlock = ( stream , message, lineTimeout ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
@@ -560,9 +559,11 @@ module.exports = ->
       
       testData.testFileName = @fileName
       testData = combTestData(testData)
-      
+
       unless testData.programName? then throw "Can not read programName from "+@fileName
       unless testData.projectPath? then throw "projectPath undefined"
+      
+      
 
       testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
       progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
