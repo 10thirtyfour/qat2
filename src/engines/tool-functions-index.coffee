@@ -209,10 +209,14 @@ module.exports = ->
       .then( (qfglout)->
         if qfglout?
           runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
-          runner.logger.pass "qatstart",runner.sysinfo
           runner.toolfuns.spammer "sendMessage", message:"!! "+runner.sysinfo.starttimeid+"\nQAT started on #{runner.sysinfo.host}\nPlatform : #{runner.sysinfo.platform}\nLycia build : "+runner.sysinfo.build
+          runner.logger.pass "qatstart",runner.sysinfo
+        else 
+          runner.logger.fail "Failed to get Lycia build form qfgl !!"
+
         return runner.sysinfo)
       .catch( (err)->
+        console.log "dsdfsdfsdf ======="
         _this.fail err.message
         throw "Unable to read environ : "+err.message
       )  
@@ -630,7 +634,6 @@ module.exports = ->
         promise: runner.toolfuns.regBuild
       return @lastBuiltApp
         
-          
     RegWD : (obj, params) ->
       @lastBuiltApp?=[]
       params ?= {}
@@ -642,12 +645,12 @@ module.exports = ->
         name: params.testName
         after : params.after
         lastBuilt : @lastBuilt
-            
-        
         
     reg : (params...) ->
       runner.reg params...
       
+    form : require("./gen/formbuilder").form
+    program : require("./gen/fglbuilder").program
 
 
  

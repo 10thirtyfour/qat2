@@ -32,8 +32,11 @@
     "byline": "~4.1.1",
     "xpath": "~0.0.7",
     "xmldom": "~0.1.19",
-    "fs-extra": "~0.11.0"
-     
+    "fs-extra": "~0.11.0",
+    "mkdirp": "~0.3.5",
+    "xmldom": "~0.1.19",
+    "xmlbuilder": "~2.1.0"
+
   },
   "devDependencies": {
     "grunt": "~0.4.2",
