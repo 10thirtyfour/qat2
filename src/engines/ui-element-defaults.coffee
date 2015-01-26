@@ -48,7 +48,7 @@ elements =
       defaults :
         height : 22
         chrome$l:
-          height : 15
+          height : 21
         
   "combo-box" :
     qxclass : "qx-aum-combo-box"
