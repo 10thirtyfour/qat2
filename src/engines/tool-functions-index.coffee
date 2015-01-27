@@ -634,13 +634,12 @@ module.exports = ->
         testData: testData  
         failOnly : testData.failOnly
         promise: rr.toolfuns.regBuild
-      return @lastBuilt
+        #return @lastBuilt
         
     RegWD : (obj, params) ->
       rr = @runner
-      @lastBuiltTestName?=[]
       params ?= {}
-      params.after    ?= @lastBuiltTestName
+      params.after    ?= @lastBuiltTestName ? []
       params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
       params.testId   ?= @lastBuilt
       if params.testId then params.testName+="$"+params.testId 
