@@ -187,36 +187,35 @@ module.exports = ->
         return (true)  
     
     getEnviron: ->
-      runner = @runner
+      rr = @runner
       _this=@
       
-      runner.sysinfo = 
-        host : runner.os.hostname()
+      rr.sysinfo = 
+        host : rr.os.hostname()
         starttimeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
-        ver : runner.os.release()
+        ver : rr.os.release()
         user : process.env.USER ? process.env.USERNAME
         build : "unknown" 
       
-      @info runner.sysinfo.platform + " " + runner.sysinfo.ver
+      @info rr.sysinfo.platform + " " + rr.sysinfo.ver
       
       [command,cc,args...] = _.compact @data.command.split(" ")
       
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 
       .then( (envtext)->
-        runner.environ = JSON.parse(envtext.toString('utf8'))
-        exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
+        rr.environ = JSON.parse(envtext.toString('utf8'))
+        exitPromise( spawn( path.join(rr.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : rr.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
-          runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
-          runner.toolfuns.spammer "sendMessage", message:"!! "+runner.sysinfo.starttimeid+"\nQAT started on #{runner.sysinfo.host}\nPlatform : #{runner.sysinfo.platform}\nLycia build : "+runner.sysinfo.build
-          runner.logger.pass "qatstart",runner.sysinfo
+          rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
+          rr.toolfuns.spammer "sendMessage", message:"!! "+rr.sysinfo.starttimeid+"\nQAT started on #{rr.sysinfo.host}\nPlatform : #{rr.sysinfo.platform}\nLycia build : "+rr.sysinfo.build
+          rr.logger.pass "qatstart",rr.sysinfo
         else 
-          runner.logger.fail "Failed to get Lycia build form qfgl !!"
+          rr.logger.fail "Failed to get Lycia build form qfgl !!"
 
-        return runner.sysinfo)
+        return rr.sysinfo)
       .catch( (err)->
-        console.log "dsdfsdfsdf ======="
         _this.fail err.message
         throw "Unable to read environ : "+err.message
       )  
@@ -464,6 +463,7 @@ module.exports = ->
     log : console.log
     
     CheckXML: (testData) ->
+      rr = @runner
       yp.frun => 
         testData.fileName?=testData.fn or cutofTest(@fileName)
         testData.method?="select"
@@ -482,15 +482,15 @@ module.exports = ->
         
         if testData.ext is ".per"
           compileTestName= uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
-          unless compileTestName of runner.tests
-            runner.reg
+          unless compileTestName of rr.tests
+            rr.reg
               name: compileTestName
               data:
                 kind: "compile"+testData.ext
               testData: 
                 fileName: testData.fileName+".per"
                 options: testData.options
-              promise: runner.toolfuns.regCompile 
+              promise: rr.toolfuns.regCompile 
           testData.ext = ".fm2"
           
         testData.fileName = testData.fileName+".fm2"
@@ -498,19 +498,20 @@ module.exports = ->
         loop
           testName = uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}")
           n+=1
-          unless testName of @runner.tests then break
+          unless testName of rr.tests then break
         
-        runner.reg
+        rr.reg
           name: testName
           after: compileTestName
           data:
             kind: "xpath"
           testData: testData
-          promise: runner.toolfuns.regXPath
+          promise: rr.toolfuns.regXPath
         return ->
           nop=0
         
     Compile: (arg, additionalParams) ->
+      rr = @runner
       yp.frun =>
         if typeof arg is "string"
           testData = _.defaults(fileName:arg,additionalParams)
@@ -541,16 +542,17 @@ module.exports = ->
 
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
           
-        runner.reg
+        rr.reg
           name: uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
           testData: testData
-          promise: runner.toolfuns.regCompile 
+          promise: rr.toolfuns.regCompile 
         return ->
           nop=0
        
     Build: (arg, additionalParams={}) ->
+      rr = @runner
       if typeof arg is "string"
         testData = additionalParams
         testData.programName = arg
@@ -564,10 +566,8 @@ module.exports = ->
       unless testData.programName? then throw "Can not read programName from "+@fileName
       unless testData.projectPath? then throw "projectPath undefined"
       
-      
-
       testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
-      progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
+      progRelativeName = path.relative rr.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
       testData.buildTestName = uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
       
       # storing test name and program name in test context for future use in WD test
@@ -581,7 +581,7 @@ module.exports = ->
       
       # ------  deploy workaround
       if testData.deployTestName?
-        runner.reg
+        rr.reg
           name: testData.deployTestName
           after: [ testData.buildTestName ]
           failOnly : (true)
@@ -606,17 +606,17 @@ module.exports = ->
                 for fn in filesToCopy
                   try
                     sourceFile = path.join(testData.projectPath,testData.projectOutput,fn)
-                    targetFile = path.join(runner.deployPath,fn)
+                    targetFile = path.join(rr.deployPath,fn)
                     fse.ensureDirSync path.dirname(targetFile)
                     fse.copySync(sourceFile,targetFile)
                   catch e
-                    runner.info "Failed to copy file : "+fn
+                    rr.info "Failed to copy file : "+fn
                   tr2file+='  <Resource path="'+fn+'"/>\n'
                 tr2file+='</Resources>\n'
-                fs.writeFileSync(path.join(runner.deployPath,testData.programName+".tr2"),tr2file)
+                fs.writeFileSync(path.join(rr.deployPath,testData.programName+".tr2"),tr2file)
 
                 if process.platform[0] is "l"
-                  ffn = path.join(runner.deployPath,filesToCopy[0])
+                  ffn = path.join(rr.deployPath,filesToCopy[0])
                   fs.chmodSync( ffn , "755")
                 
                 "Files deployed : #{filesToCopy.length}"                          
@@ -627,35 +627,36 @@ module.exports = ->
 
       testData.failOnly ?= testData.deploy
       
-      runner.reg 
+      rr.reg 
         name: testData.buildTestName
         data:
           kind: "build"
         testData: testData  
         failOnly : testData.failOnly
-        promise: runner.toolfuns.regBuild
+        promise: rr.toolfuns.regBuild
       return @lastBuilt
         
     RegWD : (obj, params) ->
+      rr = @runner
       @lastBuiltTestName?=[]
       params ?= {}
       params.after    ?= @lastBuiltTestName
-      params.testName ?= uniformName(path.relative(runner.tests.globLoader.root,@fileName))
+      params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
       params.testId   ?= @lastBuilt
       if params.testId then params.testName+="$"+params.testId 
-      runner.regWD
+      rr.regWD
         syn: obj
         name: params.testName
         after : params.after
-        lastBuilt : @lastBuilt
+        lastBuilt : params.testId
         
     reg : (params...) ->
-      runner.reg params...
+      @runner.reg params...
       
     form : require("./gen/formbuilder").form
     program : ( name , root ) ->
       name ?= cutofTest(@fileName)
-      root ?= path.join runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
+      root ?= path.join @runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
       genProgram( name, root )
       
       
