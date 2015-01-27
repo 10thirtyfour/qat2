@@ -19,7 +19,7 @@ format = require("./formxml")()
 fs = require "fs"
 prettyjson = require "prettyjson"
 dom = require("xmldom").DOMParser
-#builder = require "xmlbuilder"
+path = require "path"
 
 indent = (str) -> (("  " + i) for i in str.split "\n").join "\n"
 punctuate = (lines) -> 
@@ -97,8 +97,9 @@ class UniqNames
   newName_ : (scope) -> @newName(scope)()
 
 class ProgramBuilder extends Builder 
-  constructor: (name) -> 
+  constructor: ( name , root ) -> 
     @name = name
+    @projectRoot = root
     @commands = []
     @fglRecords = []
     @globals = []
@@ -138,7 +139,7 @@ class ProgramBuilder extends Builder
     @commands.push stmt
   openForm: (form,x) ->
     @forms.push form
-    name = form._name ?= @uniq.newName_ "form"
+    name = form._name ?= @uniq.newName_ (@name + "_form")
     x ?= 0
     @windowWithForm name
     if form.screenrecords?
@@ -156,10 +157,17 @@ class ProgramBuilder extends Builder
     #{(indent(i) for i in @commands).join("\n")}
     END MAIN
     """
+  
+  save: ( name , root ) ->
     
-  save: (root,name) -> 
     name ?= @name ? "main"
-    root ?= "tests/qatproject"
+    root ?= root ? @projectRoot
+    
+    @target = 
+      projectPath : root
+      programName : name
+      deploy : true
+    
     mkdirp.sync "#{root}/source/form"
     fs.writeFileSync "#{root}/source/#{name}.4gl", @end()
     for i in @forms
@@ -226,9 +234,7 @@ class ProgramBuilder extends Builder
               </fglBuildTarget>
               """
     fs.writeFileSync "#{root}/source/.#{name}.fgltarget", target
-    
-    
     @
 
 module.exports =
-  program: (name) -> new ProgramBuilder( name )
+  program: (  name , root ) -> new ProgramBuilder(  name , root  )
