@@ -3,6 +3,7 @@ spawn = require("child_process").spawn
 http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
+genProgram = require("./gen/fglbuilder").program
 
 {CallbackReadWrapper} = require "./readercallback"
 
@@ -559,7 +560,7 @@ module.exports = ->
       
       testData.testFileName = @fileName
       testData = combTestData(testData)
-
+      
       unless testData.programName? then throw "Can not read programName from "+@fileName
       unless testData.projectPath? then throw "projectPath undefined"
       
@@ -633,13 +634,14 @@ module.exports = ->
         testData: testData  
         failOnly : testData.failOnly
         promise: runner.toolfuns.regBuild
-      return @lastBuiltApp
+      return @lastBuilt
         
     RegWD : (obj, params) ->
-      @lastBuiltApp?=[]
+      @lastBuiltTestName?=[]
       params ?= {}
-      params.after?=@lastBuiltTestName
-      params.testName?= uniformName(path.relative(runner.tests.globLoader.root,@fileName))
+      params.after    ?= @lastBuiltTestName
+      params.testName ?= uniformName(path.relative(runner.tests.globLoader.root,@fileName))
+      params.testId   ?= @lastBuilt
       if params.testId then params.testName+="$"+params.testId 
       runner.regWD
         syn: obj
@@ -651,7 +653,11 @@ module.exports = ->
       runner.reg params...
       
     form : require("./gen/formbuilder").form
-    program : require("./gen/fglbuilder").program
-
+    program : ( name , root ) ->
+      name ?= cutofTest(@fileName)
+      root ?= path.join runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
+      genProgram( name, root )
+      
+      
 
  
