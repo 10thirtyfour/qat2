@@ -5,7 +5,7 @@ module.exports = ->
     common:
       timeouts:
         line: 12000
-        run: 60000
+        run: 600000
         compile: 20000
         build: 60000
         download: 600000
