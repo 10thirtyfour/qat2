@@ -1,10 +1,16 @@
-#f1 = form()
-#f1 = f1.gridpanel()
-#      .rows().auto().min(200).max(300).up()
-#      .cols().auto().min(200).max(200).up()
-#    .textfield().at(0,0).size(100,100).up()
-#    .up().end()
-#program( ).openForm(f1).save()
-#Build "qatproject/source/main"
+throw new Error "Skipping this file"
+forms = {}
+for w in ["textfield","combobox"]
+  forms[w] = form(w).gridpanel()[w]().at(0,0).up()
+    .rows().auto().auto().auto().up()
+    .cols().auto().auto().auto().up()
+    .up().end()
+target = program( ).openForm(forms["textfield"]).save().target
+Build target
+RegWD ->
+  @startApplication @lastBuilt
+  @sleep 10000
+  @waitExit()
+  
 
     

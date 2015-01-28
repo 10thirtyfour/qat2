@@ -17,7 +17,7 @@ module.exports = ->
   cutofTest = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
-  parceError = (raw) ->
+  parseError = (raw) ->
     errorMessage = raw : raw
     errorMessage.xml = new dom().parseFromString(raw)
     
@@ -46,7 +46,7 @@ module.exports = ->
     testData.programName ?= testData.program
     testData.projectPath ?= (testData.project or testData.prj)
     testData.reverse ?= testData.fail
-    testData.buildMode = if testData.deploy is true then "all" else "rebuild"
+    testData.buildMode ?= if testData.deploy is true then "all" else "rebuild"
       
     unless testData.programName?
       # cutting filename by 12 chars ("-test.coffee")
@@ -82,7 +82,7 @@ module.exports = ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent=true  
+        delimeterSent = true  
       writeLine line for line in message
 
     {stderr,stdout,stdin} = child 
@@ -285,7 +285,7 @@ module.exports = ->
           if result
             txt = stderr.read()
             if txt?
-              errorMessage = parceError(txt.toString('utf8'))
+              errorMessage = parseError(txt.toString('utf8'))
 
             errorMessage?= { text:txt, code:-1, line:-1 }
             if @testData.reverse
@@ -551,20 +551,19 @@ module.exports = ->
         return ->
           nop=0
        
-    Build: (arg, additionalParams={}) ->
+    Build: (arg, testData={}) ->
       rr = @runner
+      
       if typeof arg is "string"
-        testData = additionalParams
         testData.programName = arg
       else
-        arg?={}
-        testData = arg
+        testData = arg ? {}
       
       testData.testFileName = @fileName
       testData = combTestData(testData)
       
-      unless testData.programName? then throw "Can not read programName from "+@fileName
-      unless testData.projectPath? then throw "projectPath undefined"
+      unless testData.programName? then throw "Build. Can not read programName"
+      unless testData.projectPath? then throw "Build. Can not read projectPath"
       
       testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
       progRelativeName = path.relative rr.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
@@ -642,7 +641,7 @@ module.exports = ->
       params.after    ?= @lastBuiltTestName ? []
       params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
       params.testId   ?= @lastBuilt
-      if params.testId then params.testName+="$"+params.testId 
+      if params.testId? then params.testName+="$"+params.testId 
       rr.regWD
         syn: obj
         name: params.testName

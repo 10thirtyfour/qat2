@@ -211,10 +211,15 @@ class ProgramBuilder extends Builder
           </fglProject>
         """
         )
-        
+
     targets = xml.getElementById("com.querix.fgl.core.buildtargets")
-    targets.appendChild( xml.createTextNode("\n      "))
-    targets.appendChild( new dom().parseFromString "<buildTarget location=\"\" name=\"#{name}\" type=\"fgl-program\"/>")
+    targetExists = false
+    for el in targets.getElementsByTagName("buildTarget")
+      if el.getAttribute("name") is name then targetExists = true
+    unless targetExists  
+      targets.appendChild( xml.createTextNode("\n      "))
+      targets.appendChild( new dom().parseFromString "<buildTarget location=\"\" name=\"#{name}\" type=\"fgl-program\"/>")
+      
     fs.writeFileSync "#{root}/.fglproject", xml.toString()
     
     # create program file here
