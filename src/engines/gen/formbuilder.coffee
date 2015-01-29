@@ -203,6 +203,19 @@ class RangeWidgetBuilder extends ElemBuilder
         @elem.majorTick=large
     @
 
+class BoolWidgetBuilder extends ElemBuilder    
+  constructor: (el,ty,par) ->
+    super el, ty, par
+    @values(1,0)
+  values: ( checked, unchecked ) ->
+    @elem.checkedvalue = 
+      type:"stringliteral"
+      stringValue : checked
+    @elem.uncheckedvalue = 
+      type:"stringliteral"
+      stringValue : unchecked
+    @  
+    
 regBuilder = (name, builder) ->
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
@@ -228,6 +241,8 @@ regSimpleText "label"
 regSimpleText "textfield", _record: "FormOnly"
 regSimpleText "button", _record: "FormOnly"
 regSimpleText "textarea", _record: "FormOnly"
+
+regSimpleText "checkbox", _record: "FormOnly"  , BoolWidgetBuilder
 
 regSimpleText "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
 regSimpleText "spinner", _record: "FormOnly", RangeWidgetBuilder
