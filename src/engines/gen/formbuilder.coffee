@@ -182,6 +182,27 @@ labelFields = {}
 defaultOpts = {}
 
 
+class RangeWidgetBuilder extends ElemBuilder
+  constructor: (el,ty,par) ->
+    super el, ty, par
+    @range()
+    @steps()
+  range: (min=0,max=100) ->
+    @elem.minValue=min
+    @elem.maxValue=max
+    @
+  steps: (small=1,large=10) ->
+    switch @elem._type
+      when "scrollbar" 
+        @elem.smallStep=small
+        @elem.largeStep=large
+      when "spinner"
+        @elem.step=small
+      when "slider"
+        @elem.minorTick=small
+        @elem.majorTick=large
+    @
+
 regBuilder = (name, builder) ->
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
@@ -199,6 +220,7 @@ regSimpleText = (name, topts, builder) ->
     return res
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
+  
 regBuilder "gridpanel", GridBuilder
 regBuilder "borderpanel", BorderPanelBuilder
 regBuilder "coordpanel", CoordPanelBuilder
@@ -206,6 +228,10 @@ regSimpleText "label"
 regSimpleText "textfield", _record: "FormOnly"
 regSimpleText "button", _record: "FormOnly"
 regSimpleText "textarea", _record: "FormOnly"
+
+regSimpleText "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
+regSimpleText "spinner", _record: "FormOnly", RangeWidgetBuilder
+regSimpleText "slider", _record: "FormOnly", RangeWidgetBuilder
 
 class ComboBuilder extends TextWidgetBuilder
   constructor: (elem, type, par) ->
@@ -216,7 +242,7 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false 
+      selected = false  
       if i[0] is "+"
         selected = true
         i = i.substr 1
@@ -227,6 +253,8 @@ class ComboBuilder extends TextWidgetBuilder
     @
 
 regSimpleText "combobox", _record: "FormOnly", ComboBuilder
+
+
 
 ElemBuilder::record = (name) -> @attr 
   _record: (name ? "FormOnly")
@@ -257,7 +285,7 @@ ElemBuilder::dfs = (fun) ->
           res = fun.call j
           return false if res is false
           if res isnt true
-            return false if go(j) is false
+            return false if go(j) is false  
      else if _.isObject v
       res = null
       if v._type?
@@ -304,7 +332,7 @@ FormBuilder::end = ->
     {identifier:name, _type:type} = @
     if name?
       grid = knownNames[name]
-      knownNames[name] = true
+      knownNames[name] = true 
     else
       cur = names[type] ?= 0
       loop
@@ -338,7 +366,7 @@ ElemBuilder::maxSize = (w,h) -> @attr maxsize: { width: w, height: h }
 event = (name) ->
   (msg) ->
     obj = {}
-    obj[name] = msg ? true 
+    obj[name] = msg ? true  
     @attr _actions: obj
 
 ElemBuilder::event = (name,msg) -> event(name).call(@, msg)
