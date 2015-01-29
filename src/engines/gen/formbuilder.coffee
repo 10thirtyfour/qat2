@@ -128,6 +128,21 @@ class GridLenBuilder extends Builder
       {gridLength: gridLengthType: "Relative", gridLengthValue: n}
       opts)
     @
+    
+  pixels: (n, opts) ->
+    @cur.push _.merge(
+      {gridLength: gridLengthType: "Pixels", gridLengthValue: n}
+      opts)
+    @
+  percent: (n, opts) ->
+    if _.isObject n
+      opts = n
+      n = 1
+    n = 1 unless n?
+    @cur.push _.merge(
+      {gridLength: gridLengthType: "Percent", gridLengthValue: n}
+      opts)
+    @    
   min: (val) ->
     if @cur.length is 0
       throw new Error("no elements")
