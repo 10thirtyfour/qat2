@@ -62,9 +62,9 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     get :
       defaults:
-        height : 24
+        height : 20
         chrome$l :
-          height : 23
+          height : 19
     
   "group-box" :
     qxclass : "qx-aum-group-box"  
@@ -78,7 +78,7 @@ elements =
       image : (el) -> "return $('.qx-identifier-#{el} img').prop('src')"
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
-        height : 23
+        height : 22
         chrome$l :
           height : 21
     
@@ -165,9 +165,9 @@ elements =
     #get_text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
     get :
       defaults :
-        height : 22
+        height : 18
         chrome$l :
-          height : 21
+          height : 17
 
   "text-field" :   
     qxclass : "qx-aum-text-field"
@@ -175,9 +175,9 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
-        height : 22
+        height : 18
         chrome$l :
-          height : 21
+          height : 17
 
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
