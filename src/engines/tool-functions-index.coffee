@@ -595,9 +595,15 @@ module.exports = ->
                 if process.platform[0] is "w" then filesToCopy[0]+='.exe'
                 
                 formExtCare = (fn) -> 
-                  unless path.extname(fn) is ".per" then return fn else return fn.substr(0,fn.lastIndexOf(".")) + ".fm2"
+                  ext = path.extname(fn)
+                  base = fn.substr(0,fn.lastIndexOf("."))
+                  switch ext
+                    when ".per" then return base + ".fm2"
+                    when ".msg" then return base + ".erm"
+                    else return fn
   
                 filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
+                filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
                 #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
                 filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
                 tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
