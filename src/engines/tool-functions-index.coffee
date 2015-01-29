@@ -271,6 +271,7 @@ module.exports = ->
         switch (path.extname(@testData.fileName)).toLowerCase()
           when ".4gl" then cmdLine = "qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
           when ".per" then cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
+          #when ".per" then cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
         if @testData.options? then cmdLine+=" #{@testData.options}"
         
         [command,args...] = _.compact cmdLine.split(" ")
@@ -598,7 +599,7 @@ module.exports = ->
                   ext = path.extname(fn)
                   base = fn.substr(0,fn.lastIndexOf("."))
                   switch ext
-                    when ".per" then return base + ".fm2"
+                    when ".per", ".4fm", ".4fd" then return base + ".fm2"
                     when ".msg" then return base + ".erm"
                     else return fn
   
