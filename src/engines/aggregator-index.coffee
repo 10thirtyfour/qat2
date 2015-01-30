@@ -81,6 +81,6 @@ module.exports = ->
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
     console.log archy mkTree()
-    runner.toolfuns.spammer "sendReport", key:runner.sysinfo.starttimeid
+    runner.spammer "sendReport", key:runner.sysinfo.starttimeid
     donePromise.call @
   @reg plugin

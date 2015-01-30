@@ -176,15 +176,17 @@ module.exports = ->
         continue
       if dir then mess.push line
     return mess
+
+  spammer: (fun,params)->
+    unless runner.argv["skype-notify"] then return
+    params.function = fun
+    params.contact ?= "REST protocol"
+    http.get("http://"+@logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
+    .on "error", (e)-> 
+      return (true)  
+
     
   runner.toolfuns =
-    spammer: (fun,params)->
-      params.function = fun
-      params.contact = "REST protocol"
-      http.get("http://"+runner.logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
-      .on "error", (e)-> 
-        #console.log fun+" post failed"
-        return (true)  
     
     getEnviron: ->
       rr = @runner
@@ -209,7 +211,7 @@ module.exports = ->
       .then( (qfglout)->
         if qfglout?
           rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
-          rr.toolfuns.spammer "sendMessage", message:"!! "+rr.sysinfo.starttimeid+"\nQAT started on #{rr.sysinfo.host}\nPlatform : #{rr.sysinfo.platform}\nLycia build : "+rr.sysinfo.build
+          rr.spammer "sendMessage", message:"!! "+rr.sysinfo.starttimeid+"\nQAT started on #{rr.sysinfo.host}\nPlatform : #{rr.sysinfo.platform}\nLycia build : "+rr.sysinfo.build
           rr.logger.pass "qatstart",rr.sysinfo
         else 
           rr.logger.fail "Failed to get Lycia build form qfgl !!"
