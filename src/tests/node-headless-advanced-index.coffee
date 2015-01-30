@@ -18,6 +18,7 @@ module.exports = ->
             yp.frun( =>
               contextParams = 
                 fileName: fn
+                testName : runner.toolfuns.filenameToTestname(fn)
                 relativeName: path.relative(runner.tests.globLoader.root, fn)
                 runner: runner
                 

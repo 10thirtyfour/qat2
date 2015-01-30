@@ -161,8 +161,9 @@ class ProgramBuilder extends Builder
   save: ( name , root ) ->
     
     name ?= @name ? "main"
-    root ?= root ? @projectRoot
+    root ?= @projectRoot
     
+    # target for Build command
     @target = 
       projectPath : root
       programName : name

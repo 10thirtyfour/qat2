@@ -178,7 +178,11 @@ class TextWidgetBuilder extends ElemBuilder
     @
 
 tyToBuilder = {}
-labelFields = {}
+labelFields = 
+  checkbox : "title"
+  label : "text"
+  button : "text"
+  
 defaultOpts = {}
 
 
@@ -220,8 +224,7 @@ regBuilder = (name, builder) ->
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
-regSimpleText = (name, topts, builder) ->
-  labelFields[name] = "Text"
+regSimpleField = (name, topts, builder) ->
   defaultOpts[name] = topts
   builder ?= TextWidgetBuilder
   ContBuilder.prototype[name] = (opts) ->
@@ -233,20 +236,20 @@ regSimpleText = (name, topts, builder) ->
     return res
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
-  
 regBuilder "gridpanel", GridBuilder
 regBuilder "borderpanel", BorderPanelBuilder
 regBuilder "coordpanel", CoordPanelBuilder
-regSimpleText "label"
-regSimpleText "textfield", _record: "FormOnly"
-regSimpleText "button", _record: "FormOnly"
-regSimpleText "textarea", _record: "FormOnly"
 
-regSimpleText "checkbox", _record: "FormOnly"  , BoolWidgetBuilder
+regSimpleField "label"
+regSimpleField "textfield", _record: "FormOnly"
+regSimpleField "button", _record: "FormOnly"
+regSimpleField "textarea", _record: "FormOnly"
 
-regSimpleText "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
-regSimpleText "spinner", _record: "FormOnly", RangeWidgetBuilder
-regSimpleText "slider", _record: "FormOnly", RangeWidgetBuilder
+regSimpleField "checkbox", _record: "FormOnly"  , BoolWidgetBuilder
+
+regSimpleField "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
+regSimpleField "spinner", _record: "FormOnly", RangeWidgetBuilder
+regSimpleField "slider", _record: "FormOnly", RangeWidgetBuilder
 
 class ComboBuilder extends TextWidgetBuilder
   constructor: (elem, type, par) ->
@@ -267,7 +270,7 @@ class ComboBuilder extends TextWidgetBuilder
         isSelected: selected
     @
 
-regSimpleText "combobox", _record: "FormOnly", ComboBuilder
+regSimpleField "combobox", _record: "FormOnly", ComboBuilder
 
 
 

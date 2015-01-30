@@ -14,9 +14,11 @@ module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
   
   # acquiring test data from filename if needed
-  cutofTest = (testName) ->
+  filenameToTestname = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
+  
+  
   parseError = (raw) ->
     errorMessage = raw : raw
     errorMessage.xml = new dom().parseFromString(raw)
@@ -50,7 +52,7 @@ module.exports = ->
       
     unless testData.programName?
       # cutting filename by 12 chars ("-test.coffee")
-      testData.programName = cutofTest(testData.testFileName)
+      testData.programName = filenameToTestname(testData.testFileName)
 
     unless testData.projectPath?
       tempPath = testData.testFileName
@@ -185,9 +187,10 @@ module.exports = ->
     .on "error", (e)-> 
       return (true)  
 
-    
+
+  
   runner.toolfuns =
-    
+    filenameToTestname : filenameToTestname   
     getEnviron: ->
       rr = @runner
       _this=@
@@ -468,7 +471,7 @@ module.exports = ->
     CheckXML: (testData) ->
       rr = @runner
       yp.frun => 
-        testData.fileName?=testData.fn or cutofTest(@fileName)
+        testData.fileName?=testData.fn or filenameToTestname(@fileName)
         testData.method?="select"
         testData.reverse?=testData.fail
         testData.timeout?=10000
@@ -519,9 +522,9 @@ module.exports = ->
         if typeof arg is "string"
           testData = _.defaults(fileName:arg,additionalParams)
         else
-          testData = if arg? then arg else fileName:cutofTest(@fileName)
+          testData = if arg? then arg else fileName:filenameToTestname(@fileName)
 
-        testData.fileName?=(testData.fn or cutofTest(@fileName))
+        testData.fileName?=(testData.fn or filenameToTestname(@fileName))
         testData.reverse?=testData.fail
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
@@ -643,26 +646,40 @@ module.exports = ->
         failOnly : testData.failOnly
         promise: rr.toolfuns.regBuild
         #return @lastBuilt
-        
+
     RegWD : (obj, params) ->
       rr = @runner
-      params ?= {}
-      params.after    ?= @lastBuiltTestName ? []
-      params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
-      params.testId   ?= @lastBuilt
-      if params.testId? then params.testName+="$"+params.testId 
-      rr.regWD
-        syn: obj
-        name: params.testName
-        after : params.after
-        lastBuilt : params.testId
+      if _.isFunction obj
+        params ?= {}
+        params.syn = obj
+      else
+        params = obj
+      
+      params.after     ?= @lastBuiltTestName ? []
+      params.name      ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
+      params.lastBuilt ?= @lastBuilt
+      params.testId    ?= params.lastBuilt
+      if params.testId? then params.name+="$"+params.testId
+      rr.regWD params
+      
+    #  params ?= {}
+    #  params.after    ?= @lastBuiltTestName ? []
+    #  params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
+    #  params.testId   ?= @lastBuilt
+    #  if params.testId? then params.testName+="$"+params.testId 
+    #  rr.regWD
+    #    params
+    #    syn: obj
+    #    name: params.testName
+    #    after : params.after
+    #    lastBuilt : params.testId
         
     reg : (params...) ->
       @runner.reg params...
       
     form : require("./gen/formbuilder").form
     program : ( name , root ) ->
-      name ?= cutofTest(@fileName)
+      name ?= filenameToTestname(@fileName)
       root ?= path.join @runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
       genProgram( name, root )
       
