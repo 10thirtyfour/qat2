@@ -177,8 +177,8 @@ module.exports = ->
       if dir then mess.push line
     return mess
 
-  spammer: (fun,params)->
-    unless runner.argv["skype-notify"] then return
+  runner.spammer = (fun,params)->
+    unless @argv["skype-notify"] then return
     params.function = fun
     params.contact ?= "REST protocol"
     http.get("http://"+@logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
