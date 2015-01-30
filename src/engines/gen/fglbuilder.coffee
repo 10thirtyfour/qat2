@@ -120,10 +120,11 @@ class ProgramBuilder extends Builder
     b.name = screenRec.identifier.toLowerCase()
     b.initCode()
     wd = if screenRec._withDefaults then "" else " WITHOUT DEFAULTS"
+    attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
     stmt = if @isGrid
-      """INPUT ARRAY #{b.varname}#{wd} FROM #{screenRec.identifer}.*"""
+      """INPUT ARRAY #{b.varname}#{wd} FROM #{screenRec.identifer}.*#{attrib}"""
     else
-      """INPUT BY NAME #{b.varname}.*#{wd}"""
+      """INPUT BY NAME #{b.varname}.*#{wd}#{attrib}"""
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
         stmt += """
