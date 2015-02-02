@@ -29,6 +29,20 @@ class ElemBuilder extends Builder
   attr: (val) ->
     _.merge @elem, val
     @
+    
+  border: (thickness=1,col="Black") ->
+    @attr
+      elementborder:
+        type:"lineborder"
+        thickness:
+          left:thickness
+          top:thickness
+          bottom:thickness
+          right:thickness
+        borderbrush:
+          type:"systemcolor"
+          systemColorName:col
+    
   val: (t) ->
     @elem._fglVal = t
     @
