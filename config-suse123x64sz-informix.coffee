@@ -23,6 +23,7 @@ module.exports = ->
           INFORMIXDIR: "/opt/IBM/informix"
           DBDATE: "MDY4/"
           QX_REFRESH_LEVEL: 2
+          LD_LIBRARY_PATH: "/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:/opt/Querix/Lycia/lib:/opt/Querix/Lycia/axis2/lib:/opt/Querix/Common/lib:/opt/Querix/lycia-desktop:/usr/lib64/jvm/jdk1.8.0_25/jre/lib/amd64/server:"
           #LYCIA_LEAVE_WS: 1
         headless:
           QX_HEADLESS_MODE: 1  
