@@ -112,6 +112,8 @@ class ProgramBuilder extends Builder
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
   closeWindow: (name) -> @commands.push """
     CLOSE WINDOW #{name}
+    """
+  getKey: -> @commands.push """
     CALL fgl_getkey()
     """
   inputScreenRec: (screenRec) ->
