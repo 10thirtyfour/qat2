@@ -113,8 +113,8 @@ class CoordPanelBuilder extends ItemsBuilder
     super elem, ty, par
   _ext:
     at: (x,y) ->
-      x = +coord1 ? 0
-      y = +coord2 ? 0
+      x = +x ? 0
+      y = +y ? 0
       throw new Error("wrong container") unless _.isNumber(x) and _.isNumber(y)
       @attr location: {xcoord:x, ycoord:y}
       @
@@ -205,6 +205,8 @@ class RangeWidgetBuilder extends ElemBuilder
     super el, ty, par
     @range()
     @steps()
+    @elem._fglType="INT"
+    
   range: (min=0,max=100) ->
     @elem.minValue=min
     @elem.maxValue=max
@@ -274,7 +276,7 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false  
+      selected = false
       if i[0] is "+"
         selected = true
         i = i.substr 1
@@ -316,7 +318,7 @@ ElemBuilder::dfs = (fun) ->
         for j in v
           res = fun.call j
           return false if res is false
-          if res isnt true
+          if res isnt true 
             return false if go(j) is false  
      else if _.isObject v
       res = null
