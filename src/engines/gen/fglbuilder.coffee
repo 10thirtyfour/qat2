@@ -71,7 +71,8 @@ class RecordBuilder extends Builder
     else
       #console.log "init record:", @varname, prettyjson.render @
       initSingle @varname
-  field: (name, ty, val) -> 
+  field: (name, ty, val) ->
+    ty?= val._fglType
     @fields[name] = 
       ty: ty ? "STRING"
       val: val
