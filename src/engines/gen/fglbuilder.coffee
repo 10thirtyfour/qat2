@@ -142,7 +142,7 @@ class ProgramBuilder extends Builder
     @windowWithForm name
     if form.screenrecords?
       @inputScreenRec form.screenrecords[x]
-    @closeWindow name
+    #@closeWindow name
     @
   command: (str) ->
     @commands.push str
