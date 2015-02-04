@@ -15,6 +15,8 @@
 ###
 _ = require "lodash"
 prettyjson = require "prettyjson"
+containers = []
+widgets = []
 
 class Builder
 
@@ -237,10 +239,12 @@ class BoolWidgetBuilder extends ElemBuilder
     @  
     
 regBuilder = (name, builder) ->
+  containers.push name
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
 regSimpleField = (name, topts, builder) ->
+  widgets.push name
   defaultOpts[name] = topts
   builder ?= TextWidgetBuilder
   ContBuilder.prototype[name] = (opts) ->
@@ -276,9 +280,9 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false
+      selected = false 
       if i[0] is "+"
-        selected = true
+        selected = true 
         i = i.substr 1
       res.push
         _type : "comboboxitem"
@@ -317,7 +321,7 @@ ElemBuilder::dfs = (fun) ->
       if v.length > 0 and v[0]._type?
         for j in v
           res = fun.call j
-          return false if res is false
+          return false if res is false 
           if res isnt true 
             return false if go(j) is false  
      else if _.isObject v
@@ -366,7 +370,7 @@ FormBuilder::end = ->
     {identifier:name, _type:type} = @
     if name?
       grid = knownNames[name]
-      knownNames[name] = true 
+      knownNames[name] = true  
     else
       cur = names[type] ?= 0
       loop
@@ -421,3 +425,4 @@ ElemBuilder::uncheck = event "OnUncheck"
 
 module.exports =
     form: (name)-> new FormBuilder( {_name:name} )
+    formitems: -> {containers:containers, widgets:widgets, elements:widgets.concat(containers)}
