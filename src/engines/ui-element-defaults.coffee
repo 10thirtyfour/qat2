@@ -5,6 +5,9 @@ elements =
     get :
       image : (el)-> "return $('.qx-identifier-#{el} .qx-blob-content>img')[0].src"
 
+  "border-panel" :
+    qxclass : "qx-aum-border-panel"
+
   "browser" :
     qxclass : "qx-aum-browser"
     get :
@@ -56,7 +59,10 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} .qx-combo-content .qx-text').text()"
       defaults :
         height : 22
-      
+
+  "coord-panel" :
+    qxclass : "qx-aum-coord-panel"
+
   "function-field-abs" :
     qxclass : "qx-aum-function-field-abs" 
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
@@ -65,11 +71,14 @@ elements =
         height : 20
         chrome$l :
           height : 19
-    
+
+  "grid-panel" :
+    qxclass : "qx-aum-grid-panel"
+
   "group-box" :
     qxclass : "qx-aum-group-box"  
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
+      text : (el) -> "return $('.qx-identifier-#{el} legend').text()"
 
   "label" :
     qxclass  : "qx-aum-label"
@@ -109,7 +118,10 @@ elements =
     get :
       defaults : 
         height : 9    
-      
+
+   "scroll-viewer" :
+    qxclass : "qx-aum-scroll-viewer"
+
   "slider" :
     qxclass : "qx-aum-slider"
     #get_value returns percent
@@ -160,6 +172,16 @@ elements =
     get :
       image : (el) -> "return $('.qx-h-identifier-#{el} .qx-image')[0].src"
 
+  "table" :
+    qxclass : "qx-aum-table"
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-table.qx-aum-abstract-data-table').length > 0)"
+
+  "table-column" :
+    qxclass : "qx-aum-table-column"
+    selector : (el)-> "return ($('.qx-tbody .qx-identifier-#{el}.qx-aum-table-column').length > 0)"
+    get :
+      text : (el) -> "return $('.qx-tbody .qx-identifier-#{el} a.qx-text').text()"
+
   "text-area" :
     qxclass : "qx-aum-text-area"
     #get_text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
@@ -168,6 +190,10 @@ elements =
         height : 18
         chrome$l :
           height : 17
+
+  "tree-table" :
+    qxclass : "qx-aum-tree-table"
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-tree-table.qx-aum-abstract-data-table').length > 0)"
 
   "text-field" :   
     qxclass : "qx-aum-text-field"
