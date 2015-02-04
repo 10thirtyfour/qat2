@@ -111,12 +111,6 @@ class ProgramBuilder extends Builder
     @forms = []
   windowWithForm: (name) ->
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
-  closeWindow: (name) -> @commands.push """
-    CLOSE WINDOW #{name}
-    """
-  getKey: -> @commands.push """
-    CALL fgl_getkey()
-    """
   inputScreenRec: (screenRec) ->
     b = new RecordBuilder(@)
     b.field(v["#text"], v._fglType, v._val) for v in screenRec.fields
@@ -150,6 +144,11 @@ class ProgramBuilder extends Builder
       @inputScreenRec form.screenrecords[x]
     @closeWindow name
     @
+  command: (str) ->
+    @commands.push str
+    @
+  closeWindow: (name) -> @command "CLOSE WINDOW #{name}"
+  getKey: () -> @command "CALL fgl_getkey()"
   end: ->
     """
     GLOBALS
