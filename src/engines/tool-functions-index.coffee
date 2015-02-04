@@ -4,6 +4,7 @@ http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
 genProgram = require("./gen/fglbuilder").program
+genForm =  require("./gen/formbuilder")
 
 {CallbackReadWrapper} = require "./readercallback"
 
@@ -662,22 +663,11 @@ module.exports = ->
       if params.testId? then params.name+="$"+params.testId
       rr.regWD params
       
-    #  params ?= {}
-    #  params.after    ?= @lastBuiltTestName ? []
-    #  params.testName ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
-    #  params.testId   ?= @lastBuilt
-    #  if params.testId? then params.testName+="$"+params.testId 
-    #  rr.regWD
-    #    params
-    #    syn: obj
-    #    name: params.testName
-    #    after : params.after
-    #    lastBuilt : params.testId
-        
     reg : (params...) ->
       @runner.reg params...
-      
-    form : require("./gen/formbuilder").form
+    
+    form : genForm.form
+    formitems : genForm.formitems
     program : ( name , root ) ->
       name ?= filenameToTestname(@fileName)
       root ?= path.join @runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
