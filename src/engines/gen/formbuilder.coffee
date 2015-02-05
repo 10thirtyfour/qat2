@@ -44,7 +44,13 @@ class ElemBuilder extends Builder
         borderbrush:
           type:"systemcolor"
           systemColorName:col
-    
+  background: (col="LightRed") ->
+    @attr
+      background:
+        fillcolor:
+          type: "systemcolor"
+          systemColorName:col
+            
   val: (t) ->
     @elem._fglVal = t
     @
