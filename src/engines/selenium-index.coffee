@@ -57,7 +57,7 @@ module.exports = ->
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(
-            ".qx-application.qx-state-idle"
+            ".qx-application.qx-state-idle"#, #qx-application-restart"
             timeout).sleep(300))
             
       wd.addPromiseMethod(
@@ -329,8 +329,9 @@ module.exports = ->
                 promise = (browser) ->
                   yp.frun ->
                     #try
-                    testContext = _.create binfo,_.assign {browser:browser}, synproto
+                    testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     binfo.syn.call testContext
+                    throw testContext.errorMessage if testContext.errorMessage.length>0
                     #finally
                     # ======== no more kills here ========
                       #task kill. command stored in browser.executedPrograms
