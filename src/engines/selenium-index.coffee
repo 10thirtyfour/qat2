@@ -217,7 +217,19 @@ module.exports = ->
               "return $().#{nm}.apply($(arguments[0]),arguments[1])"
               [el,args])
             )
-            
+
+      wd.addPromiseMethod(
+        "hasScroll"
+        (id) ->      
+          selector = id.selector ? ".qx-identifier-#{id}"
+          @execute("""
+            el=$('#{selector}');
+            if(el.css('overflow')=='hidden') {return false;}
+            if((el.prop('clientWidth' )!=el.prop('scrollWidth' )) || 
+               (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
+            return false;
+          """)
+      )
       wd.addPromiseMethod(
         "check"
         (el, options) ->
