@@ -204,6 +204,7 @@ labelFields =
   checkbox : "title"
   label : "text"
   button : "text"
+  radiobutton: "title"
   
 defaultOpts = {}
 
@@ -262,21 +263,6 @@ regSimpleField = (name, topts, builder) ->
     return res
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
-regBuilder "gridpanel", GridBuilder
-regBuilder "borderpanel", BorderPanelBuilder
-regBuilder "coordpanel", CoordPanelBuilder
-
-regSimpleField "label"
-regSimpleField "textfield", _record: "FormOnly"
-regSimpleField "button", _record: "FormOnly"
-regSimpleField "textarea", _record: "FormOnly"
-
-regSimpleField "checkbox", _record: "FormOnly"  , BoolWidgetBuilder
-
-regSimpleField "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
-regSimpleField "spinner", _record: "FormOnly", RangeWidgetBuilder
-regSimpleField "slider", _record: "FormOnly", RangeWidgetBuilder
-
 class ComboBuilder extends TextWidgetBuilder
   constructor: (elem, type, par) ->
     super elem, type, par
@@ -295,8 +281,30 @@ class ComboBuilder extends TextWidgetBuilder
         text: i
         isSelected: selected
     @
+  
+ 
 
+regBuilder "borderpanel", BorderPanelBuilder
+regBuilder "coordpanel", CoordPanelBuilder
+regBuilder "gridpanel", GridBuilder
+
+
+regSimpleField "button", _record: "FormOnly"
+regSimpleField "checkbox", _record: "FormOnly" , BoolWidgetBuilder
 regSimpleField "combobox", _record: "FormOnly", ComboBuilder
+
+regSimpleField "label"
+
+regSimpleField "radiobutton", _record: "FormOnly", groupIdentifier: "group1", BoolWidgetBuilder
+
+regSimpleField "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
+regSimpleField "spinner", _record: "FormOnly", RangeWidgetBuilder
+regSimpleField "slider", _record: "FormOnly", RangeWidgetBuilder
+regSimpleField "textarea", _record: "FormOnly"
+regSimpleField "textfield", _record: "FormOnly"
+
+
+
 
 
 
