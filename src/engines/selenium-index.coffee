@@ -242,7 +242,11 @@ module.exports = ->
             el_type = params.type
             el_type?= "unknown"
             itemSelector = params.selector
-            
+          
+          params.mess?=""
+          
+          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
+          
           res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
           res.type = el_type
           
@@ -251,7 +255,7 @@ module.exports = ->
           params.left = params.x if (params.x?)
           params.top = params.y if (params.y?)
         
-          params.mess?=""
+          
           mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
           
