@@ -256,20 +256,19 @@ module.exports = ->
           errmsg = ""
           
           for attr,expected of params
-            switch attr 
-              when "mess","precision","selector","w","h","x","y" then continue
-              when "text","value","state","image" then res[attr]= yp @execute UI_elements[el_type].get[attr](el)
-              #else console.log "\nWarning! #{attr} not checked for #{itemSelector}"
-              
+            continue if attr in ["mess","precision","selector","w","h","x","y"]
+            
+            if attr of UI_elements[el_type].get
+              res[attr] = yp @execute UI_elements[el_type].get[attr](el)
+
             if expected is "default"
-              expected = UI_elements[el_type].get.default(attr, @qx$browserName + "$" + 
-                         process.platform[0])
+              expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
             
             if expected isnt res[attr]
               errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
-          if errmsg isnt ""
-            throw mess + " : "+errmsg
+          throw mess + " : "+errmsg if errmsg isnt ""
+            
           return mess
       )
       
