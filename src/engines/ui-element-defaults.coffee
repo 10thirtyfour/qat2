@@ -139,10 +139,10 @@ elements =
                         var scaleRect = elem.find('div.qx-scb-scell')[0].getBoundingClientRect();
                         var handleRect = elem.find('div.qx-scroll-handler')[0].getBoundingClientRect();
                         if (elem.hasClass('qx-prop-horizontal')) {
-                          return 100 * (handleRect.left - scaleRect.left) / (scaleRect.width - handleRect.width);
+                          return Math.round(100 * (handleRect.left - scaleRect.left) / (scaleRect.width - handleRect.width));
                         }
                         if (elem.hasClass('qx-prop-vertical')) {
-                          return (100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
+                          return Math.round(100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
                         }
                       """
       defaults : 
