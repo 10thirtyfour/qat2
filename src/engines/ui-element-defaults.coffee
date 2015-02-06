@@ -101,6 +101,7 @@ elements =
     get :
       image : (el) -> "return $('.qx-identifier-#{el} img').prop('src')"
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+      value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 22
         chrome$l :
@@ -131,6 +132,19 @@ elements =
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
+      orientation : (el) -> "if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-prop-horizontal').length) {return 'horizontal';}
+                             if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-prop-vertical').length) {return 'vertical';}"
+      value : (el)->  """
+                        var elem = $('div.qx-aum-scroll-bar.qx-identifier-#{el}');
+                        var scaleRect = elem.find('div.qx-scb-scell')[0].getBoundingClientRect();
+                        var handleRect = elem.find('div.qx-scroll-handler')[0].getBoundingClientRect();
+                        if (elem.hasClass('qx-prop-horizontal')) {
+                          return 100 * (handleRect.left - scaleRect.left) / (scaleRect.width - handleRect.width);
+                        }
+                        if (elem.hasClass('qx-prop-vertical')) {
+                          return (100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
+                        }
+                      """
       defaults : 
         height : 9    
 
@@ -141,10 +155,13 @@ elements =
     qxclass : "qx-aum-slider"
     #get_value returns percent
     get :
+      orientation : (el) -> "if($('div.qx-aum-slider.qx-identifier-#{el} > div.ui-slider-horizontal').length) {return 'horizontal';}
+                             if($('div.qx-aum-slider.qx-identifier-#{el} > div.ui-slider-vertical').length) {return 'vertical';}"
+    
       value : (el) -> "if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-horizontal')) {
-                          return $('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.left.slice(0,-1) }
+                          return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.left.slice(0,-1)); }
                         if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-vertical')) {
-                        return $('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1) }"
+                        return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
     
       state : (el) -> "if ($('div.qx-aum-slider.qx-enabled.qx-identifier-#{el}:not(.qx-disabled) > 
                               div:not(.ui-state-disabled):not(.ui-slider-disabled)').length > 0) { return 'enabled' }
@@ -160,6 +177,7 @@ elements =
     qxclass  : "qx-aum-spinner"
     get :
       text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
+      value: (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
       defaults :
         height : 19
         chrome$l :
@@ -201,6 +219,8 @@ elements =
     qxclass : "qx-aum-text-area"
     #get_text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
     get :
+      text: (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+      value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 18
         chrome$l :
@@ -215,6 +235,7 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-text-field').length > 0)"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+      value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 18
         chrome$l :
@@ -275,7 +296,9 @@ for name,item of elements
                    return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
   
   for method of elements.unknown.get
-    item.get[method]?= (el)-> "return 'Warning! id : #{el}, type : #{@qxclass}. get #{method} is not implemented';"
+    do =>
+      m = method
+      item.get[method]?= (el)-> "return 'Warning! id : #{el}, type : #{@qxclass}. get #{m} is not implemented';"
 
   item.get.default = (attr , platform)->
     if @defaults?
