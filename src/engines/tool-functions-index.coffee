@@ -25,6 +25,33 @@ fse = require "fs-extra"
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
   
+  cmdlineType = (str)->
+    @args=[]
+    @add = (params)->
+      return unless params?
+      parray=params.split(" ") if _.isString(params)
+      parray=params if _.isArray(params)
+      while parray.length
+        arg=parray.shift()
+        if arg in ["--e","--db","--p","-d","-e","-o"]
+          value = parray.shift()
+          index = @args.indexOf(arg)
+          if value?
+            if index is -1
+              @args.push(arg)
+              @args.push(value) 
+            else
+              @args[index+1] = value
+          else
+            @args.splice(index,1)
+        else
+          @args.push(arg)
+      return @args.length
+    @toString = (sep=" ")->
+      return @args.join(sep) 
+    @add(str)
+
+  
   # acquiring test data from filename if needed
   filenameToTestname = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
@@ -57,7 +84,7 @@ module.exports = ->
   runLog = (child, testData, setCurrentStatus) ->
     passMessage = ""
     errMessage = ""
-    delimeterSent = false
+    delimeterSent = (false)
     writeBlock = ( stream , message, lineTimeout ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
@@ -285,14 +312,16 @@ module.exports = ->
         #@data.sysinfo = @runner.sysinfo
         
         @testData.compileTimeout?=20000
-        cmdLine = ""
+        cmdLine = new cmdlineType()
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then cmdLine = "qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o -e Cp1252"
-          when ".per" then cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
-          #when ".per" then cmdLine = "qform #{@testData.fileName} -xmlout -xml -db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)} -e Cp1252"
-        if @testData.options? then cmdLine+=" #{@testData.options}"
+          when ".4gl" then cmdLine.add("qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o")
+          when ".per" then cmdLine.add("qform #{@testData.fileName} -xmlout -xml --db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}")
+
+        #cmdLine.add("-e Cp1252")
+        cmdLine.add(@testData.options)
+        @runner.trace cmdLine.toString()
         
-        [command,args...] = _.compact cmdLine.split(" ")
+        [command,args...] = cmdLine.args
 
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
