@@ -45,7 +45,7 @@ module.exports = ->
               buildPromiseName = []
 
               unless runner.argv["skip-build"] 
-                buildPromiseName = runner.extfuns.uniformName("headless$#{progRelativeName}$build")
+                buildPromiseName = runner.toolfuns.uniformName("headless$#{progRelativeName}$build")
                 unless buildPromiseName of runner.tests
                   runner.reg 
                     name: buildPromiseName
@@ -57,7 +57,7 @@ module.exports = ->
                 
               logRelativeName = path.relative(runner.tests.globLoader.root, fn)
               runner.reg
-                name: runner.extfuns.uniformName("headless$#{logRelativeName}$play")
+                name: runner.toolfuns.uniformName("headless$#{logRelativeName}$play")
                 data:
                   kind: "common-tlog"
                 testData : testData  

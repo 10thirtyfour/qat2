@@ -18,13 +18,9 @@ spawn = require("child_process").spawn
 http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
-genProgram = require("./gen/fglbuilder").program
-genForm =  require("./gen/formbuilder")
+
 
 {CallbackReadWrapper} = require "./readercallback"
-
-uniformName = (tn) ->
-  tn.replace(/\\/g, "/")
 
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
@@ -32,8 +28,6 @@ module.exports = ->
   # acquiring test data from filename if needed
   filenameToTestname = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
-
-  
   
   parseError = (raw) ->
     errorMessage = raw : raw
@@ -59,37 +53,6 @@ module.exports = ->
       errorMessage.message = raw 
     
     errorMessage
-
-  combTestData = (testData) ->
-    testData.programName ?= testData.program
-    testData.projectPath ?= (testData.project or testData.prj)
-    testData.reverse ?= testData.fail
-    testData.buildMode ?= if testData.deploy is true then "all" else "rebuild"
-      
-    unless testData.programName?
-      # cutting filename by 12 chars ("-test.coffee")
-      testData.programName = filenameToTestname(testData.testFileName)
-
-    unless testData.projectPath?
-      tempPath = testData.testFileName
-      while (tempPath != ( tempPath = path.dirname tempPath ))
-        if fs.existsSync(path.join(tempPath,".fglproject")) 
-          testData.projectPath = tempPath
-          break
-
-        
-    if testData.projectPath?
-      testData.projectName = path.basename testData.projectPath  
-      # here can be implemented XML parce of project file. Currently using default paths
-      testData.projectSource = 'source' 
-      testData.projectOutput = 'output'
-    
-      testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
- 
-    #looks like on win32 shown also for x64 platform
-    if process.platform[0] is "w" then testData.programExecutable+=".exe" 
-
-    return testData
 
   runLog = (child, testData, setCurrentStatus) ->
     passMessage = ""
@@ -202,11 +165,44 @@ module.exports = ->
     http.get("http://"+@logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
     .on "error", (e)-> 
       return (true)  
-
-
   
   runner.toolfuns =
+    uniformName: (tn) ->
+      tn.replace(/\\/g, "/")
+    
     filenameToTestname : filenameToTestname   
+    
+    combTestData: (testData) ->
+      testData.programName ?= testData.program
+      testData.projectPath ?= (testData.project or testData.prj)
+      testData.reverse ?= testData.fail
+      testData.buildMode ?= if testData.deploy is true then "all" else "rebuild"
+        
+      unless testData.programName?
+        # cutting filename by 12 chars ("-test.coffee")
+        testData.programName = filenameToTestname(testData.testFileName)
+
+      unless testData.projectPath?
+        tempPath = testData.testFileName
+        while (tempPath != ( tempPath = path.dirname tempPath ))
+          if fs.existsSync(path.join(tempPath,".fglproject")) 
+            testData.projectPath = tempPath
+            break
+
+          
+      if testData.projectPath?
+        testData.projectName = path.basename testData.projectPath  
+        # here can be implemented XML parce of project file. Currently using default paths
+        testData.projectSource = 'source' 
+        testData.projectOutput = 'output'
+      
+        testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
+   
+      #looks like on win32 shown also for x64 platform
+      if process.platform[0] is "w" then testData.programExecutable+=".exe" 
+
+      return testData
+    
     getEnviron: ->
       rr = @runner
       _this=@
@@ -278,13 +274,14 @@ module.exports = ->
       
     regCompile: ->
       yp.frun( =>
+
         opt = 
           env: {}
           cwd: path.dirname(@testData.fileName)
 
         _.merge opt.env, @runner.environ
         _.merge opt.env, @options.commondb
-        
+
         #@data.sysinfo = @runner.sysinfo
         
         @testData.compileTimeout?=20000
@@ -296,7 +293,7 @@ module.exports = ->
         if @testData.options? then cmdLine+=" #{@testData.options}"
         
         [command,args...] = _.compact cmdLine.split(" ")
-        
+
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
         #looks like on win32 shown also for x64 platform
@@ -467,7 +464,6 @@ module.exports = ->
         testData.errorMessage = e
       return testData    
   
-
     regXPath : ->
       yp.frun => 
         rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/2011/fglForms"',"")
@@ -478,216 +474,48 @@ module.exports = ->
           return "Matched!"
         else
           throw "String mismatch. Expected: #{@testData.sample}. Actual: #{s}."
-      
     
-  runner.extfuns =  
-    uniformName : uniformName
-    log : console.log
-    
-    CheckXML: (testData) ->
-      rr = @runner
-      yp.frun => 
-        testData.fileName?=testData.fn or filenameToTestname(@fileName)
-        testData.method?="select"
-        testData.reverse?=testData.fail
-        testData.timeout?=10000
-        testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
-        testData.options?=testData.opts
-        
-        testData.ext = path.extname(testData.fileName).toLowerCase()
-        unless testData.ext
-          testData.ext= if fs.existsSync(testData.fileName+".fm2") then ".fm2" else ".per"
-        else  
-          testData.fileName = path.join(path.dirname(testData.fileName), path.basename(testData.fileName,testData.ext))
-
-        suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
-        
-        if testData.ext is ".per"
-          compileTestName= uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
-          unless compileTestName of rr.tests
-            rr.reg
-              name: compileTestName
-              data:
-                kind: "compile"+testData.ext
-              testData: 
-                fileName: testData.fileName+".per"
-                options: testData.options
-              promise: rr.toolfuns.regCompile 
-          testData.ext = ".fm2"
+    regDeploy : ->
+      yp.frun( =>
+        rr = @runner
+        try 
+          rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
+          xml = new dom().parseFromString(rawxml)
+          filesToCopy = [@testData.programName]
+          if process.platform[0] is "w" then filesToCopy[0]+='.exe'
           
-        testData.fileName = testData.fileName+".fm2"
-        n = 0
-        loop
-          testName = uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}")
-          n+=1
-          unless testName of rr.tests then break
-        
-        rr.reg
-          name: testName
-          after: compileTestName
-          data:
-            kind: "xpath"
-          testData: testData
-          promise: rr.toolfuns.regXPath
-        return ->
-          nop=0
-        
-    Compile: (arg, additionalParams) ->
-      rr = @runner
-      yp.frun =>
-        if typeof arg is "string"
-          testData = _.defaults(fileName:arg,additionalParams)
-        else
-          testData = if arg? then arg else fileName:filenameToTestname(@fileName)
+          formExtCare = (fn) -> 
+            ext = path.extname(fn)
+            base = fn.substr(0,fn.lastIndexOf("."))
+            switch ext
+              when ".per", ".4fm", ".4fd" then return base + ".fm2"
+              when ".msg" then return base + ".erm"
+              else return fn
 
-        testData.fileName?=(testData.fn or filenameToTestname(@fileName))
-        testData.reverse?=testData.fail
-        testData.errorCode?=(testData.error or testData.err)
-        testData.options?=testData.opts
-        
-        if testData.errorCode? then testData.reverse = (true)  
-        
-        delete testData.fail 
-        delete testData.fn
-       
-        if testData.ext? 
-          unless testData.ext[0] is "." then testData.ext="."+testData.ext
-        else
-          # .4gl used as default extension"
-          testData.ext=".4gl"
-        testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
-        
-        unless path.extname(testData.fileName).length 
-          testData.fileName+=testData.ext
-        else
-          testData.ext=path.extname(testData.fileName)
+          filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
+          filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
+          #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+          filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
+          tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
 
-        suspectTestName = path.relative path.dirname(@fileName), testData.fileName
+          for fn in filesToCopy
+            try
+              sourceFile = path.join(@testData.projectPath,@testData.projectOutput,fn)
+              targetFile = path.join(rr.deployPath,fn)
+              fse.ensureDirSync path.dirname(targetFile)
+              fse.copySync(sourceFile,targetFile)
+            catch e
+              rr.info "Failed to copy file : "+fn
+            tr2file+='  <Resource path="'+fn+'"/>\n'
+          tr2file+='</Resources>\n'
+          fs.writeFileSync(path.join(rr.deployPath,@testData.programName+".tr2"),tr2file)
+
+          if process.platform[0] is "l"
+            ffn = path.join(rr.deployPath,filesToCopy[0])
+            fs.chmodSync( ffn , "755")
           
-        rr.reg
-          name: uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
-          data:
-            kind: "compile"+testData.ext.toLowerCase()
-          testData: testData
-          promise: rr.toolfuns.regCompile 
-        return ->
-          nop=0
-       
-    Build: (arg, testData={}) ->
-      rr = @runner
-      
-      if typeof arg is "string"
-        testData.programName = arg
-      else
-        testData = arg ? {}
-      
-      testData.testFileName = @fileName
-      testData = combTestData(testData)
-      
-      unless testData.programName? then throw "Build. Can not read programName"
-      unless testData.projectPath? then throw "Build. Can not read projectPath"
-      
-      testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
-      progRelativeName = path.relative rr.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
-      testData.buildTestName = uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
-      
-      # storing test name and program name in test context for future use in WD test
-      @lastBuiltTestName = testData.buildTestName
-      @lastBuilt = testData.programName
-      
-      if testData.buildMode is "all"
-        testData.deployTestName = uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")        
-        testData.buildMode = "rebuild"
-        @lastBuiltTestName = testData.deployTestName
-      
-      # ------  deploy workaround
-      if testData.deployTestName?
-        rr.reg
-          name: testData.deployTestName
-          after: [ testData.buildTestName ]
-          failOnly : (true)
-          data:
-            kind: "deploy"
-          promise: ->
-            yp.frun( =>
-              try 
-                rawxml=fs.readFileSync(testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
-                xml = new dom().parseFromString(rawxml)
-                filesToCopy = [testData.programName]
-                if process.platform[0] is "w" then filesToCopy[0]+='.exe'
-                
-                formExtCare = (fn) -> 
-                  ext = path.extname(fn)
-                  base = fn.substr(0,fn.lastIndexOf("."))
-                  switch ext
-                    when ".per", ".4fm", ".4fd" then return base + ".fm2"
-                    when ".msg" then return base + ".erm"
-                    else return fn
-  
-                filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
-                filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
-                #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
-                filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
-                tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
+          "Files deployed : #{filesToCopy.length}"                          
+        catch e
+          throw e
+      )
 
-                for fn in filesToCopy
-                  try
-                    sourceFile = path.join(testData.projectPath,testData.projectOutput,fn)
-                    targetFile = path.join(rr.deployPath,fn)
-                    fse.ensureDirSync path.dirname(targetFile)
-                    fse.copySync(sourceFile,targetFile)
-                  catch e
-                    rr.info "Failed to copy file : "+fn
-                  tr2file+='  <Resource path="'+fn+'"/>\n'
-                tr2file+='</Resources>\n'
-                fs.writeFileSync(path.join(rr.deployPath,testData.programName+".tr2"),tr2file)
-
-                if process.platform[0] is "l"
-                  ffn = path.join(rr.deployPath,filesToCopy[0])
-                  fs.chmodSync( ffn , "755")
-                
-                "Files deployed : #{filesToCopy.length}"                          
-              catch e
-                throw e
-            )
-      # ------ end of deploy workaround
-
-      testData.failOnly ?= testData.deploy
-      
-      rr.reg 
-        name: testData.buildTestName
-        data:
-          kind: "build"
-        testData: testData  
-        failOnly : testData.failOnly
-        promise: rr.toolfuns.regBuild
-        #return @lastBuilt
-
-    RegWD : (obj, params) ->
-      rr = @runner
-      if _.isFunction obj
-        params ?= {}
-        params.syn = obj
-      else
-        params = obj
-      
-      params.after     ?= @lastBuiltTestName ? []
-      params.name      ?= uniformName(path.relative(rr.tests.globLoader.root,@fileName))
-      params.lastBuilt ?= @lastBuilt
-      params.testId    ?= params.lastBuilt
-      if params.testId? then params.name+="$"+params.testId
-      rr.regWD params
-      
-    reg : (params...) ->
-      @runner.reg params...
-    
-    form : genForm.form
-    formitems : genForm.formitems
-    program : ( name , root ) ->
-      name ?= filenameToTestname(@fileName)
-      root ?= path.join @runner.tests.globLoader.root,(@runner.generatorProject ? "qatproject")
-      genProgram( name, root )
-      
-      
-
- 
