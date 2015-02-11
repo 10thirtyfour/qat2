@@ -127,7 +127,7 @@ module.exports = ->
         rr.reg
           name: testData.deployTestName
           after: [ testData.buildTestName ]
-          #silent : (true)
+          silent : (true)
           data:
             kind: "deploy"
           testData: testData  
