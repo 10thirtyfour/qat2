@@ -15,6 +15,7 @@
 ###
 glob = require "glob"
 _ = require "lodash"
+_.mixin require "lodash-deep"
 Q = require "q"
 graphlib = require "graphlib"
 prettyjson = require "prettyjson"
