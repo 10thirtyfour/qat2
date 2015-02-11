@@ -320,6 +320,7 @@ module.exports = ->
           #  cmdLine.add(['-o','"'+path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl')+'.4o')+'"'])
             cmdLine.add(['-e','Cp1252',@testData.fileName])
           when ".per" then cmdLine.add("qform #{@testData.fileName} -xmlout -xml --db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}")
+          when ".4fd" then cmdLine.add("qxcompat #{@testData.fileName}")
 
         #cmdLine.add("-e Cp1252")
         cmdLine.add(@testData.options)
