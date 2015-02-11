@@ -314,16 +314,21 @@ module.exports = ->
         @testData.compileTimeout?=20000
         cmdLine = new cmdlineType()
         switch (path.extname(@testData.fileName)).toLowerCase()
-          when ".4gl" then cmdLine.add("qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o")
+          #when ".4gl" then cmdLine.add("qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o")
+          when ".4gl" 
+            cmdLine.add("qfgl --xml-errors -d #{opt.env.LYCIA_DB_DRIVER}")
+          #  cmdLine.add(['-o','"'+path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl')+'.4o')+'"'])
+            cmdLine.add(['-e','Cp1252',@testData.fileName])
           when ".per" then cmdLine.add("qform #{@testData.fileName} -xmlout -xml --db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}")
 
         #cmdLine.add("-e Cp1252")
         cmdLine.add(@testData.options)
-        @runner.trace cmdLine.toString()
+        @trace opt.cwd
+        @trace cmdLine.toString()
         
         [command,args...] = cmdLine.args
 
-        command = path.join(opt.env.LYCIA_DIR,"bin",command)
+        #command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
         #looks like on win32 shown also for x64 platform
         #if process.platform is "ia32" or process.platform is "x64" then command+=".exe"
