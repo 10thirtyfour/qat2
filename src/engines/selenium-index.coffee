@@ -360,9 +360,22 @@ module.exports = ->
                   yp.frun ->
                     #try
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
-                    binfo.syn.call testContext
+                    try
+                      binfo.syn.call testContext
+                    catch e
+                      if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
+                        alertText = yp(testContext.browser.alertText())
+                        testContext.errorMessage+=alertText+" alert caught! "+e.message
+                      else
+                        throw e
+                      
                     throw testContext.errorMessage if testContext.errorMessage.length>0
-                    #finally
+                    #catch e
+                    #  al = testContext.switchTo().alert()
+                    #  al = driver.switchTo().alert(); 
+                    # AlertText = al.getText();
+                    #if e.cause.value.message is "unexpected alert open"
+                    #    throw "SlientSideProblems"
                     # ======== no more kills here ========
                       #task kill. command stored in browser.executedPrograms
                       #if process.platform[0] is "w" 
@@ -385,6 +398,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally ->
                   browser.quit()
+               
               return r.then(-> "OK")
             @reg binfo
             binfo.data.browser = i
