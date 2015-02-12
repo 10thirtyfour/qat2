@@ -329,7 +329,7 @@ module.exports = ->
         
         [command,args...] = cmdLine.args
 
-        #command = path.join(opt.env.LYCIA_DIR,"bin",command)
+        command = path.join(opt.env.LYCIA_DIR,"bin",command)
 
         #looks like on win32 shown also for x64 platform
         #if process.platform is "ia32" or process.platform is "x64" then command+=".exe"
