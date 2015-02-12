@@ -31,7 +31,6 @@ class ElemBuilder extends Builder
   attr: (val) ->
     _.merge @elem, val
     @
-    
   border: (thickness=1,col="Black") ->
     @attr
       elementborder:
@@ -50,18 +49,17 @@ class ElemBuilder extends Builder
         fillcolor:
           type: "systemcolor"
           systemColorName:col
-            
   val: (t) ->
     @elem._fglVal = t
     @
   up: -> @par
   end: -> @elem
 
-getBuilder = (param, parent) ->
+getBuilder = (param, parent, el) ->
   if _.isString param
     b = tyToBuilder[param]
     throw new Error("no builder for #{param}") unless b?
-    el = {}
+    el ?= {}
     return [_.merge(b(el, param, parent), parent._ext), el]
   if param.end?
     return [parent, param.end()]
@@ -91,6 +89,29 @@ class ItemsBuilder extends ContBuilder
     _.merge el, opts
     items.push el
     b
+    
+class TableColumnBuilder extends ContBuilder
+  constructor: (elem, type, par) ->
+    super elem, type, par
+  contFieldName: "control"
+  
+  _ext: {}
+
+    
+class TableBuilder extends ItemsBuilder
+  constructor: (elem, ty, par) ->
+    super elem, ty, par
+    @elem.tabledatamodel = tablecolumns:[]
+  content: (param,opts) ->
+    throw new Error("Only tablecolumns may be created inside table!") unless param is "tablecolumn"
+    items = @elem.tabledatamodel.tablecolumns
+    [b,el] = getBuilder param, @
+    _.merge el, opts
+    items.push el
+    b
+    
+  _ext: {}
+  
 
 class GridBuilder extends ItemsBuilder
   constructor: (elem, ty, par) ->
@@ -189,7 +210,6 @@ class FormBuilder extends ContBuilder
 class TextWidgetBuilder extends ElemBuilder
   constructor: (el,ty,par) ->
     super el, ty, par
-    #@size(100,30)
   textFieldName: "text"
   text: (t) ->
     unless t?
@@ -267,14 +287,14 @@ class ComboBuilder extends TextWidgetBuilder
   constructor: (elem, type, par) ->
     super elem, type, par
   editable: (val) -> 
-    val ?= true
+    val ?= (true)
     @attr editable: val
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
       selected = false 
       if i[0] is "+"
-        selected = true 
+        selected = (true) 
         i = i.substr 1
       res.push
         _type : "comboboxitem"
@@ -287,6 +307,8 @@ class ComboBuilder extends TextWidgetBuilder
 regBuilder "borderpanel", BorderPanelBuilder
 regBuilder "coordpanel", CoordPanelBuilder
 regBuilder "gridpanel", GridBuilder
+regBuilder "tablecolumn", TableColumnBuilder
+regBuilder "table", TableBuilder
 
 
 regSimpleField "button", _record: "FormOnly"
@@ -304,10 +326,6 @@ regSimpleField "textarea", _record: "FormOnly"
 regSimpleField "textfield", _record: "FormOnly"
 
 
-
-
-
-
 ElemBuilder::record = (name) -> @attr 
   _record: (name ? "FormOnly")
   fieldType: "FORM_ONLY"
@@ -321,7 +339,7 @@ lift = (old, fun) ->
 
 regField = (name) ->
   lift name, -> 
-    #console.log "RECCORD"
+    #console.log "RECORD"
     @record()
 
 regField "textfield"
@@ -335,16 +353,16 @@ ElemBuilder::dfs = (fun) ->
       if v.length > 0 and v[0]._type?
         for j in v
           res = fun.call j
-          return false if res is false 
-          if res isnt true 
-            return false if go(j) is false  
+          return false if res is (false) 
+          if res isnt (true) 
+            return (false) if go(j) is (false) 
      else if _.isObject v
-      res = null
+      res = (null)
       if v._type?
         res = fun.call v
-        return false if res is false 
-      if res isnt true
-        return false if go(v) is false
+        return false if res is (false)
+      if res isnt (true)
+        return false if go(v) is (false)
   go @elem
 
 ElemBuilder::fields = (fun) ->
@@ -357,7 +375,7 @@ ElemBuilder::widgets = (fun) ->
 
 class ScreenRecordBuilder extends Builder
   constructor: (@rec) ->
-  isGrid: (v) -> @rec.isgrid = v
+  isGrid: (v) -> @rec._isGrid = v
   field: (f) -> 
     return @ for i in @rec.fields when i["#text"] is f.name
     @rec.fields.push
@@ -382,17 +400,24 @@ FormBuilder::end = ->
   @widgets ->
     # default names
     {identifier:name, _type:type} = @
+    
     if name?
       grid = knownNames[name]
-      knownNames[name] = true  
+      knownNames[name] = (true)  
     else
       cur = names[type] ?= 0
       loop
         name = type + ++cur
         break unless knownNames[name]?
-      knownNames[name] = true
+      knownNames[name] = (true)
       names[type] = cur
       @identifier = name
+
+    if type is "table"
+      form.screenrec(@identifier).isGrid(true)
+      for f in @tabledatamodel.tablecolumns
+        f.control._record = @identifier
+        
     if @_record?
       rec = form.screenrec(@_record).field(@)
       rec.isGrid(true) if grid
@@ -409,6 +434,7 @@ FormBuilder::end = ->
     return
   res = super()
   #console.log "widgets:", prettyjson.render res
+  
   res
 
 ElemBuilder::size = (w,h) -> @attr preferredsize: { width: w, height: h }
@@ -418,7 +444,7 @@ ElemBuilder::maxSize = (w,h) -> @attr maxsize: { width: w, height: h }
 event = (name) ->
   (msg) ->
     obj = {}
-    obj[name] = msg ? true  
+    obj[name] = msg ? (true)  
     @attr _actions: obj
 
 ElemBuilder::event = (name,msg) -> event(name).call(@, msg)

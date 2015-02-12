@@ -63,11 +63,11 @@ class RecordBuilder extends Builder
     unless @varname?
       @varname = @par.uniq.newName_ @name
     @par.defs.push """DEFINE #{@varname} #{@typeRef()}"""
-    if @isGrid
-      @par.commands.push """
-        FOR i = 1 TO 100
-          #{initSingle "#{@varname}[i]", i}
-        END FOR"""
+    
+    if @_isGrid
+      @par.commands.push "FOR i = 1 TO 100"
+      initSingle "#{@varname}[i]"
+      @par.commands.push "END FOR"
     else
       #console.log "init record:", @varname, prettyjson.render @
       initSingle @varname
@@ -78,7 +78,7 @@ class RecordBuilder extends Builder
       val: val
   typeRef: -> "OF #{@typeName}"
   type: -> 
-    """TYPE AS #{if @isGrid then "DYNAMIC ARRAY OF " else ""}RECORD
+    """TYPE AS #{if @_isGrid then "DYNAMIC ARRAY OF " else ""}RECORD
     #{punctuate ("  #{n} #{t.ty}" for n, t of @fields)}
     END RECORD"""
   globDef: ->
@@ -115,11 +115,12 @@ class ProgramBuilder extends Builder
     b = new RecordBuilder(@)
     b.field(v["#text"], v._fglType, v._val) for v in screenRec.fields
     b.name = screenRec.identifier.toLowerCase()
+    b._isGrid = screenRec._isGrid
     b.initCode()
     wd = if screenRec._withDefaults then "" else " WITHOUT DEFAULTS"
     attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
-    stmt = if @isGrid
-      """INPUT ARRAY #{b.varname}#{wd} FROM #{screenRec.identifer}.*#{attrib}"""
+    stmt = if screenRec._isGrid
+      """INPUT ARRAY #{b.varname}#{wd} FROM #{screenRec.identifier}.*#{attrib}"""
     else
       """INPUT BY NAME #{b.varname}.*#{wd}#{attrib}"""
     for {_val:{_actions:i}} in screenRec.fields when i?
@@ -136,6 +137,8 @@ class ProgramBuilder extends Builder
                END INPUT"""
     @commands.push stmt
   openForm: (form,x) ->
+    #console.log x
+    #console.log form
     @forms.push form
     name = form._name ?= @uniq.newName_ (@name + "_form")
     x ?= 0
@@ -170,7 +173,7 @@ class ProgramBuilder extends Builder
     @target = 
       projectPath : root
       programName : name
-      deploy : true
+      deploy : (true)
     
     mkdirp.sync "#{root}/source/form"
     fs.writeFileSync "#{root}/source/#{name}.4gl", @end()
@@ -219,7 +222,7 @@ class ProgramBuilder extends Builder
     targets = xml.getElementById("com.querix.fgl.core.buildtargets")
     targetExists = false
     for el in targets.getElementsByTagName("buildTarget")
-      if el.getAttribute("name") is name then targetExists = true
+      if el.getAttribute("name") is name then targetExists = (true)
     unless targetExists  
       targets.appendChild( xml.createTextNode("\n      "))
       targets.appendChild( new dom().parseFromString "<buildTarget location=\"\" name=\"#{name}\" type=\"fgl-program\"/>")
