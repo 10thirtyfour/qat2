@@ -38,7 +38,7 @@ class RecordBuilder extends Builder
   initCode: ->
     initSingle = (varname, x) => 
       for i,v of @fields
-        res = """LET #{varname}.#{i} ="""
+        res = """  LET #{varname}.#{i} ="""
         switch v.ty
             when "STRING"
               if v.val._fglVal
@@ -65,7 +65,8 @@ class RecordBuilder extends Builder
     @par.defs.push """DEFINE #{@varname} #{@typeRef()}"""
     
     if @_isGrid
-      @par.commands.push "FOR i = 1 TO 100"
+      @_itemCount?=100
+      @par.commands.push "FOR i = 1 TO #{@_itemCount}"
       initSingle "#{@varname}[i]"
       @par.commands.push "END FOR"
     else
@@ -76,15 +77,15 @@ class RecordBuilder extends Builder
     @fields[name] = 
       ty: ty ? "STRING"
       val: val
-  typeRef: -> "OF #{@typeName}"
+  typeRef: -> "#{@typeName}"
   type: -> 
-    """TYPE AS #{if @_isGrid then "DYNAMIC ARRAY OF " else ""}RECORD
+    """#{if @_isGrid then "DYNAMIC ARRAY OF " else ""}RECORD
     #{punctuate ("  #{n} #{t.ty}" for n, t of @fields)}
     END RECORD"""
   globDef: ->
     unless @typeName?
       @typeName = @par.uniq.newName_ "type#{@name}"
-    """DEFINE #{@typeName}#{indent @type()}"""
+    """TYPE #{@typeName}#{indent @type()}"""
 
 class UniqNames
   constructor: ->
@@ -111,34 +112,50 @@ class ProgramBuilder extends Builder
     @forms = []
   windowWithForm: (name) ->
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
-  inputScreenRec: (screenRec) ->
+
+  initScreenRec: (screenRec) ->
     b = new RecordBuilder(@)
     b.field(v["#text"], v._fglType, v._val) for v in screenRec.fields
     b.name = screenRec.identifier.toLowerCase()
     b._isGrid = screenRec._isGrid
     b.initCode()
-    wd = if screenRec._withDefaults then "" else " WITHOUT DEFAULTS"
+    return b.varname
+    
+  inputScreenRec: (screenRec, params = { dialog : false }) ->
+    params.varname ?= @initScreenRec screenRec
+    wd = if screenRec._withDefaults or params.dialog then "" else " WITHOUT DEFAULTS"
     attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
+
     stmt = if screenRec._isGrid
-      """INPUT ARRAY #{b.varname}#{wd} FROM #{screenRec.identifier}.*#{attrib}"""
+      if params.dialog 
+        """DISPLAY ARRAY #{params.varname}#{wd} TO #{screenRec.identifier}.*#{attrib}"""
+      else
+        """INPUT ARRAY #{params.varname}#{wd} FROM #{screenRec.identifier}.*#{attrib}"""
     else
-      """INPUT BY NAME #{b.varname}.*#{wd}#{attrib}"""
+      """INPUT BY NAME #{params.varname}.*#{wd}#{attrib}"""
+    
+    
+    interaction = stmt.split(" ")[0]
+    
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
-        stmt += """
+        stmt += """ 
                   
                   ON ACTION(#{v})
                     DISPLAY "#{v}"
                 """
-    stmt += """
-               
-               ON KEY(F10)
-                  EXIT INPUT
-               END INPUT"""
+    unless params.dialog
+      stmt += """ 
+                  ON KEY(F10)
+                    EXIT #{interaction}
+                
+              """
+    stmt+= """ 
+              END #{interaction}
+           """
+    #"
     @commands.push stmt
   openForm: (form,x) ->
-    #console.log x
-    #console.log form
     @forms.push form
     name = form._name ?= @uniq.newName_ (@name + "_form")
     x ?= 0
@@ -146,6 +163,22 @@ class ProgramBuilder extends Builder
     if form.screenrecords?
       @inputScreenRec form.screenrecords[x]
     #@closeWindow name
+    @
+  dialog: (form)->
+    @forms.push form
+    name = form._name ?= @uniq.newName_ (@name + "_form")
+    @windowWithForm name
+    varnames = for sr in form.screenrecords
+      @initScreenRec sr
+      
+    @commands.push "DIALOG"
+    for sr,i in form.screenrecords
+      @inputScreenRec sr, dialog:true, varname:varnames[i]
+    @commands.push """
+          ON ACTION cancel
+            EXIT DIALOG
+        END DIALOG
+        """
     @
   command: (str) ->
     @commands.push str
@@ -220,7 +253,10 @@ class ProgramBuilder extends Builder
         )
 
     targets = xml.getElementById("com.querix.fgl.core.buildtargets")
-    targetExists = false
+    # TODO: 
+    # Check this element for existence. 
+    # Empty eclipse project may don't have it.
+    targetExists = (false)
     for el in targets.getElementsByTagName("buildTarget")
       if el.getAttribute("name") is name then targetExists = (true)
     unless targetExists  
