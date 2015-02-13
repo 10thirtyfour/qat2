@@ -26,6 +26,40 @@ punctuate = (lines) ->
   ("#{i}," for i in lines[0...lines.length-1]).join("\n")+"\n"+
     lines[lines.length-1]
 
+dummyProject =  
+  """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <projectDescription>
+      <name>project</name>
+      <comment></comment>
+      <projects></projects>
+      <buildSpec>
+        <buildCommand>
+          <name>com.querix.fgl.core.fglbuilder</name>
+          <arguments></arguments>
+        </buildCommand>
+      </buildSpec>
+      <natures>
+        <nature>com.querix.fgl.core.fglnature</nature>
+      </natures>
+    </projectDescription>
+""" 
+
+dummyFglProject =
+  """
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <fglProject name="qatproject">
+      <data>
+        <item id="com.querix.fgl.core.pathentries">
+          <pathentry kind="src" path="source"/>
+          <pathentry kind="out" path="output"/>
+        </item>
+        <item id="com.querix.fgl.core.buildtargets"></item>
+      </data>
+    </fglProject>
+  """
+
+      
 class Builder 
 
 class SimpleBuilder extends Builder
@@ -136,12 +170,11 @@ class ProgramBuilder extends Builder
     
     
     interaction = stmt.split(" ")[0]
-    
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
         stmt += """ 
                   
-                  ON ACTION(#{v})
+                  ON ACTION #{v}
                     DISPLAY "#{v}"
                 """
     unless params.dialog
@@ -180,6 +213,13 @@ class ProgramBuilder extends Builder
         END DIALOG
         """
     @
+  action: (actName) ->
+    @commands.push """
+          ON ACTION #{actName}
+            DISPLAY #{actName}
+          """
+    @
+  
   command: (str) ->
     @commands.push str
     @
@@ -214,43 +254,12 @@ class ProgramBuilder extends Builder
       fs.writeFileSync "#{root}/source/form/#{i._name}.fm2", format.write i
     
     # create or update project file here
-    unless fs.existsSync("#{root}/.project")
-      fs.writeFileSync "#{root}/.project", 
-        """
-          <?xml version="1.0" encoding="UTF-8"?>
-          <projectDescription>
-            <name>project</name>
-            <comment></comment>
-            <projects></projects>
-            <buildSpec>
-              <buildCommand>
-                <name>com.querix.fgl.core.fglbuilder</name>
-                <arguments></arguments>
-              </buildCommand>
-            </buildSpec>
-            <natures>
-              <nature>com.querix.fgl.core.fglnature</nature>
-            </natures>
-          </projectDescription>
-      """ 
+    unless fs.existsSync "#{root}/.project" then fs.writeFileSync "#{root}/.project",dummyProject 
     
-    if fs.existsSync("#{root}/.fglproject")
-      xml = new dom().parseFromString fs.readFileSync("#{root}/.fglproject",'utf8')
-    else 
-      xml = new dom().parseFromString(
-        """
-          <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-          <fglProject name="qatproject">
-            <data>
-              <item id="com.querix.fgl.core.pathentries">
-                <pathentry kind="src" path="source"/>
-                <pathentry kind="out" path="output"/>
-              </item>
-              <item id="com.querix.fgl.core.buildtargets"></item>
-            </data>
-          </fglProject>
-        """
-        )
+    xml = new dom().parseFromString if fs.existsSync("#{root}/.fglproject")
+      fs.readFileSync("#{root}/.fglproject",'utf8')
+    else
+      dummyFglProject
 
     targets = xml.getElementById("com.querix.fgl.core.buildtargets")
     # TODO: 
