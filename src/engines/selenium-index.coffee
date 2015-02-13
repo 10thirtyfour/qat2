@@ -187,7 +187,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "invoke",
         (el) ->
-          unless el.click? then el = @elementByCss ".#{el}"
+          unless el.click? 
+            el = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss(".#{el}"))
+            
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"
           else
