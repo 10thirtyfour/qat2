@@ -148,6 +148,7 @@ class ProgramBuilder extends Builder
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
 
   initScreenRec: (screenRec) ->
+    return if screenRec.fields.length is 0
     b = new RecordBuilder(@)
     b.field(v["#text"], v._fglType, v._val) for v in screenRec.fields
     b.name = screenRec.identifier.toLowerCase()
@@ -156,6 +157,7 @@ class ProgramBuilder extends Builder
     return b.varname
     
   inputScreenRec: (screenRec, params = { dialog : false }) ->
+    return if screenRec.fields.length is 0 
     params.varname ?= @initScreenRec screenRec
     wd = if screenRec._withDefaults or params.dialog then "" else " WITHOUT DEFAULTS"
     attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
