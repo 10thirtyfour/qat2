@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 module.exports = ->
   ALLTRACE = false
   {_,opts} = @
@@ -28,26 +13,44 @@ module.exports = ->
         install: 600000
       options:
         buildMode: "rebuild"
+        databaseProfile: "informix" 
         env:
           QX_QAT: 1
-        commondb:
-          LYCIA_DB_DRIVER: "informix"
-          INFORMIXSERVER: "querix_tcp"
-          LOGNAME: "informix"
-          INFORMIXPASS: "default2375"
-          INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
-          DBDATE: "MDY4/"
-          TNS_ADMIN: "c:\\Oracle"
           QX_REFRESH_LEVEL: 2
           #LYCIA_LEAVE_WS: 1
-        headless:
-          QX_HEADLESS_MODE: 1  
+    headless:
+      QX_HEADLESS_MODE: 1  
     logger:
       transports:
         console:
           level: "info"
+          #couchdb:
+          #host: "10.38.57.55"
     globLoader:
       root: "./tests"
+
+
+
+    dbprofiles:
+      informix:         
+        LYCIA_DB_DRIVER: "informix"
+        INFORMIXSERVER: "querix_tcp"
+        LOGNAME: "informix"
+        INFORMIXPASS: "default2375"
+        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+        DBDATE: "MDY4/"
+
+      oracle:
+        TNS_ADMIN: "c:\\Oracle"
+
+      "mssql-odbc":
+        LYCIA_DB_DRIVER: "odbc"
+        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;" 
+
+      "mysql-odbc":
+        LYCIA_DB_DRIVER: "odbc"
+        ODBC_DSN: "myodbc"
+
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"

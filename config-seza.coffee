@@ -13,20 +13,13 @@ module.exports = ->
         install: 600000
       options:
         buildMode: "rebuild"
+        databaseProfile: "informix" 
         env:
           QX_QAT: 1
-        commondb:
-          LYCIA_DB_DRIVER: "informix"
-          INFORMIXSERVER: "querix_tcp"
-          LOGNAME: "informix"
-          INFORMIXPASS: "default2375"
-          INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
-          DBDATE: "MDY4/"
-          TNS_ADMIN: "c:\\Oracle"
           QX_REFRESH_LEVEL: 2
           #LYCIA_LEAVE_WS: 1
-        headless:
-          QX_HEADLESS_MODE: 1  
+    headless:
+      QX_HEADLESS_MODE: 1  
     logger:
       transports:
         console:
@@ -34,7 +27,30 @@ module.exports = ->
           #couchdb:
           #host: "10.38.57.55"
     globLoader:
-      root: "./tests"
+      root: "./tests2"
+
+
+
+    dbprofiles:
+      informix:         
+        LYCIA_DB_DRIVER: "informix"
+        INFORMIXSERVER: "querix_tcp"
+        LOGNAME: "informix"
+        INFORMIXPASS: "default2375"
+        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+        DBDATE: "MDY4/"
+
+      oracle:
+        TNS_ADMIN: "c:\\Oracle"
+
+      "mssql-odbc":
+        LYCIA_DB_DRIVER: "odbc"
+        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;" 
+
+      "mysql-odbc":
+        LYCIA_DB_DRIVER: "odbc"
+        ODBC_DSN: "myodbc"
+
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
