@@ -90,7 +90,7 @@ module.exports = ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
       unless delimeterSent
         writeLine( ">>>" )
-        delimeterSent = true  
+        delimeterSent = (true)  
       writeLine line for line in message
 
     {stderr,stdout,stdin} = child 
@@ -240,7 +240,8 @@ module.exports = ->
         platform : process.platform.substring(0,3)+'_'+process.arch
         ver : rr.os.release()
         user : process.env.USER ? process.env.USERNAME
-        build : "unknown" 
+        build : "unknown"
+        database : @options.databaseProfile
       
       @info rr.sysinfo.platform + " " + rr.sysinfo.ver
       
@@ -253,7 +254,12 @@ module.exports = ->
       .then( (qfglout)->
         if qfglout?
           rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
-          rr.spammer "sendMessage", message:"!! "+rr.sysinfo.starttimeid+"\nQAT started on #{rr.sysinfo.host}\nPlatform : #{rr.sysinfo.platform}\nLycia build : "+rr.sysinfo.build
+          rr.spammer "sendMessage", message: """
+            !! #{rr.sysinfo.starttimeid}
+            QAT started on #{rr.sysinfo.host}
+            Platform : #{rr.sysinfo.platform} (#{rr.sysinfo.database})
+            Lycia build : #{rr.sysinfo.build}
+            """
           rr.logger.pass "qatstart",rr.sysinfo
         else 
           rr.logger.fail "Failed to get Lycia build form qfgl !!"
@@ -307,7 +313,9 @@ module.exports = ->
           cwd: path.dirname(@testData.fileName)
 
         _.merge opt.env, @runner.environ
-        _.merge opt.env, @options.commondb
+        _.merge opt.env, @options.env
+        _.merge opt.env, @runner.opts.dbprofiles[@options.databaseProfile]
+        _.merge opt.env, @testData.env
 
         #@data.sysinfo = @runner.sysinfo
         
@@ -367,16 +375,18 @@ module.exports = ->
           cwd: path.resolve(@testData.projectPath)
         
         _.merge opt.env, @runner.environ
-        _.merge opt.env, @options.commondb
+        _.merge opt.env, @options.env
+        _.merge opt.env, @runner.opts.dbprofiles[@options.databaseProfile]
+        _.merge opt.env, @testData.env
 
-        exename = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
+        qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
         
         @testData.buildMode ?= @options.buildMode 
         @testData.buildTimeout ?= @timeouts.build
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
         #@data.commandLine = "qbuild " + params.join(" ")
         try
-          child = spawn( exename , params , opt) 
+          child = spawn( qrun , params , opt) 
           result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
           if result
             if @testData.reverse 
@@ -402,8 +412,9 @@ module.exports = ->
             cwd: path.resolve(@testData.projectPath,@testData.projectOutput)
 
           _.merge opt.env, @runner.environ
-          _.merge opt.env, @options.commondb
-          _.merge opt.env, @options.headless
+          _.merge opt.env, @runner.opts.headless
+          _.merge opt.env, @options.env
+          _.merge opt.env, @runner.opts.dbprofiles[@options.databaseProfile]
           _.merge opt.env, @testData.env
 
           logLine = 0
@@ -415,14 +426,10 @@ module.exports = ->
             
           exename = path.join(opt.env.LYCIA_DIR, "bin", "qrun")
           
-          params = [
-            @testData.programExecutable
-            "-d"
-            opt.env.LYCIA_DB_DRIVER
-          ].concat( @testData.programArgs )
+          params = new cmdlineType( [ @testData.programExecutable, "-d", opt.env.LYCIA_DB_DRIVER ] )
+          params.add @testData.programArgs
           
-          #@data.commandLine = "qrun "+ params.join(" ")
-          child = spawn( exename, params, opt)
+          child = spawn( exename, params.args, opt)
                        
           @testData.ignoreHeadlessErrorlevel = true; #????
           
@@ -446,57 +453,57 @@ module.exports = ->
         fileName: logFileName
         env : {}
 
-      try
-        logStream = fs.createReadStream(logFileName, encoding: "utf8")
-        nextLogLine = lineFromStream logStream
-        while (line=nextLogLine())
-          break if line is "<<<"
-          
-          # environment variable search
-          if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>$"))
-            # inserting params into testData with path
-            matches[1].split('.').reduce( (prev,curr,i,ar)-> 
-              if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
-            , testData)
 
-          else
-            # trying to find programName only if it is not yet defined
-            unless testData.programName?
-              if (matches=(line.match "^<< *(.*?) *>>$"))
-                cmd = matches[1]
-                # handling both, quoted and unquoted program name
-                if (matches=(cmd.match '"(.*?)" *(.*)'))
-                  testData.programName=matches[1]
-                  testData.programArgs=matches[2].split(" ")
-                else
-                  [testData.programName,testData.programArgs...]=cmd.split(" ")
- 
-        # removing database arg if found one
-        if testData.programArgs.indexOf("-d")>-1
-          testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
+      logStream = fs.createReadStream(logFileName, encoding: "utf8")
+      nextLogLine = lineFromStream logStream
+      while (line=nextLogLine())
+        break if line is "<<<"
+        
+        # environment variable search
+        if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>$"))
+          # inserting params into testData with path
+          matches[1].split('.').reduce( (prev,curr,i,ar)-> 
+            if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
+          , testData)
 
-        # removing ".exe"  
-        if testData.programName.lastIndexOf(".exe")>testData.programName.length - 5
-           testData.programName=testData.programName.substr(0,testData.programName.length - 4)
-        tempPath = path.resolve(logFileName)
+        else
+          # trying to find programName only if it is not yet defined
+          unless testData.programName?
+            if (matches=(line.match "^<< *(.*?) *>>$"))
+              cmd = matches[1]
+              # handling both, quoted and unquoted program name
+              if (matches=(cmd.match '"(.*?)" *(.*)'))
+                testData.programName=matches[1]
+                testData.programArgs=matches[2].split(" ")
+              else
+                [testData.programName,testData.programArgs...]=cmd.split(" ")
 
-        while (tempPath != ( tempPath = path.dirname tempPath ))
-          if fs.existsSync(path.join(tempPath,".fglproject")) 
-            testData.projectPath = tempPath
-            break
+      throw "Unable to read programName" unless testData.programName?
+      # removing database arg if found one
+      if testData.programArgs.indexOf("-d")>-1
+        testData.programArgs.splice(testData.programArgs.indexOf("-d"),2)   
 
-        if testData.projectPath?
-          testData.projectName = path.basename testData.projectPath  
-          # here can be implemented XML parce of project file. Currently using default paths
-          testData.projectSource = 'source' 
-          testData.projectOutput = 'output'
+      # removing ".exe"  
+      if testData.programName.lastIndexOf(".exe")>testData.programName.length - 5
+         testData.programName=testData.programName.substr(0,testData.programName.length - 4)
+      tempPath = path.resolve(logFileName)
 
-        testData.programExecutable = path.join(testData.projectPath , testData.projectOutput , path.basename(testData.programName))
-        #looks like on win32 shown also for x64 platform
-        if process.platform is "win32" then testData.programExecutable+=".exe"
-        #testData.projectPath = path.resolve(testData.projectPath)
-      catch e
-        testData.errorMessage = e
+      while (tempPath != ( tempPath = path.dirname tempPath ))
+        if fs.existsSync(path.join(tempPath,".fglproject")) 
+          testData.projectPath = tempPath
+          break
+
+      unless testData.projectPath? then throw "Unable to read projectPath"
+
+      testData.projectName = path.basename testData.projectPath  
+      # here can be implemented XML parce of project file. Currently using default paths
+      testData.projectSource = 'source' 
+      testData.projectOutput = 'output'
+
+      testData.programExecutable = path.join(testData.projectPath , testData.projectOutput , path.basename(testData.programName))
+      #looks like on win32 shown also for x64 platform
+      if process.platform is "win32" then testData.programExecutable+=".exe"
+      #testData.projectPath = path.resolve(testData.projectPath)
       return testData    
   
     regXPath : ->

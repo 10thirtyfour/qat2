@@ -13,11 +13,13 @@
 # http://www.querix.com/
 # #L%
 ###
+
+
+
 process.maxTickDepth = Infinity
 
 module.exports = ->
   {path,Q,yp,toolfuns} = runner = @
-  
   @reg
     name: "tlogLoader"
     before: ["globLoader"]
@@ -30,17 +32,12 @@ module.exports = ->
           pattern: ["**/*.tlog"]
           parseFile: (fn) ->
             yp.frun( =>
-              testData = toolfuns.LoadHeaderData(fn)
-              unless testData.programName?
-                runner.info "Can not read programName from "+testData.fileName
-                return ->
-                  "Can not read programName from "+testData.fileName
-                  
-              unless testData.projectPath?
-                runner.info "projectPath undefined"
-                return ->
-                  "projectPath undefined"
-
+              try 
+                testData = toolfuns.LoadHeaderData(fn)
+              catch e
+                runner.info "#{fn}. #{e}"
+                return true
+              
               progRelativeName = path.relative(runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource,testData.programName))
               buildPromiseName = []
 
