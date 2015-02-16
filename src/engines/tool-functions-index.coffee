@@ -153,10 +153,8 @@ module.exports = ->
     line = (lineCountPrompt) => 
       if lineCountPrompt then return lineCount 
       lineCount+=1
-      lineText = yp Q.nfcall((cb) -> 
-        iter.read((err,v) -> 
-          cb err,v
-          ))
+      lineText = yp Q.denodeify(iter.read)()
+
       return lineText
     return line
 

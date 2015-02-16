@@ -52,7 +52,8 @@ module.exports = ->
           nopts = _.assign {cwd: d}, opts
           for p in utils.mkArray pattern
             do (d,name,parseFile) =>
-              Q.nfcall(glob, p, nopts)
+              #Q.nfcall(glob, p, nopts)
+              Q.ninvoke(runner,"glob",p,nopts)
                 .then((fn) =>
                   @trace "found files:", fn
                   chainPromise = Q {}
@@ -72,8 +73,10 @@ module.exports = ->
                     do (i) =>
                       fullname = "#{d}/#{i}"
                       chainPromise = chainPromise.then(() -> parseFile(fullname))
-                  chainPromise.then( =>
+                  return chainPromise.then( =>
                       runner.sync()
                       true)
+                  
                   )
-      Q.all _.flatten res
+
+      return Q.all(_.flatten(res,true))

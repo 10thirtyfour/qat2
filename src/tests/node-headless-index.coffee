@@ -19,7 +19,7 @@
 process.maxTickDepth = Infinity 
 
 module.exports = ->
-  {path,Q,yp,toolfuns} = runner = @
+  {path,yp,toolfuns} = runner = @
   
   @runner.tests.globLoader.disable.file.pattern?=[]
   for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile 
@@ -36,7 +36,6 @@ module.exports = ->
           name: "node$headless-indexer"
           pattern: ["**/*.tlog"]
           parseFile: (fn) ->
-            
             yp.frun( =>
               try 
                 testData = toolfuns.LoadHeaderData(fn)
@@ -51,11 +50,11 @@ module.exports = ->
                 unless buildPromiseName of runner.tests
                   runner.reg 
                     name: buildPromiseName
-                    failOnly: true
+                    failOnly: true 
                     data:
                       kind: "build" 
-                    testData : testData  
-                    promise: toolfuns.regBuild
+                    testData : testData
+                    promise: toolfuns.regBuild 
                 
               logRelativeName = path.relative(runner.tests.globLoader.root, fn)
               runner.reg
