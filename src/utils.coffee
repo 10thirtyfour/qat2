@@ -30,11 +30,11 @@ module.exports = ->
         visited[n] = true
         for e in g.inEdges n
           continue if e is link
-          g.delEdge(e) if visited[g.source e]
+          g.removeEdge(e) if visited[e.v]
         for e in g.outEdges n
            # the edge may deleted during recursive invocation
           continue unless g.hasEdge e
-          t = g.target e
+          t = e.w
           if visited[t]
             #TODO: better cycles detection this way the cycle detection
             # in runner isn't needed

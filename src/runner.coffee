@@ -46,7 +46,7 @@ class Runner
     keysColor: "magenta"
     dashColor: "magenta"
   os: require "os"
-  graph: new graphlib.Digraph
+  graph: new graphlib.Graph
   fs: fs
   colors: require "colors"
   EventEmitter: require("events").EventEmitter
@@ -69,7 +69,7 @@ class Runner
     @tests[name] = descr
     _.merge descr, @common, @opts.common, @opts[name]
     @notInGraph.push descr
-    @graph.addNode name
+    @graph.setNode name
   # schedules next actions for execution
   # res - initial result, there report is aggregating 
   # may be some statistics information
@@ -141,30 +141,30 @@ class Runner
       @trace "building: #{name}"
       if name isnt "setup" and name isnt "run"
        if setup
-          graph.addEdge null, "setup", name
-          graph.addEdge null, name, "run"
+          graph.setEdge "setup", name
+          graph.setEdge name, "run"
         else
-          graph.addEdge null, "run", name
-      graph.addEdge null, name, "done"
+          graph.setEdge "run", name
+      graph.setEdge name, "done"
       if before?
         for i in @utils.mkArray before
           unless @tests[i]
             throw new Error "Unknown dependency #{i} in `before` of #{name}"
-          graph.addEdge(null, name, i)
+          graph.setEdge(name, i)
       if after?
         for i in @utils.mkArray after
           unless @tests[i]
             throw new Error "Unknown dependency #{i} in `after` of #{name}"
-          graph.addEdge(null, i, name) 
+          graph.setEdge(i, name) 
     @notInGraph.length = 0
     @info "number of edges:#{graph.edges().length}"
-    fs.writeFileSync "tmp/graph-#{syncNo}", dot.encode(graph)
+    fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
     cycles = graphlib.alg.findCycles graph
     if cycles.length isnt 0
       throw "cycles in test dependencies: #{@prettyjson cycles}"
     @info "no dependency cycles"
     @utils.transRed @graph, "setup"
-    fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.encode(graph)
+    fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
     @info "number of edges after reduction:#{graph.edges().length}"
   go: ->
     try

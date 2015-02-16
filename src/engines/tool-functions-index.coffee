@@ -267,6 +267,7 @@ module.exports = ->
         return rr.sysinfo)
       .catch( (err)->
         _this.fail err.message
+        rr.spammer "sendMessage", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
         throw "Unable to read environ : "+err.message
       )  
       

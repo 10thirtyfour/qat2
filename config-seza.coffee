@@ -16,10 +16,9 @@ module.exports = ->
         databaseProfile: "informix" 
         env:
           QX_QAT: 1
-          QX_REFRESH_LEVEL: 2
-          #LYCIA_LEAVE_WS: 1
     headless:
       QX_HEADLESS_MODE: 1  
+      QX_REFRESH_LEVEL: 2
     logger:
       transports:
         console:
@@ -28,8 +27,6 @@ module.exports = ->
           #host: "10.38.57.55"
     globLoader:
       root: "./tests"
-
-
 
     dbprofiles:
       informix:         
@@ -41,6 +38,7 @@ module.exports = ->
         DBDATE: "MDY4/"
 
       oracle:
+        LYCIA_DB_DRIVER: "oracle"
         TNS_ADMIN: "c:\\Oracle"
 
       "mssql-odbc":
@@ -50,7 +48,6 @@ module.exports = ->
       "mysql-odbc":
         LYCIA_DB_DRIVER: "odbc"
         ODBC_DSN: "myodbc"
-
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"

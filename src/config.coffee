@@ -22,7 +22,7 @@ module.exports = ->
   # ~/.qat (js or coffee)
   # $QAT_CONFIG
   # config argument (may be many)
-
+  require('coffee-script/register')
   {_,os,utils} = @
   @argv = argv = require("optimist").argv ? {}
   home = process.env.HOME ? process.env.USERPROFILE
