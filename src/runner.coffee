@@ -26,7 +26,6 @@ assert = require "assert"
 xpath = require "xpath"
 dom = require("xmldom").DOMParser
 
-
 syncNo = 0
 
 class Runner
@@ -93,11 +92,15 @@ class Runner
     t.error = false
     for i in @graph.predecessors(node)
       pt = tests[i]
+      unless pt?
+        @info "Node #{node} has invalid predecessor #{i}. Ignoring."
+        continue
+      
       unless pt.done
         @trace "not all dependencies satisfied #{i}"
         return Q({})
-      t.error = t.error or pt.error is true
-    t.started = true
+      t.error = t.error or pt.error is true 
+    t.started = true 
     r = @prePromise()
     if not t.disabled and t.promise? and (not t.error or t.runAnyway)
       r = r.then(-> t.promise())
@@ -149,13 +152,16 @@ class Runner
       if before?
         for i in @utils.mkArray before
           unless @tests[i]
-            throw new Error "Unknown dependency #{i} in `before` of #{name}"
+            #throw new Error "Unknown dependency #{i} in `before` of #{name}"
+            @info "Unknown dependency #{i} in `before` of #{name}"
           graph.setEdge(name, i)
       if after?
         for i in @utils.mkArray after
           unless @tests[i]
-            throw new Error "Unknown dependency #{i} in `after` of #{name}"
-          graph.setEdge(i, name) 
+            #throw new Error "Unknown dependency #{i} in `after` of #{name}"
+            @info "Unknown dependency #{i} in `before` of #{name}"
+          graph.setEdge(i, name)
+
     @notInGraph.length = 0
     @info "number of edges:#{graph.edges().length}"
     fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
@@ -166,6 +172,7 @@ class Runner
     @utils.transRed @graph, "setup"
     fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
     @info "number of edges after reduction:#{graph.edges().length}"
+
   go: ->
     try
       fs.mkdirSync "tmp"

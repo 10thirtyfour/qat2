@@ -26,7 +26,7 @@
     "mkdirp": "*",
     "optimist": "*",
     "prettyjson": "*",
-    "q": "^2.0.3",
+    "q": "~1.1.2",
     "source-map-support": "*",
     "tsort": "*",
     "wd": "*",

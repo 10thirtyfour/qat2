@@ -27,7 +27,7 @@ module.exports = ->
           #couchdb:
           #host: "10.38.57.55"
     globLoader:
-      root: "./tests"
+      root: "./tests2"
 
 
 

@@ -40,7 +40,7 @@ module.exports = ->
     name: "wd"
     # CFGOPT: default wait timeout
     defaultWaitTimeout: 30000
-    setup: true  
+    setup: true   
     before: "globLoader"
     enable:
       browser:
@@ -69,16 +69,10 @@ module.exports = ->
       
       wd.addPromiseMethod(
         "waitIdle",
-        (timeout) ->
+        (timeout) -> 
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector(
-            ".qx-application.qx-state-idle"#, #qx-application-restart"
-            timeout).sleep(300))
-            
-      wd.addPromiseMethod(
-        "toolbutton"
-        (title) ->
-          @elementByCss(""".qx-aum-toolbar-button[title="#{title}"]"""))
+          @waitForElementByCssSelector(".qx-application.qx-state-idle", timeout)
+          )  
           
       wd.addPromiseMethod(
         "startApplication"
@@ -94,7 +88,7 @@ module.exports = ->
           programUrl = runner.lyciaWebUrl + params.instance + "/" + command
 
           if params.args then programUrl+=params.args
-          
+
           if params.wait
             return @get(programUrl).waitIdle()
           else
@@ -152,11 +146,13 @@ module.exports = ->
           h?="se"
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
           #h = yp @elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
-
-          yp @elementById("qx-home-form",0,0).
-               moveTo( Math.floor(r.left + r.width / 2),Math.floor(r.top + r.height / 2))
+          x = Math.round(r.left + r.width / 2)
+          y = Math.round(r.top + r.height / 2)
+          #console.log dx,dy
+          yp @elementById("qx-home-form")
+              .moveTo( x, y )
               .buttonDown(0)
-              .moveTo( null, Math.floor(dx) , Math.floor(dy) )
+              .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
               .buttonUp(0)
         )
 
@@ -174,7 +170,6 @@ module.exports = ->
           ))
         )
 
-            
       wd.addPromiseMethod(
         "fglFocused",
         -> @elementByCss(".qx-focused"))
@@ -308,14 +303,19 @@ module.exports = ->
             return (false)
           (true)
       )      
-      
+
       wd.addPromiseMethod(
         "getRect"
-        (el) ->
+        (el) -> 
           {selector} = el
           selector?= '.qx-identifier-' + el
           return yp @execute "return $('#{selector}')[0].getBoundingClientRect()"
       )
+
+      wd.addPromiseMethod(
+        "toolbutton"
+        (title) ->
+          @elementByCss(""".qx-aum-toolbar-button[title="#{title}"]"""))
       
       wd.addPromiseMethod(
         "messageBox"

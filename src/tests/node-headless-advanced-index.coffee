@@ -21,16 +21,17 @@ module.exports = ->
   {path,Q,fs,_,yp,utils} = runner = @
 
   @reg
-    name: "node-headless-advanced-index"
+    name: "advancedLoader"
     before: ["globLoader"]
     setup: true  
     promise: ->
-      yp.frun( =>
+      yp.frun =>
         @runner.tests.globLoader.regGlob
           name: "node$headless-advanced"
           pattern: ["**/*-test.coffee"]
           parseFile: (fn) ->
-            yp.frun( =>
+            yp.frun =>
+              #console.log " COFEEE >> #{fn}"
               contextParams = 
                 fileName: fn
                 testName : runner.toolfuns.filenameToTestname(fn)
@@ -45,8 +46,7 @@ module.exports = ->
                 cfeval fs.readFileSync(fn,encoding:"utf8"),sandbox: contextParams
               catch errorMessage
                 runner.info "Headless-advanced. Eval failed for #{fn}. Message : #{errorMessage}"
-              finally
-                true
-              )
-        )
+              true
+              
+        true
       

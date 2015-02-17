@@ -24,6 +24,20 @@ fse = require "fs-extra"
 
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
+
+  lineFromStream = (stream) ->
+    options = 
+      keepEmptyLines : 1
+      
+    splitted = new byline.createStream(stream , options)
+    iter = new CallbackReadWrapper splitted
+    lineCount = 0
+    line = (lineCountPrompt) =>
+      if lineCountPrompt then return lineCount 
+      lineCount+=1
+      lineText = yp Q.denodeify(iter.read)()
+      return lineText
+    return line
   
   cmdlineType = (str)->
     @args=[]
@@ -141,22 +155,6 @@ module.exports = ->
     if (logBlock = readBlock(nextOutLine,"<<<")).length>1
       throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
-
-  lineFromStream = (stream) ->
-    options = 
-      keepEmptyLines : 1
-      
-    splitted = byline.createStream(stream , options)
-    iter = new CallbackReadWrapper splitted
-    lineCount = 0
-    
-    line = (lineCountPrompt) => 
-      if lineCountPrompt then return lineCount 
-      lineCount+=1
-      lineText = yp Q.denodeify(iter.read)()
-
-      return lineText
-    return line
 
   exitPromise = (child, opt={}) ->
     def = Q.defer()
@@ -451,8 +449,7 @@ module.exports = ->
       testData =
         fileName: logFileName
         env : {}
-
-
+        
       logStream = fs.createReadStream(logFileName, encoding: "utf8")
       nextLogLine = lineFromStream logStream
       while (line=nextLogLine())

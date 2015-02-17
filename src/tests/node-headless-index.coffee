@@ -31,12 +31,13 @@ module.exports = ->
     setup: true  
     disabled: false 
     promise: ->
-      yp.frun( =>
+      yp.frun =>
         @runner.tests.globLoader.regGlob
           name: "node$headless-indexer"
           pattern: ["**/*.tlog"]
           parseFile: (fn) ->
-            yp.frun( =>
+            #console.log fn
+            yp.frun =>
               try 
                 testData = toolfuns.LoadHeaderData(fn)
               catch e
@@ -50,7 +51,7 @@ module.exports = ->
                 unless buildPromiseName of runner.tests
                   runner.reg 
                     name: buildPromiseName
-                    failOnly: true 
+                    failOnly: true
                     data:
                       kind: "build" 
                     testData : testData
@@ -65,7 +66,7 @@ module.exports = ->
                 after: buildPromiseName
                 promise: toolfuns.regLogRun
               true
-            )
-        )
+        true    
+        
 
 
