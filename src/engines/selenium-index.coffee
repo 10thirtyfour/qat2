@@ -44,7 +44,7 @@ module.exports = ->
     before: "globLoader"
     enable:
       browser:
-        chrome: true
+        chrome: true 
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"
@@ -149,7 +149,7 @@ module.exports = ->
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           #console.log dx,dy
-          yp @elementById("qx-home-form")
+          yp @elementByCss('#qx-home-form')
               .moveTo( x, y )
               .buttonDown(0)
               .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
