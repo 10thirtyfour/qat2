@@ -230,6 +230,7 @@ module.exports = ->
       rr = @runner
       _this=@
       
+      
       rr.sysinfo = 
         host : rr.os.hostname()
         starttimeid : (new Date()).toISOString()
@@ -238,14 +239,18 @@ module.exports = ->
         user : process.env.USER ? process.env.USERNAME
         build : "unknown"
         database : @options.databaseProfile
-      
+
+      rr.opts.environCommand?=rr.opts.environCommands[rr.sysinfo.platform]
+      rr.opts.deployPath?=rr.opts.defaultDeployPath[rr.sysinfo.platform]
+
       @info rr.sysinfo.platform + " " + rr.sysinfo.ver
       
-      [command,cc,args...] = _.compact @data.command.split(" ")
+      [command,cc,args...] = _.compact rr.opts.environCommand.split(" ")
       
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true) 
       .then( (envtext)->
         rr.environ = JSON.parse(envtext.toString('utf8'))
+        unless rr.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR" 
         exitPromise( spawn( path.join(rr.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : rr.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
@@ -258,12 +263,12 @@ module.exports = ->
             """
           rr.logger.pass "qatstart",rr.sysinfo
         else 
-          rr.logger.fail "Failed to get Lycia build form qfgl !!"
+          throw new Error "Failed to get Lycia build form qfgl !!"
 
         return rr.sysinfo)
       .catch( (err)->
-        _this.fail err.message
         rr.spammer "sendMessage", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
+        _this.fail "Unable to read environ : "+err.message
         throw "Unable to read environ : "+err.message
       )  
       
@@ -539,17 +544,17 @@ module.exports = ->
           for fn in filesToCopy
             try
               sourceFile = path.join(@testData.projectPath,@testData.projectOutput,fn)
-              targetFile = path.join(rr.deployPath,fn)
+              targetFile = path.join(rr.opts.deployPath,fn)
               fse.ensureDirSync path.dirname(targetFile)
               fse.copySync(sourceFile,targetFile)
             catch e
               rr.info "Failed to copy file : "+fn
             tr2file+='  <Resource path="'+fn+'"/>\n'
           tr2file+='</Resources>\n'
-          fs.writeFileSync(path.join(rr.deployPath,@testData.programName+".tr2"),tr2file)
+          fs.writeFileSync(path.join(rr.opts.deployPath,@testData.programName+".tr2"),tr2file)
 
           if process.platform[0] is "l"
-            ffn = path.join(rr.deployPath,filesToCopy[0])
+            ffn = path.join(rr.opts.deployPath,filesToCopy[0])
             fs.chmodSync( ffn , "755")
           
           "Files deployed : #{filesToCopy.length}"                          

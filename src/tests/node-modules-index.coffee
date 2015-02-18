@@ -15,6 +15,15 @@
 ###
 module.exports = ->
   {Q,utils} = @
+  
+  @reg
+    name: "read$environ"
+    setup: true
+    before: ["globLoader"]
+    data:
+      kind: "setup"
+    promise: @toolfuns.getEnviron
+    
   @reg
     name: "node-modules-search"
     before: "globLoader"

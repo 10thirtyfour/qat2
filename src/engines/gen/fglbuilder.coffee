@@ -175,12 +175,13 @@ class ProgramBuilder extends Builder
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
         stmt += """ 
-                  
+                   
                   ON ACTION #{v}
                     DISPLAY "#{v}"
                 """
     unless params.dialog
-      stmt += """ 
+      stmt += """  
+                    
                   ON KEY(F10)
                     EXIT #{interaction}
                 

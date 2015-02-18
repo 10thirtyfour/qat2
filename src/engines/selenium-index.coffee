@@ -251,7 +251,6 @@ module.exports = ->
           params.height = params.h if (params.h?)
           params.left = params.x if (params.x?)
           params.top = params.y if (params.y?)
-        
           
           mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
