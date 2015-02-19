@@ -402,7 +402,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   browser.quit()
-              return r#.then(-> "OK")
+              return r.then(-> "OK")
               
             @reg binfo
             binfo.data.browser = i
