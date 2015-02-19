@@ -112,6 +112,29 @@ elements =
     get :
       defaults :
         height : 26.65625
+      orientation : (el) -> """
+                                if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-orientation-vertical')) {
+                                  return 'vertical';
+                                  } 
+                                return 'horizontal';
+                            """
+      value : (el) -> """
+                      var obj = $('div.qx-aum-progress-bar.qx-identifier-#{el}');
+                      var attr = 'width';
+                      if (obj.hasClass('qx-orientation-vertical')) { attr = 'height'; };
+
+                      var logicVal = parseInt("0"+obj.children('div.ui-progressbar').attr('aria-valuenow'));
+                      var physicVal = parseInt("0"+obj.find('div > div.ui-progressbar-value')[0].style[attr].slice(0,-1));
+                      
+                      
+                      if(Math.abs(logicVal-physicVal) < 5) { 
+                        return logicVal 
+                      } else { 
+                        return 'Logical (aria-valuenow): '+logicVal+', Physical (.ui-progressbar-value.'+attr+'): '+physicVal;
+                      }
+                      
+                      """
+
 
   "radio-button" :
     qxclass : "qx-aum-radio-button"

@@ -256,7 +256,7 @@ module.exports = ->
           errmsg = ""
           
           for attr,expected of params
-            continue if attr in ["mess","precision","selector","w","h","x","y"]
+            continue if attr in ["mess","precision","selector","w","h","x","y","deferred"]
             
             if attr of UI_elements[el_type].get
               res[attr] = yp @execute UI_elements[el_type].get[attr](el)
@@ -267,8 +267,15 @@ module.exports = ->
             if expected isnt res[attr]
               errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
-          throw mess + " : "+errmsg if errmsg isnt ""
-            
+              
+          if errmsg is "" then return ""
+          
+          mess+=" : #{errmsg}" 
+          
+          unless params.deferred      
+            throw mess
+          @errorMessage?=""
+          @errorMessage+=mess+"\n"
           return mess
       )
       
@@ -372,6 +379,7 @@ module.exports = ->
                         throw e
                       
                     throw testContext.errorMessage if testContext.errorMessage.length>0
+                    throw browser.errorMessage if browser.errorMessage.length>0
                     #catch e
                     #  al = testContext.switchTo().alert()
                     #  al = driver.switchTo().alert(); 

@@ -235,7 +235,11 @@ class RangeWidgetBuilder extends ElemBuilder
     @range()
     @steps()
     @elem._fglType="INT"
-    
+  orientation: (orient) ->
+    orient = "Vertical" if orient in ["v","V","vertical"]
+    orient = "Horizontal" if orient in ["h","H","horizontal"]
+    @elem.orientation=orient
+    @
   range: (min=0,max=100) ->
     @elem.minValue=min
     @elem.maxValue=max
@@ -245,7 +249,7 @@ class RangeWidgetBuilder extends ElemBuilder
       when "scrollbar" 
         @elem.smallStep=small
         @elem.largeStep=large
-      when "spinner"
+      when "spinner","progressbar"
         @elem.step=small
       when "slider"
         @elem.minorTick=small
@@ -322,6 +326,8 @@ regSimpleField "radiobutton", _record: "FormOnly", groupIdentifier: "group1", Bo
 regSimpleField "scrollbar", _record: "FormOnly" , RangeWidgetBuilder
 regSimpleField "spinner", _record: "FormOnly", RangeWidgetBuilder
 regSimpleField "slider", _record: "FormOnly", RangeWidgetBuilder
+regSimpleField "progressbar", _record: "FormOnly", RangeWidgetBuilder
+
 regSimpleField "textarea", _record: "FormOnly"
 regSimpleField "textfield", _record: "FormOnly"
 
