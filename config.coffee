@@ -21,9 +21,7 @@ module.exports = ->
         run: 60000
         compile: 20000
         build: 60000
-        download: 600000
-        unzip: 180000
-        install: 600000
+        wd: 120000
       options:
         buildMode: "rebuild"
         databaseProfile: "informix" 

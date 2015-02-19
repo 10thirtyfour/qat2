@@ -343,8 +343,9 @@ module.exports = ->
         yp.frun ->
           _.assign t, synproto
           act.call t
+          
       runner.regWD = (info) ->
-        #plugin = @
+        wdTimeout = @opts.common.timeouts.wd
         d = info.data ?= {}
         _.merge d, kind: "wd"
         info.enable = _.merge {}, plugin.enable, info.enable
@@ -358,7 +359,7 @@ module.exports = ->
               if binfo.syn?
                 binfo.name= "wd$#{i}$#{info.name}"
                 promise = (browser) ->
-                  yp.frun ->
+                  yp.frun( ->
                     #try
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     try
@@ -383,9 +384,11 @@ module.exports = ->
                       #  exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
                       #else
                       #  exec('pkill -9 '+ browser.cmd )
-                      
+                    ).timeout(wdTimeout)  
               else
                 promise = ->
+            
+            
             binfo.promise = ->
               if plugin.links[i]?
                 browser = wd.promiseChainRemote plugin.links[i]
@@ -397,10 +400,10 @@ module.exports = ->
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
-                r = r.finally ->
+                r = r.finally =>
                   browser.quit()
-               
-              return r.then(-> "OK")
+              return r#.then(-> "OK")
+              
             @reg binfo
             binfo.data.browser = i
       Q({})
