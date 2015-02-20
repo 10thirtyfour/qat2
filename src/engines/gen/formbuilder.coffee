@@ -15,8 +15,11 @@
 ###
 _ = require "lodash"
 prettyjson = require "prettyjson"
-containers = []
-widgets = []
+
+formitems = 
+  containers : []
+  widgets : []
+  rangefields : [ "progressbar", "scrollbar", "slider", "spinner" ]
 
 class Builder
 
@@ -270,12 +273,12 @@ class BoolWidgetBuilder extends ElemBuilder
     @  
     
 regBuilder = (name, builder) ->
-  containers.push name
+  formitems.containers.push name
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
 regSimpleField = (name, topts, builder) ->
-  widgets.push name
+  formitems.widgets.push name
   defaultOpts[name] = topts
   builder ?= TextWidgetBuilder
   ContBuilder.prototype[name] = (opts) ->
@@ -296,7 +299,7 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false 
+      selected = false  
       if i[0] is "+"
         selected = (true) 
         i = i.substr 1
@@ -471,4 +474,6 @@ ElemBuilder::uncheck = event "OnUncheck"
 
 module.exports =
     form: (name)-> new FormBuilder( {_name:name} )
-    formitems: -> {containers:containers, widgets:widgets, elements:widgets.concat(containers)}
+    formitems: -> 
+      formitems.elements = formitems.widgets.concat(formitems.containers)
+      formitems
