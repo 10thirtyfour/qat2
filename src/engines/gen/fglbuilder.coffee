@@ -75,19 +75,19 @@ class RecordBuilder extends Builder
         res = """  LET #{varname}.#{i} ="""
         switch v.ty
             when "STRING"
-              if v.val._fglVal
+              if v.val._fglVal?
                 res += "\"#{v.val._fglVal}\""
               else if @_withDefaults or not v.val.text?
                 res += "\"str-#{varname}-#{i}#{if x? then "-#{x}" else ""}\""
               else
                 res += "\"#{v.val.text}\""
             when "INT"
-              if v.val._fglVal
+              if v.val._fglVal?
                 res += v.val._fglVal
               else
                 res += if x? then x else "100"
             else 
-              if v.val._fglVal
+              if v.val._fglVal?
                 res += v.val._fglVal
               else
                 res += "NULL"
