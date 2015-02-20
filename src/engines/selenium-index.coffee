@@ -99,7 +99,7 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector("#qx-home-form, #qx-application-restart",timeout))
+          @waitForElementByCssSelector("#qx-application-restart",timeout))
            
           
       wd.addPromiseMethod(
@@ -302,10 +302,11 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "setValue"
-        (el, value) -> 
+        (el, value) ->
           try
             yp UI_elements[ yp @getType(el) ].set.value.apply(@,[el,value])
           catch e
+            plugin.info "#{el} setValue failed"
             return (false)
           (true)
       )      
@@ -368,7 +369,9 @@ module.exports = ->
                 promise = (browser) ->
                   yp.frun( ->
                     #try
+                    
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
+                    testContext.browser.errorMessage=""
                     try
                       binfo.syn.call testContext
                     catch e
@@ -377,9 +380,12 @@ module.exports = ->
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
                         throw e
-                      
-                    throw testContext.errorMessage if testContext.errorMessage.length>0
-                    throw browser.errorMessage if browser.errorMessage.length>0
+                    
+                    
+                    testContext.errorMessage+=testContext.browser.errorMessage
+                    if testContext.errorMessage.length>0  
+                      throw testContext.errorMessage
+                    #throw  if testContext.browser.errorMessage.length>0
                     #catch e
                     #  al = testContext.switchTo().alert()
                     #  al = driver.switchTo().alert(); 
