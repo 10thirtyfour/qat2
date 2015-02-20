@@ -130,7 +130,7 @@ elements =
                       if(Math.abs(logicVal-physicVal) < 5) { 
                         return logicVal 
                       } else { 
-                        return 'Logical (aria-valuenow): '+logicVal+', Physical (.ui-progressbar-value.'+attr+'): '+physicVal;
+                        return 'Logical (aria-valuenow): '+logicVal+', Visual (.ui-progressbar-value.'+attr+'): '+physicVal;
                       }
                       
                       """
@@ -162,9 +162,11 @@ elements =
                         var scaleRect = elem.find('div.qx-scb-scell')[0].getBoundingClientRect();
                         var handleRect = elem.find('div.qx-scroll-handler')[0].getBoundingClientRect();
                         if (elem.hasClass('qx-prop-horizontal')) {
+                          if (scaleRect.width === handleRect.width) {return 0;}
                           return Math.round(100 * (handleRect.left - scaleRect.left) / (scaleRect.width - handleRect.width));
                         }
                         if (elem.hasClass('qx-prop-vertical')) {
+                          if (scaleRect.height === handleRect.height) {return 0;}
                           return Math.round(100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
                         }
                       """
@@ -200,7 +202,7 @@ elements =
     qxclass  : "qx-aum-spinner"
     get :
       text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
-      value: (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
+      value: (el) -> "return parseInt('0'+$('div.qx-identifier-#{el} .qx-main-cell > input').val())"
       defaults :
         height : 19
         chrome$l :
