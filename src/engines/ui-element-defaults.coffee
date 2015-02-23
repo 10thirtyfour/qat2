@@ -135,7 +135,6 @@ elements =
                       
                       """
 
-
   "radio-button" :
     qxclass : "qx-aum-radio-button"
     get :
@@ -186,9 +185,9 @@ elements =
           while count>0
             count-=1
             @invoke selector
-            @sleep 100 
+            @waitIdle 
 
-        return true
+        (true)
         
    "scroll-viewer" :
     qxclass : "qx-aum-scroll-viewer"
@@ -225,10 +224,21 @@ elements =
         chrome$l :
           height : 17
     set :
-      value : (el,val) ->
-        
-        
-        true
+      value : (el,val)->
+        # setValue with mouse
+        if val.smallStep?
+          count=Math.abs(val.smallStep)
+          selector = "div.qx-identifier-#{el}.qx-aum-spinner a.ui-spinner-"+ if val.smallStep>0 then "up" else "down"
+          while count>0
+            count-=1
+            @invoke selector
+            @waitIdle           
+          return
+        # click on textfield, clear value and enver new one
+        el = @elementByCss("div.qx-identifier-#{el}.qx-aum-spinner input.qx-text.ui-spinner-input")
+        el.click()
+        @waitIdle
+        el.sendKeys(['\uE009','a','\uE009','\uE017']).sendKeys(val)
 
   "tab" :
     qxclass : "qx-aum-tab"
@@ -281,15 +291,21 @@ elements =
     qxclass : "qx-aum-text-field"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-text-field').length > 0)"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-      value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+      text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
+      value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
         height : 18
         chrome$l :
           height : 17
     set :
       value : (el,val)->
-        true 
+        #click on textfield and wait for idle
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
+        @waitIdle
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field .qx-text")
+        .sendKeys(['\uE009','a','\uE009','\uE017'])
+        .sendKeys(val)
+        
         
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
