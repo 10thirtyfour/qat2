@@ -183,7 +183,7 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click? 
-            el = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss(".#{el}"))
+            el = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss("#{el}"))
             
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"

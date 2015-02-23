@@ -188,11 +188,7 @@ elements =
             @invoke selector
             @sleep 100 
 
-        if val.largeStep  
-        #if val.largeStep
-            
-          
-        return "d"
+        return true
         
    "scroll-viewer" :
     qxclass : "qx-aum-scroll-viewer"
@@ -228,6 +224,11 @@ elements =
         height : 19
         chrome$l :
           height : 17
+    set :
+      value : (el,val) ->
+        
+        
+        true
 
   "tab" :
     qxclass : "qx-aum-tab"
@@ -286,7 +287,10 @@ elements =
         height : 18
         chrome$l :
           height : 17
-
+    set :
+      value : (el,val)->
+        true 
+        
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     set :
