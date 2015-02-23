@@ -172,7 +172,28 @@ elements =
                       """
       defaults : 
         height : 9    
+    set :
+      value : (el,val) -> 
+        # step direction and count must be placed into val property, like 
+        # setValue "scrollbar1", smallStep:3
+        # setValue "scrollbar1", largeStep:-1
+        # numeric value treated as % to drag
+        # setValue "scrollbar1", 10
+        count=0
+        if val.smallStep
+          count=Math.abs(val.smallStep)
+          selector = 'div.qx-aum-scroll-bar.qx-identifier-'+el+' a.qx-scb-'+ if val.smallStep<0 then 'up' else 'down'
+          while count>0
+            count-=1
+            @invoke selector
+            @sleep 100 
 
+        if val.largeStep  
+        #if val.largeStep
+            
+          
+        return "d"
+        
    "scroll-viewer" :
     qxclass : "qx-aum-scroll-viewer"
 
