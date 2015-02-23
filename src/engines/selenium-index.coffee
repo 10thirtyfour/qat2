@@ -121,7 +121,7 @@ module.exports = ->
         () ->
           @get(runner.lyciaWebUrl)
             .waitIdle())   
-
+          
       wd.addPromiseMethod(
         "dragNDrop"
         (el, left, top) -> 
@@ -184,12 +184,45 @@ module.exports = ->
         (el) ->
           unless el.click? 
             el = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss("#{el}"))
-            
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"
           else
             el.click())
 
+      wd.addPromiseMethod(
+        "getClasses",
+        (el) ->
+          element = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss("#{el}"))
+          yp(element.getAttribute("class")).split(" ")
+      )            
+          
+          
+      wd.addPromiseMethod(
+        "checkClasses",
+        (el, params) ->
+          classes = yp @getClasses el
+          params.good?=params.required
+          params.bad?=params.forbidden
+          
+          goodClasses = if _.isString(params.good) then params.good.split(' ') else params.good ? []
+          badClasses  = if _.isString(params.bad ) then params.bad.split(' ') else params.bad ? []
+          
+          mess=""
+          for badClass in badClasses
+            mess+="#{el} has class #{badClass}\n" if badClass in classes
+            
+          for goodClass in goodClasses    
+            mess+="#{el} does not have class #{goodClass}\n" unless goodClass in classes
+          
+          params.deferred?=@aggregateError
+          
+          unless params.deferred      
+            throw mess
+          @errorMessage?=""
+          @errorMessage+=mess
+          return mess
+      )            
+           
       wd.addPromiseMethod(
         "invokeElement",
         (el) ->
@@ -215,6 +248,7 @@ module.exports = ->
               [el,args])
             )
 
+            
       wd.addPromiseMethod(
         "hasScroll"
         (id) ->      
@@ -272,6 +306,7 @@ module.exports = ->
           
           mess+=" : #{errmsg}" 
           
+          params.deferred?=@aggregateError
           unless params.deferred      
             throw mess
           @errorMessage?=""
@@ -336,12 +371,10 @@ module.exports = ->
               throw "Isn't implemented for this messageBox element yet"
       )
 
-      
               
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
-      
       wrap = (m,n) ->
         (args...) ->
           yp @browser[n].apply @browser, args
@@ -372,6 +405,7 @@ module.exports = ->
                     
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
+                    testContext.aggregateError=false
                     try
                       binfo.syn.call testContext
                     catch e
@@ -381,6 +415,8 @@ module.exports = ->
                       else
                         throw e
                     
+                    #console.log testContext.browser.errorMessage
+                    #console.log testContext.browser.errorMessage
                     
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0  
