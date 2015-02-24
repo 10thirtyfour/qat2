@@ -223,7 +223,21 @@ class ProgramBuilder extends Builder
             DISPLAY #{actName}
           """
     @
-  
+    
+  showRecord: (f,x,sep)->
+    f?=0
+    x?=0
+    sep?='>>>'
+    if @forms?
+      form=@forms[f]
+      if form.screenrecords?
+        mess = ""
+        for field in form.screenrecords[x].fields
+          if mess.length then mess+="||'#{sep}'||"
+          mess+="NVL(formonly1.#{field._val.identifier},'NULL')"
+        @commands.push "MESSAGE "+mess  
+    @
+    
   command: (str) ->
     @commands.push str
     @
