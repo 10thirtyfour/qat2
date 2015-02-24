@@ -69,7 +69,7 @@ module.exports = ->
       
       wd.addPromiseMethod(
         "waitIdle",
-        (timeout) -> 
+        (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(".qx-application.qx-state-idle", timeout)
           )  
@@ -90,9 +90,9 @@ module.exports = ->
           if params.args then programUrl+=params.args
 
           if params.wait
-            return @get(programUrl).waitIdle()
+            return @get(programUrl).waitIdle().sleep(500)
           else
-            return @get(programUrl)
+            return @get(programUrl).sleep(500)
           ) 
 
       wd.addPromiseMethod(
@@ -108,6 +108,8 @@ module.exports = ->
           yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
           )
          
+         
+              
       wd.addPromiseMethod(
         "waitMessageBox",
         (timeout) ->
@@ -358,7 +360,14 @@ module.exports = ->
         "toolbutton"
         (title) ->
           @elementByCss(""".qx-aum-toolbar-button[title="#{title}"]"""))
-      
+          
+      wd.addPromiseMethod(
+        "statusBarText"
+        () ->
+          yp @execute('return $("div.qx-identifier-statusbarmessage div.qx-text").text()') ? ""
+      )    
+          
+
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
