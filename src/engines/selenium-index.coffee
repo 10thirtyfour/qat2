@@ -71,7 +71,7 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector(".qx-application.qx-state-idle", timeout)
+          @waitForElementByCssSelector(".qx-application.qx-state-idle", timeout).sleep(300)
           )  
           
       wd.addPromiseMethod(
@@ -90,7 +90,7 @@ module.exports = ->
           if params.args then programUrl+=params.args
 
           if params.wait
-            return @get(programUrl).waitIdle().sleep(500)
+            return @get(programUrl).waitIdle()
           else
             return @get(programUrl).sleep(500)
           ) 
