@@ -144,8 +144,11 @@ class ProgramBuilder extends Builder
     @newTypeName = @uniq.newName "type"
     @newVarName = @uniq.newName "var"
     @forms = []
+    @activeWindowName =""
   windowWithForm: (name) ->
+    @activeWindowName = name 
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
+    
 
   initScreenRec: (screenRec) ->
     return if screenRec.fields.length is 0
@@ -198,7 +201,7 @@ class ProgramBuilder extends Builder
     @windowWithForm name
     if form.screenrecords?
       @inputScreenRec form.screenrecords[x]
-    @closeWindow name
+    #@closeWindow name
     @
     
   dialog: (form)->
@@ -241,7 +244,9 @@ class ProgramBuilder extends Builder
   command: (str) ->
     @commands.push str
     @
-  closeWindow: (name) -> @command "CLOSE WINDOW #{name}"
+  closeWindow: (name) -> 
+    name?=@activeWindowName
+    @command "CLOSE WINDOW #{name}"
   getKey: () -> @command "CALL fgl_getkey()"
   end: ->
     """
