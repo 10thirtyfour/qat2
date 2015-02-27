@@ -217,9 +217,14 @@ module.exports = ->
             mess+="#{el} does not have class #{goodClass}\n" unless goodClass in classes
           
           params.deferred?=@aggregateError
+
+          return "" unless mess.length>0
           
-          unless params.deferred      
-            throw mess
+          if params.mess?
+            mess=params.mess+' '+mess
+          
+          throw mess unless params.deferred      
+            
           @errorMessage?=""
           @errorMessage+=mess
           return mess
