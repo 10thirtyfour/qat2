@@ -336,7 +336,7 @@ module.exports = ->
         cmdLine.add(@testData.options)
         @trace opt.cwd
         @trace cmdLine.toString()
-        
+
         [command,args...] = cmdLine.args
 
         command = path.join(opt.env.LYCIA_DIR,"bin",command)
@@ -360,7 +360,7 @@ module.exports = ->
 
             # construction error message
             @data.failMessage=errorMessage.message
-            throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}"
+            throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}. Commandline : #{cmdLine.toString()}"
             
         finally 
           child.kill('SIGKILL')
