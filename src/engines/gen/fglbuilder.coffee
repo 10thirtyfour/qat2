@@ -101,7 +101,7 @@ class RecordBuilder extends Builder
     if @_isGrid
       @_itemCount?=100
       @par.commands.push "FOR i = 1 TO #{@_itemCount}"
-      initSingle "#{@varname}[i]"
+      initSingle "#{@varname}[i]",'"||i#'
       @par.commands.push "END FOR"
     else
       #console.log "init record:", @varname, prettyjson.render @
@@ -170,29 +170,29 @@ class ProgramBuilder extends Builder
         """DISPLAY ARRAY #{params.varname}#{wd} TO #{screenRec.identifier}.*#{attrib}"""
       else
         """INPUT ARRAY #{params.varname}#{wd} FROM #{screenRec.identifier}.*#{attrib}"""
-    else
+    else 
       """INPUT BY NAME #{params.varname}.*#{wd}#{attrib}"""
     
     
     interaction = stmt.split(" ")[0]
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
-        stmt += """ 
-                   
-                  ON ACTION #{v}
-                    DISPLAY "#{v}"
-                """
+        stmt += """\n  ON ACTION #{v}\n    DISPLAY "#{v}" """
+
+    #console.log screenRec._blocks  
+    if screenRec._blocks?
+      for block in screenRec._blocks
+        stmt += "\n  ON #{block.name}\n    #{block.text}"
+        if block.name.substr(0,4) is "DRAG" or block.name.substr(0,4) is "DROP"
+          # add dnd variable
+          if @defs.indexOf("DEFINE dnd ui.DragDrop") is -1
+            @defs.push "DEFINE dnd ui.DragDrop"
+      
+    
     unless params.dialog
-      stmt += """  
-                    
-                  ON KEY(F10)
-                    EXIT #{interaction}
-                
-              """
-    stmt+= """ 
-              END #{interaction}
-           """
-    #"
+      stmt += "\n  ON KEY(F10)\n    EXIT #{interaction}"
+    
+    stmt+= "\nEND #{interaction}\n"
     @commands.push stmt
   openForm: (form,x) ->
     @forms.push form
@@ -204,14 +204,14 @@ class ProgramBuilder extends Builder
     #@closeWindow name
     @
     
-  dialog: (form)->
+  dialog: (form,attr)->
     @forms.push form
     name = form._name ?= @uniq.newName_ (@name + "_form")
     @windowWithForm name
     varnames = for sr in form.screenrecords
       @initScreenRec sr
       
-    @commands.push "DIALOG"
+    @commands.push "\nDIALOG" + if attr? then " ATTRIBUTES(#{attr})" else ""
     for sr,i in form.screenrecords
       @inputScreenRec sr, dialog:true, varname:varnames[i]
     @commands.push """
@@ -253,6 +253,7 @@ class ProgramBuilder extends Builder
     GLOBALS
       #{(indent(i) for i in @globals).join("\n")}
     END GLOBALS
+    
     MAIN
       DEFINE i INT
     #{(indent(i) for i in @defs).join("\n")}

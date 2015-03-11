@@ -112,7 +112,11 @@ class TableBuilder extends ItemsBuilder
     _.merge el, opts
     items.push el
     b
-    
+  block: (name,text)->  
+    @elem.blocks?=[]
+    text?='DISPLAY "'+name+'"'
+    @elem.blocks.push {name:name,text:text}
+    @
   _ext: {}
   
 
@@ -384,12 +388,16 @@ ElemBuilder::widgets = (fun) ->
 
 class ScreenRecordBuilder extends Builder
   constructor: (@rec) ->
-  isGrid: (v) -> @rec._isGrid = v
+  isGrid: (v) -> 
+    @rec._isGrid = v
   field: (f) -> 
     return @ for i in @rec.fields when i["#text"] is f.name
     @rec.fields.push
       "#text": f.identifier
       _val: f
+    @
+  blocks : (b)->
+    @rec._blocks = b
     @
 
 FormBuilder::screenrec = (name) ->
@@ -423,10 +431,12 @@ FormBuilder::end = ->
       @identifier = name
 
     if type is "table"
-      form.screenrec(@identifier).isGrid(true)
+      r = form.screenrec(@identifier)
+      r.isGrid(true)
+      r.blocks @blocks
       for f in @tabledatamodel.tablecolumns
         f.control._record = @identifier
-        
+         
     if @_record?
       rec = form.screenrec(@_record).field(@)
       rec.isGrid(true) if grid

@@ -14,12 +14,15 @@
 # #L%
 ###
 log = console.log
-exec = require('child_process').exec
+
 
 UI_elements = require "./ui-element-defaults"
+dnd_helper = require "./drag_and_drop_helper"
+
+
 
 module.exports = ->
-  {Q,_,EventEmitter,yp} = runner = @
+  {fs,Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
   # http://code.google.com/p/selenium/issues/detail?id=5353
   # so we need to simulate it from within the page
@@ -36,15 +39,26 @@ module.exports = ->
       not fname.match("^newElement$|^toJSON$|^toString$|^_") and
         not EventEmitter.prototype[fname]
       ).value()
+
+  # transform input element to css selector for most methods      
+  getSelector = (el)->
+    # exact selector was provided
+    if el.selector? then return el.selector
+    # string as id
+    if _.isString(el) then return ".qx-identifier-#{el}"
+    # table row selector
+    if el.table? and el.row?
+      return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
+      
   @reg
     name: "wd"
     # CFGOPT: default wait timeout
-    defaultWaitTimeout: 30000
-    setup: true   
+    defaultWaitTimeout: 60000
+    setup: (true)
     before: "globLoader"
     enable:
       browser:
-        chrome: true 
+        chrome: (true)
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"
@@ -65,6 +79,7 @@ module.exports = ->
       invoke:
         firefox: (true) 
     promise: ->
+    
       plugin = @
       
       wd.addPromiseMethod(
@@ -105,7 +120,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
+          yp(@elementByCssSelectorIfExists(getSelector(el)))?
           )
          
          
@@ -124,15 +139,7 @@ module.exports = ->
           @get(runner.lyciaWebUrl)
             .waitIdle())   
           
-      wd.addPromiseMethod(
-        "dragNDrop"
-        (el, left, top) -> 
-          el
-            .moveTo()
-            .buttonDown()
-            .moveTo(left,top)
-            .buttonUp()
-      )
+
 
       wd.addPromiseMethod(
         "getElement"
@@ -147,7 +154,7 @@ module.exports = ->
         (wnd,dx,dy,h) -> 
           h?="se"
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
-          #h = yp @elementByCss(".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
+
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           #console.log dx,dy
@@ -185,7 +192,7 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click? 
-            el = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss("#{el}"))
+            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss("#{el}"))
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"
           else
@@ -258,10 +265,9 @@ module.exports = ->
             
       wd.addPromiseMethod(
         "hasScroll"
-        (id) ->      
-          selector = id.selector ? ".qx-identifier-#{id}"
+        (el) ->      
           @execute("""
-            el=$('#{selector}');
+            el=$('#{getSelector(el)}');
             if(el.css('overflow')=='hidden') {return false;}
             if((el.prop('clientWidth' )!=el.prop('scrollWidth' )) || 
                (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
@@ -356,9 +362,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "getRect"
         (el) -> 
-          {selector} = el
-          selector?= '.qx-identifier-' + el
-          return yp @execute "return $('#{selector}')[0].getBoundingClientRect()"
+          return yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
       )
 
       wd.addPromiseMethod(
@@ -369,10 +373,56 @@ module.exports = ->
       wd.addPromiseMethod(
         "statusBarText"
         () ->
-          yp @execute('return $("div.qx-identifier-statusbarmessage div.qx-text").text()') ? ""
+          yp(@execute('return $("div.qx-identifier-statusbarmessage div.qx-text").text()')) ? ""
       )    
-          
+      
+      
+      wd.addPromiseMethod(
+        "dndInit",
+        (el,button=0)->
+          @execute dnd_helper
+      )
+      
+      wd.addPromiseMethod(
+        "dragNDrop",
+        (el,button=0)->
+          @execute "$('#{@getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
+      )
 
+      #wd.addPromiseMethod(
+      #  "startDrag",
+      #  (el,button=0)->
+      #    b=el.button ? button
+      #    r = yp @getRect el
+      #    x = Math.round(r.left + r.width / 2)
+      #    y = Math.round(r.top + r.height / 2)
+      #    console.log x,y
+      #    e = yp @elementByCss('#qx-home-form')
+      #      #.moveTo( x, y )
+      #      #.dragNDrop(b)
+      #      #.moveTo( x + 30 , y + 30 )
+      #      #.buttonDown(b)
+      #      #.moveTo( x + 60 , y + 60 )
+      #      #.buttonUp(b)
+      #      #.buttonDown(b)
+      #      #.moveTo( x + 10 , y + 3 )
+      #      #.moveTo( x + 20 , y + 23 )
+      #      #.buttonUp(b)
+      #      
+      #    @draggable = { button : b }
+      #) 
+      
+      wd.addPromiseMethod(
+        "dropAt",
+        (el)->
+          return unless @draggable.button?
+          selector = @getSelector(el)
+          @elementByCss("#{selector}").moveTo().buttonUp(@draggable.button)
+          @draggable={}
+      
+      )
+      
+     
       wd.addPromiseMethod(
         "messageBox"
         (action,params) ->
@@ -385,10 +435,17 @@ module.exports = ->
               throw "Isn't implemented for this messageBox element yet"
       )
 
-              
+      wd.addPromiseMethod(
+        "getSelector", (el)->
+          if el.selector? then return el.selector
+          if _.isString(el) then return ".qx-identifier-#{el}"
+          if el.table? and el.row?
+            return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
+      )   
       # Adding properties for wd test' this
       synproto = 
         SPECIAL_KEYS:wd.SPECIAL_KEYS
+        
       wrap = (m,n) ->
         (args...) ->
           yp @browser[n].apply @browser, args
@@ -398,7 +455,8 @@ module.exports = ->
         yp.frun ->
           _.assign t, synproto
           act.call t
-          
+      
+      
       runner.regWD = (info) ->
         wdTimeout = @opts.common.timeouts.wd
         d = info.data ?= {}
@@ -429,20 +487,9 @@ module.exports = ->
                       else
                         throw e
                     
-                    #console.log testContext.browser.errorMessage
-                    #console.log testContext.browser.errorMessage
-                    
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0  
                       throw testContext.errorMessage
-                    #throw  if testContext.browser.errorMessage.length>0
-                    #catch e
-                    #  al = testContext.switchTo().alert()
-                    #  al = driver.switchTo().alert(); 
-                    # AlertText = al.getText();
-                    #if e.cause.value.message is "unexpected alert open"
-                    #    throw "SlientSideProblems"
-                    # ======== no more kills here ========
                       #task kill. command stored in browser.executedPrograms
                       #if process.platform[0] is "w" 
                       #  exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
