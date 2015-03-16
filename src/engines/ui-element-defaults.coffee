@@ -112,7 +112,7 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-item').length > 0)"
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
-      text  : (el) -> "return $('.qx-identifier-#{el} a').text()"
+      text  : (el) -> "return $('.qx-identifier-#{el} > a').text()"
 
 
    
