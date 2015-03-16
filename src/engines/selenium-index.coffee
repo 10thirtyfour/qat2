@@ -165,7 +165,19 @@ module.exports = ->
               .buttonUp(0)
         )
 
-
+      wd.addPromiseMethod(
+        "moveWindow"
+        (wnd,dx,dy) -> 
+          r = yp @execute "return $('.qx-o-identifier-#{wnd} > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
+          x = Math.round(r.left + r.width / 2)
+          y = Math.round(r.top + r.height / 2)
+          yp @elementByCss('#qx-home-form')
+              .moveTo( x, y )
+              .buttonDown(0)
+              .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
+              .buttonUp(0)
+        )
+        
       wd.addPromiseMethod(
         "resizeElement"
         (el,dx,dy,h) -> 
