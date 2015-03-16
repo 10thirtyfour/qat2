@@ -106,7 +106,16 @@ elements =
         height : 22
         chrome$l :
           height : 21
-    
+
+  "menu-item" :
+    qxclass  : "qx-aum-menu-item"
+    selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-item').length > 0)"
+    get :
+      image : (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
+      text  : (el) -> "return $('.qx-identifier-#{el} a').text()"
+
+
+   
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     get :
@@ -310,7 +319,7 @@ elements =
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     set :
-      #Warning!!1 not work 
+      #Warning!!! not work 
       value : (el,h,m) -> "return(@execute($('.ui-timepicker-hours .ui-timepicker tbody tr td a')[#{h}].click()).execute($('.ui-timepicker-minutes .ui-timepicker tbody tr td a')[#{m}].click()))"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
