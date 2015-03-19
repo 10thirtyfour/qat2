@@ -276,8 +276,8 @@ class BoolWidgetBuilder extends ElemBuilder
       stringValue : unchecked
     @  
     
-regBuilder = (name, builder) ->
-  formitems.containers.push name
+regBuilder = (name, builder, skip) ->
+  formitems.containers.push(name) unless skip?
   ContBuilder.prototype[name] = (opts) -> @content name
   tyToBuilder[name] = (el,ty,par) -> new builder el, ty, par
 
@@ -303,7 +303,7 @@ class ComboBuilder extends TextWidgetBuilder
   items: (items...) ->
     res = @elem.comboBoxItems ?= []
     for i in items
-      selected = false  
+      selected = false
       if i[0] is "+"
         selected = (true) 
         i = i.substr 1
@@ -318,7 +318,7 @@ class ComboBuilder extends TextWidgetBuilder
 regBuilder "borderpanel", BorderPanelBuilder
 regBuilder "coordpanel", CoordPanelBuilder
 regBuilder "gridpanel", GridBuilder
-regBuilder "tablecolumn", TableColumnBuilder
+regBuilder "tablecolumn", TableColumnBuilder, true
 regBuilder "table", TableBuilder
 
 

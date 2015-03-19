@@ -154,10 +154,8 @@ module.exports = ->
         (wnd,dx,dy,h) -> 
           h?="se"
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
-
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
-          #console.log dx,dy
           yp @elementByCss('#qx-home-form')
               .moveTo( x, y )
               .buttonDown(0)
