@@ -180,13 +180,16 @@ module.exports = ->
         "resizeElement"
         (el,dx,dy,h) -> 
           h?="e"
-          yp(@elementByCss(".qx-identifier-#{el} .ui-resizable-#{h}").then( (p)->
-            p
-              .moveTo()
-              .buttonDown()
-              .moveTo(dx,dy)
-              .buttonUp()
-          ))
+          r = yp @execute "return $('.qx-identifier-#{el} .ui-resizable-#{h}')[0].getBoundingClientRect()"
+
+          x = Math.round(r.left + r.width / 2)
+          y = Math.round(r.top + r.height / 2)
+          #console.log dx,dy
+          yp @elementByCss('#qx-home-form')
+              .moveTo( x, y )
+              .buttonDown(0)
+              .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
+              .buttonUp(0)
         )
 
       wd.addPromiseMethod(
