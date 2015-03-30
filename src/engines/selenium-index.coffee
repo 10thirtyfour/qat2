@@ -442,7 +442,7 @@ module.exports = ->
           switch action
             when "getText" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
             when "getValue" then yp(@execute("return $('.qx-message-box:visible input').val()"))
-            when "wait" then yp(@waitMessageBox())
+            when "wait" then yp(@waitMessageBox().sleep(300))
             when "click" then yp(@execute ("$('.qx-button-#{params}').click()")) 
             else
               throw "Isn't implemented for this messageBox element yet"
