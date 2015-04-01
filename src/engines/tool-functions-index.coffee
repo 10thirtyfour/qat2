@@ -25,6 +25,13 @@ fse = require "fs-extra"
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
 
+  inetEnvSetDatabase = (dbProps) ->
+    dbProps?=runner.opts.dbprofiles[runner.sysinfo.database]
+    # LISTENERXML variable is broken on windows
+    #listenerXml=new dom().parseFromString(fs.readFileSync(runner.environ.LISTENERXML))
+    #inetEnvFn = xpath.select("/xml/service[name[text() = 'default-1889']]/envfile/text()",listenerXml)
+    #console.log inetEnvFn
+    
   lineFromStream = (stream) ->
     options = 
       keepEmptyLines : 1
@@ -64,7 +71,6 @@ module.exports = ->
     @toString = (sep=" ")->
       return @args.join(sep) 
     @add(str)
-
   
   # acquiring test data from filename if needed
   filenameToTestname = (testName) ->
@@ -266,6 +272,8 @@ module.exports = ->
           throw new Error "Failed to get Lycia build form qfgl !!"
 
         return rr.sysinfo)
+      .then( ->
+        inetEnvSetDatabase())
       .catch( (err)->
         rr.spammer "sendMessage", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
         _this.fail "Unable to read environ : "+err.message
