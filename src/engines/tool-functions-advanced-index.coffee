@@ -16,9 +16,9 @@ module.exports = ->
         testData.fileName = path.resolve(path.dirname(@fileName),testData.fileName)
         testData.options?=testData.opts
         
-        testData.ext = path.extname(testData.fileName).toLowerCase()
+        testData.ext=path.extname(testData.fileName).toLowerCase()
         unless testData.ext
-          testData.ext= if fs.existsSync(testData.fileName+".fm2") then ".fm2" else ".per"
+          testData.ext=".per" #if fs.existsSync(testData.fileName+".fm2") then ".fm2" else ".per"
         else  
           testData.fileName = path.join(path.dirname(testData.fileName), path.basename(testData.fileName,testData.ext))
 
@@ -48,8 +48,10 @@ module.exports = ->
         unless formTestName of rr.tests
           rr.reg
             name : formTestName
-            kind : "xml"
-          promise : -> Q( "OK" )
+            data :
+              kind : "xpath"
+            promise : -> 
+              @runner.Q("OK")
 
         rr.reg
           name: testName
