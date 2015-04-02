@@ -38,15 +38,24 @@ module.exports = ->
           testData.ext = ".fm2"
           
         testData.fileName = testData.fileName+".fm2"
+        formTestName = rr.toolfuns.uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}")
         n = 0
         loop
-          testName = rr.toolfuns.uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}$#{n}")
+          testName = "#{formTestName}$#{n}"
           n+=1
           unless testName of rr.tests then break
         
+        unless formTestName of rr.tests
+          rr.reg
+            name : formTestName
+            kind : "xml"
+          promise : -> Q( "OK" )
+
         rr.reg
           name: testName
           after: compileTestName
+          before : formTestName
+          failOnly: true
           data:
             kind: "xpath"
           testData: testData
