@@ -120,7 +120,7 @@ elements =
     qxclass : "qx-aum-progress-bar"
     get :
       defaults :
-        height : 26.65625
+        height : 2 #6.65625
       orientation : (el) -> """
                                 if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-orientation-vertical')) {
                                   return 'vertical';
