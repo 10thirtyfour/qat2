@@ -29,6 +29,7 @@ module.exports = ->
           unless compileTestName of rr.tests
             rr.reg
               name: compileTestName
+              failOnly: true
               data:
                 kind: "compile"+testData.ext
               testData: 
