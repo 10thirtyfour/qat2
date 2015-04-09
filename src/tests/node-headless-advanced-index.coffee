@@ -19,6 +19,10 @@ vm = require "vm"
 module.exports = ->
   
   {path,Q,fs,_,yp,utils} = runner = @
+  
+  @runner.tests.globLoader.disable.file.pattern?=[]
+  for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile 
+    @runner.tests.globLoader.disable.file.pattern.push "**/*-#{dbp}-db-qfgl-test.coffee"
 
   @reg
     name: "advancedLoader"
