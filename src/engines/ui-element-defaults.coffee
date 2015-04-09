@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 elements = 
 
   "blob-viewer" :
@@ -34,6 +19,7 @@ elements =
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
+      value : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
       defaults :
         height : 24
         chrome$l:
