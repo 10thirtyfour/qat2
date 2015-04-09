@@ -26,11 +26,31 @@ module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
 
   inetEnvSetDatabase = (dbProps) ->
-    dbProps?=runner.opts.dbprofiles[runner.sysinfo.database]
-    # LISTENERXML variable is broken on windows
-    #listenerXml=new dom().parseFromString(fs.readFileSync(runner.environ.LISTENERXML))
-    #inetEnvFn = xpath.select("/xml/service[name[text() = 'default-1889']]/envfile/text()",listenerXml)
-    #console.log inetEnvFn
+    qatHeader="\n### QAT SECTION START\n"
+    qatFooter="### QAT SECTION END\n"
+    try
+      listenerXml = new dom().parseFromString(fs.readFileSync(runner.environ.LISTENERXML).toString())
+      inetEnvFn = xpath.select("/xml/service[name[text() = 'default-1889']]/envfile/text()",listenerXml).toString()
+      inetEnv= fs.readFileSync(inetEnvFn).toString()
+      
+      if inetEnv.indexOf(qatHeader)>-1
+        if inetEnv.indexOf(qatFooter)>-1
+          footer = inetEnv.slice(inetEnv.indexOf(qatFooter) + qatFooter.length)     
+        else 
+          footer = ""
+        inetEnv=inetEnv.slice(0,inetEnv.indexOf(qatHeader)) + footer
+      
+      dbProps?=runner.opts.dbprofiles[runner.sysinfo.database]
+
+      inetEnv+=qatHeader
+      for key,val of dbProps
+        inetEnv+="#{key}=#{dbProps[key]}\n"
+      inetEnv+=qatFooter
+
+      fs.writeFileSync(inetEnvFn,inetEnv)
+      
+    catch e
+      runner.logger.info "Failed to read listener.xml/inet.env"
     
   lineFromStream = (stream) ->
     options = 
