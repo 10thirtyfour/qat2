@@ -320,6 +320,9 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
 
+  "toolbar-separator" :
+    qxclass : "qx-aum-toolbar-separator"
+      
   "web-component" :
     qxclass : "qx-aum-web-component"
     get :
