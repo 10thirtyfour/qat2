@@ -20,6 +20,12 @@ elements =
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       value : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
+      state : (el) -> "if ($('div.qx-aum-button.qx-enabled.qx-active.qx-not-readonly.qx-identifier-#{el}
+                       :not(.qx-disabled):not(.ui-state-disabled):not(.qx-inactive):not(.qx-readonly)').length > 0) { return 'enabled' }
+                      if ($('div.qx-aum-button.qx-disabled.qx-inactive.qx-readonly.ui-state-disabled.qx-identifier-#{el}
+                        :not(.qx-enabled):not(.qx-active):not(.qx-not-readonly)').length > 0) { return 'disabled' }                               
+                      return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
+      
       defaults :
         height : 24
         chrome$l:
