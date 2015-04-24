@@ -4,14 +4,14 @@ module.exports = ->
   _.merge opts,
 
     environCommands:
-      win_ia32: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIA3~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
-      win_x64: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIA3~1.2\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
+      win_ia32: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIA3~1.1\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
+      win_x64: 'cmd /c C:\\PROGRA~1\\Querix\\LYCIA3~1.1\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))'
       lin_ia32: 'sh -c source /opt/Querix/Lycia/environ ; sleep 1; export LD_LIBRARY_PATH=/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:$LD_LIBRARY_PATH ; node -e "console.log(JSON.stringify(process.env))"'
       lin_x64: 'sh -c source /opt/Querix/Lycia/environ ; sleep 1; export LD_LIBRARY_PATH=/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:$LD_LIBRARY_PATH ; node -e "console.log(JSON.stringify(process.env))"'
 
     defaultDeployPath:
-      win_ia32: 'C:/ProgramData/Querix/Lycia 6/progs'
-      win_x64: 'C:/ProgramData/Querix/Lycia 6/progs'
+      win_ia32: 'C:/ProgramData/Querix/Lycia 7/progs'
+      win_x64: 'C:/ProgramData/Querix/Lycia 7/progs'
       lin_ia32: '/opt/Querix/Lycia/progs'
       lin_x64: '/opt/Querix/Lycia/progs'
    
