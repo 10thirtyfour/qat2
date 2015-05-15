@@ -286,7 +286,15 @@ elements =
         height : 18
         chrome$l :
           height : 17
-
+    set :
+      value : (el,val)->
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-area")
+        .click()
+        @waitIdle()
+        @keys(['\uE009','a','\uE009','\uE003'])
+        @keys(val)
+        @waitIdle()
+        
   "tree-table" :
     qxclass : "qx-aum-tree-table"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-tree-table.qx-aum-abstract-data-table').length > 0)"
@@ -304,12 +312,12 @@ elements =
     set :
       value : (el,val)->
         #click on textfield and wait for idle
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
-        @waitIdle
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field .qx-text")
-        .sendKeys(['\uE009','a','\uE009','\uE017'])
-        .sendKeys(val)
-        
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field")
+        .click()
+        @waitIdle()
+        @keys(['\uE009','a','\uE009','\uE003'])
+        @keys(val)
+        @waitIdle()
         
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
