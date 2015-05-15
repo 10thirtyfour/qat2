@@ -241,6 +241,9 @@ elements =
         @waitIdle
         el.sendKeys(['\uE009','a','\uE009','\uE017']).sendKeys(val)
 
+  "stack-panel" :
+    qxclass : "qx-aum-stack-panel"
+
   "tab" :
     qxclass : "qx-aum-tab"
     get :
