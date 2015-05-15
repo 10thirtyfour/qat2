@@ -288,13 +288,15 @@ elements =
           height : 17
     set :
       value : (el,val)->
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-area")
-        .click()
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
         @waitIdle()
-        @keys(['\uE009','a','\uE009','\uE003'])
-        @keys(val)
+        a = @elementByCss('.qx-identifier-#{el}.qx-has-focus')
         @waitIdle()
-        
+        unless a is null
+          @keys(['\uE009','a','\uE009','\uE003'])
+          @keys(val)
+        @waitIdle()
+
   "tree-table" :
     qxclass : "qx-aum-tree-table"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-tree-table.qx-aum-abstract-data-table').length > 0)"
