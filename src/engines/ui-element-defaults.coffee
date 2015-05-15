@@ -314,11 +314,13 @@ elements =
     set :
       value : (el,val)->
         #click on textfield and wait for idle
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field")
-        .click()
+        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
         @waitIdle()
-        @keys(['\uE009','a','\uE009','\uE003'])
-        @keys(val)
+        a = @elementByCss('.qx-identifier-#{el}.qx-has-focus')
+        @waitIdle()
+        unless a is null
+          @keys(['\uE009','a','\uE009','\uE003'])
+          @keys(val)
         @waitIdle()
         
   "time-edit-field" :
