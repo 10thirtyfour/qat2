@@ -286,16 +286,14 @@ elements =
         height : 18
         chrome$l :
           height : 17
-    set :
-      value : (el,val)->
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
-        @waitIdle()
-        a = @elementByCss('.qx-identifier-#{el}.qx-has-focus')
-        @waitIdle()
-        unless a is null
-          @keys(['\uE009','a','\uE009','\uE003'])
-          @keys(val)
-        @waitIdle()
+     set :
+       value : (el,val)->
+         @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
+         @waitIdle
+         @elementByCss(".qx-identifier-#{el}.qx-aum-text-area .qx-text")
+         .sendKeys(['\uE009','a','\uE009','\uE017'])
+         .sendKeys(val)
+         @waitIdle()
 
   "tree-table" :
     qxclass : "qx-aum-tree-table"
@@ -311,18 +309,15 @@ elements =
         height : 18
         chrome$l :
           height : 17
-    set :
-      value : (el,val)->
-        #click on textfield and wait for idle
-        @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
-        @waitIdle()
-        a = @elementByCss('.qx-identifier-#{el}.qx-has-focus')
-        @waitIdle()
-        unless a is null
-          @keys(['\uE009','a','\uE009','\uE003'])
-          @keys(val)
-        @waitIdle()
-        
+     set :
+       value : (el,val)->
+         @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
+         @waitIdle
+         @elementByCss(".qx-identifier-#{el}.qx-aum-text-field .qx-text")
+         .sendKeys(['\uE009','a','\uE009','\uE017'])
+         .sendKeys(val)
+         @waitIdle()
+                   
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     set :
