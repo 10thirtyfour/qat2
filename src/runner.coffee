@@ -148,7 +148,8 @@ class Runner
           graph.setEdge name, "run"
         else
           graph.setEdge "run", name
-      graph.setEdge name, "done"
+      unless name is "done" 
+        graph.setEdge name, "done"
       if before?
         for i in @utils.mkArray before
           unless @tests[i]
@@ -167,6 +168,7 @@ class Runner
     fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
     cycles = graphlib.alg.findCycles graph
     if cycles.length isnt 0
+      console.log cycles
       throw "cycles in test dependencies: #{@prettyjson cycles}"
     @info "no dependency cycles"
     @utils.transRed @graph, "setup"
