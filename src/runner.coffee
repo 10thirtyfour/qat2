@@ -168,7 +168,6 @@ class Runner
     fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
     cycles = graphlib.alg.findCycles graph
     if cycles.length isnt 0
-      console.log cycles
       throw "cycles in test dependencies: #{@prettyjson cycles}"
     @info "no dependency cycles"
     @utils.transRed @graph, "setup"
