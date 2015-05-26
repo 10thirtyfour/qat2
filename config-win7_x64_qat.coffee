@@ -5,7 +5,7 @@ module.exports = ->
     common:
       timeouts:
         line: 12000
-        run: 600000
+        run: 60000
         compile: 20000
         build: 60000
         download: 600000
@@ -17,8 +17,10 @@ module.exports = ->
         env:
           QX_QAT: 1
           QX_REFRESH_LEVEL: 2
+
     headless:
       QX_HEADLESS_MODE: 1  
+
     logger:
       transports:
         console:
@@ -28,13 +30,15 @@ module.exports = ->
     globLoader:
       root: "./tests"
 
+
+
     dbprofiles:
       informix:         
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
-        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+        INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
         DBDATE: "MDY4/"
 
       oracle:
@@ -55,3 +59,4 @@ module.exports = ->
   @qatDefaultInstance = "default-1889"
   @tempPath = "./tests"
   @deployPath = "C:/ProgramData/Querix/Lycia 7/progs"
+
