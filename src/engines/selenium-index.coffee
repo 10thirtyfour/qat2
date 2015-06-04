@@ -57,10 +57,12 @@ module.exports = ->
     before: "globLoader"
     enable:
       browser:
+        #firefox: (true)
         chrome: (true)
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"
+      firefox: "http://localhost:4444/wd/hub/"
     browsers:
       chrome:
         browserName: "chrome"
@@ -76,7 +78,7 @@ module.exports = ->
       justType:
         safari: (true)
       invoke:
-        firefox: (true) 
+        firefox: (false) 
     promise: ->
     
       plugin = @
@@ -85,8 +87,7 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector('div[data-qx-state="idle"', timeout).sleep(300)
-          #@waitForElementByCssSelector(".qx-application.qx-state-idle", timeout).sleep(300)
+          @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
           )  
           
       wd.addPromiseMethod(
