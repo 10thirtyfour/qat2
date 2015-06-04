@@ -325,8 +325,8 @@ module.exports = ->
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
             
-            if expected isnt res[attr]
-              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
+            if expected isnt Math.floor(res[attr])
+              errmsg += "#{attr} mismatch! Actual : <#{Math.floor(res[attr])}>, Expected : <#{expected}>. "
 
               
           if errmsg is "" then return ""
@@ -493,14 +493,15 @@ module.exports = ->
                     try
                       binfo.syn.call testContext
                     catch e
-                      # TODO : kill qrun here
+                      ###
+					  TODO : kill qrun here
                       for cmd in testContext.browser.executedPrograms
                         if process.platform[0] is "w" 
                           runner.trace "taskkill /F /T /IM #{cmd}.exe"
                           exec("taskkill /F /T /IM #{cmd}.exe")
-                        #else
-                        #  exec("pkill -9 #{cmd}")
-                      
+                        else
+                          exec("pkill -9 #{cmd}")
+                      ###
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
