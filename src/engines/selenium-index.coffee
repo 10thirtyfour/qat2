@@ -20,7 +20,6 @@ UI_elements = require "./ui-element-defaults"
 dnd_helper = require "./drag_and_drop_helper"
 
 
-
 module.exports = ->
   {fs,Q,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
@@ -487,14 +486,20 @@ module.exports = ->
                 binfo.name= "wd$#{i}$#{info.name}"
                 promise = (browser) ->
                   yp.frun( ->
-                    #try
-                    
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
                     testContext.aggregateError=false
                     try
                       binfo.syn.call testContext
                     catch e
+                      # TODO : kill qrun here
+                      for cmd in testContext.browser.executedPrograms
+                        if process.platform[0] is "w" 
+                          runner.trace "taskkill /F /T /IM #{cmd}.exe"
+                          exec("taskkill /F /T /IM #{cmd}.exe")
+                        #else
+                        #  exec("pkill -9 #{cmd}")
+                      
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
@@ -504,11 +509,6 @@ module.exports = ->
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0  
                       throw testContext.errorMessage
-                      #task kill. command stored in browser.executedPrograms
-                      #if process.platform[0] is "w" 
-                      #  exec('taskkill /F /T /IM '+ browser.cmd + '.exe')
-                      #else
-                      #  exec('pkill -9 '+ browser.cmd )
                     ).timeout(wdTimeout)  
               else
                 promise = ->
