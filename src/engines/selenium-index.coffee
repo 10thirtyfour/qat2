@@ -306,6 +306,10 @@ module.exports = ->
           throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
           
           res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
+          res.width = Math.floor(res.width)
+          res.height = Math.floor(res.height)
+          res.left = Math.floor(res.left)
+          res.top = Math.floor(res.top)
           res.type = el_type
           
           params.width = params.w if (params.w?)
@@ -325,8 +329,8 @@ module.exports = ->
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
             
-            if expected isnt Math.floor(res[attr])
-              errmsg += "#{attr} mismatch! Actual : <#{Math.floor(res[attr])}>, Expected : <#{expected}>. "
+            if expected isnt res[attr]
+              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
               
           if errmsg is "" then return ""
