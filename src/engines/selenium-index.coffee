@@ -162,6 +162,7 @@ module.exports = ->
               .buttonDown(0)
               .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
               .buttonUp(0)
+              .waitIdle()
         )
 
       wd.addPromiseMethod(
