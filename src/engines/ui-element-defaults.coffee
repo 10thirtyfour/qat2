@@ -98,6 +98,9 @@ elements =
         height : 22
         chrome$l :
           height : 21
+  
+  "list-box" :
+    qxclass : "qx-aum-list-box"                                
 
   "menu-item" :
     qxclass  : "qx-aum-menu-item"
