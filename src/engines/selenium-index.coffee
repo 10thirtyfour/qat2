@@ -359,8 +359,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "getType"
         (el) ->
-          for name,element of UI_elements
-            if yp @execute element.selector(el)
+          classList = yp @getClasses(el)
+          for name of UI_elements
+            if (classList.indexOf("qx-aum-#{name}") != -1)
               return name
           "unknown"
       ) 
