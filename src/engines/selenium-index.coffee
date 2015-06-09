@@ -56,9 +56,7 @@ module.exports = ->
     setup: (true)
     before: "globLoader"
     enable:
-      browser:
-        #firefox: (true)
-        chrome: (true)
+      browser: runner.opts.browserList
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"

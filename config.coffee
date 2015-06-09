@@ -39,8 +39,11 @@ module.exports = ->
           #couchdb:
           #host: "10.38.57.55"
     globLoader:
-      root: "./tests2"
-
+      root: "./tests"
+    browserList :
+      chrome: (true)
+      #firefox: (true)
+      
     dbprofiles:
       informix:         
         LYCIA_DB_DRIVER: "informix"
