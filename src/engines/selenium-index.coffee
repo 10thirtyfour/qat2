@@ -480,6 +480,7 @@ module.exports = ->
         _.merge d, kind: "wd"
         info.enable = _.merge {}, plugin.enable, info.enable
         for i,v of plugin.browsers when info.enable.browser[i]
+          #wdTimeout = @opts.common.timeouts.wd[i]
           do (i,v) =>
             binfo = _.clone info
             binfo.data = _.clone info.data
@@ -492,7 +493,7 @@ module.exports = ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
-                    testContext.aggregateError=false
+                    testContext.aggregateError=(false)
                     try
                       binfo.syn.call testContext
                     catch e
