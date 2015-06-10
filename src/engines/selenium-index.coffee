@@ -390,8 +390,9 @@ module.exports = ->
           
       wd.addPromiseMethod(
         "statusBarText"
-        () ->
-          yp(@execute('return $("div.qx-identifier-statusbarmessage:visible .qx-text").text()')) ? ""
+        (mType) ->
+          mType ?= "message" 
+          yp(@execute('return $("div.qx-identifier-statusbar#{mType}:visible .qx-text").text()')) ? ""
       )    
       
       
