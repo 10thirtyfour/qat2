@@ -214,7 +214,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "getClasses",
         (el) ->
-          element = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCss("#{el}"))
+          element = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCssIfExists("#{el}")) ? (null)
+          if element is (null) 
+            return ""
           yp(element.getAttribute("class")).split(" ")
       )            
           
