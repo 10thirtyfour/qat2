@@ -102,7 +102,7 @@ elements =
   "list-box" :
     qxclass : "qx-aum-list-box"                                
     get :
-      state : (el) -> "if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-enabled.qx-active.qx-not-readonly').length > 0) { return 'enabled' }
+      state : (el) -> "if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('select."+@qxclass+".qx-identifier-#{el}').attr('class');"
 
