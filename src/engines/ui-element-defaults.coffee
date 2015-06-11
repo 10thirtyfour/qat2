@@ -335,7 +335,7 @@ elements =
       defaults :
         height : 18
         chrome$l :
-          height : 15
+          height : 17
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
