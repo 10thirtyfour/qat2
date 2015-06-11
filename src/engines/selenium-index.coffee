@@ -53,7 +53,7 @@ module.exports = ->
   @reg
     name: "wd"
     # CFGOPT: default wait timeout
-    defaultWaitTimeout: 60000
+    defaultWaitTimeout: 10000
     setup: (true)
     before: "globLoader"
     enable:
@@ -105,7 +105,7 @@ module.exports = ->
           if params.args then programUrl+=params.args
 
           if params.wait
-            return @get(programUrl).waitIdle()
+            return @get(programUrl).waitIdle(60000)
           else
             return @get(programUrl).sleep(500)
           ) 
@@ -113,7 +113,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "waitExit"
         (timeout) ->
-          timeout ?= plugin.defaultWaitTimeout
+          timeout ?= 3000
           @waitForElementByCssSelector("#qx-application-restart",timeout))
            
           
