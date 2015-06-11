@@ -20,7 +20,7 @@ elements =
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       value : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
-      state : (el) -> "if ($('div.qx-aum-button.qx-enabled.qx-active.qx-not-readonly.qx-identifier-#{el}
+      state : (el) -> "if ($('div.qx-aum-button.qx-active.qx-not-readonly.qx-identifier-#{el}
                        :not(.qx-disabled):not(.ui-state-disabled):not(.qx-inactive):not(.qx-readonly)').length > 0) { return 'enabled' }
                       if ($('div.qx-aum-button.qx-disabled.qx-inactive.qx-readonly.ui-state-disabled.qx-identifier-#{el}
                         :not(.qx-enabled):not(.qx-active):not(.qx-not-readonly)').length > 0) { return 'disabled' }                               
@@ -333,7 +333,7 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
-        height : 16
+        height : 18
         chrome$l :
           height : 15
       
@@ -364,7 +364,7 @@ elements =
   "unknown" :
     qxclass : "unknown"
     get :
-      text : () -> "return;"
+      text : (el) -> "return $('.qx-identifier-#{el}').text()"
       image : () -> "return;"
       value : () -> "return;"
       state : () -> "return;"
