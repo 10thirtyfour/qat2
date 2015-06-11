@@ -376,7 +376,7 @@ for name,item of elements
   item.get.qxclass = item.qxclass 
   item.get.text  ?= (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
   item.get.image ?= (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
-  item.get.state ?= (el)-> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-enabled.qx-active.qx-not-readonly').length > 0) { return 'enabled' }
+  item.get.state ?= (el)-> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
   
