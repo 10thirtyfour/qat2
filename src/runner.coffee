@@ -89,7 +89,7 @@ class Runner
     @trace "crawling #{node}"
     if t.started
       throw new Error "trying to crawl already started node: #{node}"
-    t.error = false
+    t.error = (false)
     for i in @graph.predecessors(node)
       pt = tests[i]
       unless pt?

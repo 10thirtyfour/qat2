@@ -28,6 +28,7 @@ module.exports = ->
   wd = @wd = require "wd"
   @chai = chai = require "chai"
   chaiAsPromised = require "chai-as-promised"
+  {exec}  = require 'child_process'
   chaiAsPromised.transferPromiseness = wd.transferPromiseness
   chai.use chaiAsPromised
   chai.should()
@@ -501,15 +502,13 @@ module.exports = ->
                     try
                       binfo.syn.call testContext
                     catch e
-                      ###
-					  TODO : kill qrun here
+                      #TODO : kill qrun here
                       for cmd in testContext.browser.executedPrograms
                         if process.platform[0] is "w" 
                           runner.trace "taskkill /F /T /IM #{cmd}.exe"
-                          exec("taskkill /F /T /IM #{cmd}.exe")
-                        else
-                          exec("pkill -9 #{cmd}")
-                      ###
+                          exec "taskkill /F /T /IM #{cmd}.exe"
+                          #else
+                          #exec("pkill -9 #{cmd}")
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
