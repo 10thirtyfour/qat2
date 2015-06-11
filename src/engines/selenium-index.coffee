@@ -486,7 +486,8 @@ module.exports = ->
         info.enable = _.merge {}, plugin.enable, info.enable
         for i,v of plugin.browsers when info.enable.browser[i]
           #wdTimeout = @opts.common.timeouts.wd[i]
-          do (i,v) =>
+          startTime = new Date()
+          do (i,v,startTime) =>
             binfo = _.clone info
             binfo.data = _.clone info.data
             binfo.data.kind = "wd-#{i}"
@@ -536,7 +537,8 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   browser.quit()
-              return r.then(-> "OK")
+              finishTime = new Date()
+              return r.then(-> "Pass. Duration time = "+(finishTime.getTime() - startTime.getTime())/1000+" (sec.)")
               
             @reg binfo
             binfo.data.browser = i
