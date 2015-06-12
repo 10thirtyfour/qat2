@@ -193,7 +193,7 @@ runner.reg
   after: "setup"
 runner.reg
   name: "done"
-  silent: true
+  silent: (true)
   runAnyway: true
   promise: ->
     @runner.logger.profile "run"

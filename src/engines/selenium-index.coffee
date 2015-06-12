@@ -486,22 +486,26 @@ module.exports = ->
         info.enable = _.merge {}, plugin.enable, info.enable
         for i,v of plugin.browsers when info.enable.browser[i]
           #wdTimeout = @opts.common.timeouts.wd[i]
-          startTime = new Date()
-          do (i,v,startTime) =>
+          do (i,v) =>
             binfo = _.clone info
+            binfo.duration ?= {}
             binfo.data = _.clone info.data
             binfo.data.kind = "wd-#{i}"
             promise = binfo.promise
             unless promise?
               if binfo.syn?
                 binfo.name= "wd$#{i}$#{info.name}"
+
                 promise = (browser) ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
                     testContext.aggregateError=(false)
                     try
+        
+                      binfo.duration.startTime = new Date()
                       binfo.syn.call testContext
+                      binfo.duration.finishTime = new Date()
                     catch e
                       #TODO : kill qrun here
                       for cmd in testContext.browser.executedPrograms
@@ -522,9 +526,9 @@ module.exports = ->
                     ).timeout(wdTimeout)  
               else
                 promise = ->
-            
-            
+
             binfo.promise = ->
+
               if plugin.links[i]?
                 browser = wd.promiseChainRemote plugin.links[i]
               else
@@ -537,8 +541,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   browser.quit()
-              finishTime = new Date()
-              return r.then(-> "Pass. Duration time = "+(finishTime.getTime() - startTime.getTime())/1000+" (sec.)")
+              return r.then(-> "Pass. Duration time = "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
               
             @reg binfo
             binfo.data.browser = i
