@@ -56,9 +56,9 @@ module.exports = ->
               _reduce = v.reduce ?= (keys,vals) -> sum vals
               _maxLevel = v.levels ? 1
               v.map msg
-              _store = null
-              _reduce = null
-          callback null, true
+              _store = (null)
+              _reduce = (null)
+          callback null, (true)
       Q {}
   labelToColor = (lab) ->
     switch lab
@@ -80,7 +80,24 @@ module.exports = ->
     tree
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
+    deff = Q.defer()
+    db = require('nano')('http://'+runner.logger.transports.couchdb.host+':5984/qat_log')
+    db.view 'suits','all?key="'+runner.sysinfo.starttimeid+'"', (err, suits)->
+      if((err) || (suits.rows.length!=1)) 
+        console.log "!!! Cant get suite or key is not unique !!!"
+        deff.resolve("err")
+        return
+      suite=suits.rows[0]
+      suite.value.params.status   = "complete"
+      suite.value.params.result   = plugin.queries.common._store
+      suite.value.params.duration = Math.round((new Date() - new Date(runner.sysinfo.starttimeid)) / 1000)
+      db.insert suite.value, suite._id, (err, msg)->
+        runner.spammer "sendReport", key:runner.sysinfo.starttimeid  
+        if err then deff.resolve("error") else deff.resolve("ok")
+ 
     console.log archy mkTree()
-    runner.spammer "sendReport", key:runner.sysinfo.starttimeid
-    donePromise.call @
+    
+    context=@
+    deff.promise.timeout(10000)
+    .then( ()-> donePromise.call context)
   @reg plugin
