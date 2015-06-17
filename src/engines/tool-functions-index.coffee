@@ -280,7 +280,7 @@ module.exports = ->
         exitPromise( spawn( path.join(rr.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : rr.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
-          rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7)
+          rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
           rr.spammer "sendMessage", message: """
             !! #{rr.sysinfo.starttimeid}
             QAT started on #{rr.sysinfo.host}
