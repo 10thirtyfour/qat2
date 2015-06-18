@@ -112,14 +112,10 @@ elements =
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
       text  : (el) -> "return $('.qx-identifier-#{el} > a').text()"
-
-  "menu-command":
-    qxclass : "qx-aum-menu-command"
-    get :
       state : (el) -> "if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('li."+@qxclass+".qx-identifier-#{el}').attr('class');"
-   
+
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     get :
