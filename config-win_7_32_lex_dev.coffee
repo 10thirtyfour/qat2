@@ -28,3 +28,11 @@ module.exports = ->
       timeouts:
         wd: 1200000
 
+   dbprofiles:
+      informix:         
+        LYCIA_DB_DRIVER: "informix"
+        INFORMIXSERVER: "querix_tcp"
+        LOGNAME: "informix"
+        INFORMIXPASS: "default2375"
+        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+
