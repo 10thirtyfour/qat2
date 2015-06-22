@@ -21,14 +21,14 @@ module.exports = ->
       root: "./tests"
       
     browserList :
-      chrome: (true)
+      #chrome: (false)
       firefox: (true)
 
     common:
       timeouts:
         wd: 1200000
 
-   dbprofiles:
+    dbprofiles:
       informix:         
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_tcp"
