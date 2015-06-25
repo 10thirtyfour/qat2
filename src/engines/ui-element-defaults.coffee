@@ -343,6 +343,9 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       image : (el) -> "return $('.qx-identifier-#{el} .qx-htal>img')[0].src"
+      state : (el) -> "if ($('a."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
+                   if ($('a."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
+                   return $('a."+@qxclass+".qx-identifier-#{el}').attr('class');"
 
   "toolbar-separator" :
     qxclass : "qx-aum-toolbar-separator"
