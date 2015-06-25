@@ -86,6 +86,7 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
+          
           @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
           )  
           

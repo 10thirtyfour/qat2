@@ -119,7 +119,7 @@ class Runner
         Q {}
     r = r.finally =>
           @trace "done #{node}, next", @graph.successors node
-          t.done = true
+          t.done = (true)
           next = for i in @graph.successors node
             do (i) =>
               => @crawl i
@@ -194,7 +194,7 @@ runner.reg
 runner.reg
   name: "done"
   silent: (true)
-  runAnyway: true
+  runAnyway: (true)
   promise: ->
     @runner.logger.profile "run"
     Q {}

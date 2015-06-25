@@ -49,7 +49,7 @@ module.exports = ->
                 unless buildPromiseName of runner.tests
                   runner.reg 
                     name: buildPromiseName
-                    failOnly: true
+                    failOnly: (true)
                     data:
                       kind: "build" 
                     testData : testData
@@ -63,8 +63,8 @@ module.exports = ->
                 testData : testData  
                 after: buildPromiseName
                 promise: toolfuns.regLogRun
-              true
-        true    
+              (true)
+        (true)    
         
 
 
