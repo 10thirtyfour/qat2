@@ -157,7 +157,7 @@ module.exports = ->
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
-          yp @elementByCss('#qx-home-form')
+          yp @elementByCss(".qx-o-identifier-#{wnd}")
               .moveTo( x, y )
               .buttonDown(0)
               .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
@@ -502,8 +502,7 @@ module.exports = ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
                     testContext.aggregateError=(false)
-                    try
-        
+                    try       
                       binfo.duration.startTime = new Date()
                       binfo.syn.call testContext
                       binfo.duration.finishTime = new Date()
@@ -542,7 +541,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   browser.quit()
-              return r.then(-> "Pass. Duration time = "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
+              return r.then(-> "Pass. Duration time = "+binfo.duration.finishTime+"    "+binfo.duration.startTime+"   "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
               
             @reg binfo
             binfo.data.browser = i
