@@ -89,7 +89,7 @@ class Runner
     @trace "crawling #{node}"
     if t.started
       throw new Error "trying to crawl already started node: #{node}"
-    t.error = (false)
+    t.error = false
     for i in @graph.predecessors(node)
       pt = tests[i]
       unless pt?
@@ -119,7 +119,7 @@ class Runner
         Q {}
     r = r.finally =>
           @trace "done #{node}, next", @graph.successors node
-          t.done = (true)
+          t.done = true
           next = for i in @graph.successors node
             do (i) =>
               => @crawl i
