@@ -219,11 +219,6 @@ elements =
                         if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-vertical')) {
                         return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
     
-      state : (el) -> "if ($('div.qx-aum-slider.qx-enabled.qx-identifier-#{el}:not(.qx-disabled) > 
-                              div:not(.ui-state-disabled):not(.ui-slider-disabled)').length > 0) { return 'enabled' }
-                      if ($('div.qx-aum-slider.qx-disabled.qx-identifier-#{el}:not(.qx-enabled) > 
-                              div.ui-state-disabled.ui-slider-disabled').length > 0) { return 'disabled' }                               
-                      return $('div.qx-aum-slider.qx-identifier-#{el}').attr('class');"
       defaults : 
         height : 16
         chrome$l :
