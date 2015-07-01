@@ -264,6 +264,7 @@ module.exports = ->
         ver : rr.os.release()
         user : process.env.USER ? process.env.USERNAME
         build : "unknown"
+        scenario : rr.opts.scenario
         database : @options.databaseProfile
 
       rr.opts.environCommand?=rr.opts.environCommands[rr.sysinfo.platform]
