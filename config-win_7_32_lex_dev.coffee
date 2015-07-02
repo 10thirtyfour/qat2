@@ -23,7 +23,7 @@ module.exports = ->
     browserList :
       #chrome: (false)
       firefox: (true)
-
+      #ie: (true)
     common:
       timeouts:
         wd: 1200000

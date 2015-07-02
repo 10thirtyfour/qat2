@@ -43,6 +43,7 @@ module.exports = ->
     browserList :
       chrome: (true)
       #firefox: (true)
+      #ie: (true)
       
     dbprofiles:
       informix:         
