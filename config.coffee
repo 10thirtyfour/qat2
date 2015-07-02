@@ -22,24 +22,31 @@ module.exports = ->
         compile: 20000
         build: 60000
         wd: 120000
+
       options:
         buildMode: "rebuild"
         databaseProfile: "informix" 
         env:
           QX_QAT: 1
-
           DBDATE: "MDY4/"
+
     headless:
       QX_HEADLESS_MODE: 1  
       QX_REFRESH_LEVEL: 2
+
     logger:
       transports:
         console:
           level: "info"
           #couchdb:
           #host: "10.38.57.55"
+
     globLoader:
       root: "./tests"
+      disable:
+        file: 
+          pattern: []
+
     browserList :
       chrome: (true)
       #firefox: (true)
@@ -64,7 +71,9 @@ module.exports = ->
       "mysql-odbc":
         LYCIA_DB_DRIVER: "odbc"
         ODBC_DSN: "myodbc"
-
+      
+      "pgsql-odbc":
+        LYCIA_DB_DRIVER: "odbc"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @seleniumServerPort = 9515
