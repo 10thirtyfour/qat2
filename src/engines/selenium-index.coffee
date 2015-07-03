@@ -68,7 +68,7 @@ module.exports = ->
       firefox:
         browserName: "firefox"
       ie:
-        browserName: "internet explorer"
+        browserName: "ie"
       safari:
         browserName: "safari"
       opera:
@@ -106,7 +106,7 @@ module.exports = ->
           if params.args then programUrl+=params.args
 
           if params.wait
-            return @get(programUrl).waitIdle(60000)
+            return @get(programUrl).waitIdle(30000)
           else
             return @get(programUrl).sleep(500)
           ) 
@@ -541,7 +541,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   browser.quit()
-              return r.then(-> "Pass. Duration time = "+binfo.duration.finishTime+"    "+binfo.duration.startTime+"   "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
+              return r.then(-> "Pass. Duration time = "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
               
             @reg binfo
             binfo.data.browser = i
