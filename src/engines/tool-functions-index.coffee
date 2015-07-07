@@ -490,7 +490,7 @@ module.exports = ->
         break if line is "<<<"
         
         # environment variable search
-        if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>$"))
+        if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>"))
           # inserting params into testData with path
           matches[1].split('.').reduce( (prev,curr,i,ar)-> 
             if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
@@ -499,7 +499,7 @@ module.exports = ->
         else
           # trying to find programName only if it is not yet defined
           unless testData.programName?
-            if (matches=(line.match "^<< *(.*?) *>>$"))
+            if (matches=(line.match "^<< *(.*?) *>>"))
               cmd = matches[1]
               # handling both, quoted and unquoted program name
               if (matches=(cmd.match '"(.*?)" *(.*)'))
