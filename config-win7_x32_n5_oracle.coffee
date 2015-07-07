@@ -21,3 +21,5 @@ module.exports = ->
       chrome: (false)
       firefox: (false)
       ie: (false)
+
+    scenario: "Oracle"

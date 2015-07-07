@@ -2,6 +2,9 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
+
+
+    scenario: "Full + Informix"
  
     logger:
       transports:
