@@ -39,20 +39,10 @@ module.exports = ->
           DBDATE: "MDY4/"
           LD_LIBRARY_PATH: "/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:/opt/Querix/Lycia/lib:/opt/Querix/Lycia/axis2/lib:/opt/Querix/Common/lib:/opt/Querix/lycia-desktop:/usr/lib64/jvm/jdk1.8.0_25/jre/lib/amd64/server:"
 
-      oracle:
-        TNS_ADMIN: "c:\\Oracle"
-
-      "mssql-odbc":
-        LYCIA_DB_DRIVER: "odbc"
-        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;" 
-
-      "mysql-odbc":
-        LYCIA_DB_DRIVER: "odbc"
-        ODBC_DSN: "myodbc"
-
+  scenario: "Full on Informix"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
-  @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
+  @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.46.0.jar"
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
   @tempPath = "./tests"
