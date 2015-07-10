@@ -267,6 +267,7 @@ module.exports = ->
         scenario : rr.opts.scenario
         database : @options.databaseProfile
       if rr.opts.notes? then rr.sysinfo.notes = rr.opts.notes
+      if process.env.hasOwnProperty('ProgramFiles(x86)') then rr.sysinfo.platform="win_x64"
 
       rr.opts.environCommand?=rr.opts.environCommands[rr.sysinfo.platform]
       rr.opts.deployPath?=rr.opts.defaultDeployPath[rr.sysinfo.platform]
