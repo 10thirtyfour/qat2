@@ -20,7 +20,7 @@ module.exports = ->
           DBDATE: "MDY4/"
           LD_LIBRARY_PATH: "/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:/opt/Querix/Lycia/lib:/opt/Querix/Lycia/axis2/lib:/opt/Querix/Common/lib:/opt/Querix/lycia-desktop:/usr/lib64/jvm/jdk1.8.0_25/jre/lib/amd64/server:"
 
-    scenario: "Full on Informix"
+    scenario: "default"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.46.0.jar"

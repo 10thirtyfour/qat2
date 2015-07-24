@@ -4,7 +4,7 @@ module.exports = ->
   _.merge opts,
 
 
-    scenario: "Full on Informix"
+    scenario: "default"
  
     logger:
       transports:

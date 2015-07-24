@@ -6,7 +6,7 @@ module.exports = ->
       options:
         databaseProfile: "informix"  
     
-    scenario: "Full on Informix"
+    scenario: "default"
 
     logger:
       transports:
