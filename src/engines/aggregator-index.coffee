@@ -81,19 +81,20 @@ module.exports = ->
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
     deff = Q.defer()
-    db = require('nano')('http://'+runner.logger.transports.couchdb.host+':5984/qat_log')
-    db.view 'suits','all?key="'+runner.sysinfo.starttimeid+'"', (err, suits)->
-      if((err) || (suits.rows.length!=1)) 
-        console.log "!!! Cant get suite or key is not unique !!!"
-        deff.resolve("err")
-        return
-      suite=suits.rows[0]
-      suite.value.params.status   = "complete"
-      suite.value.params.result   = plugin.queries.common._store
-      suite.value.params.duration = Math.round((new Date() - new Date(runner.sysinfo.starttimeid)) / 1000)
-      db.insert suite.value, suite._id, (err, msg)->
-        runner.spammer "sendReport", key:runner.sysinfo.starttimeid  
-        if err then deff.resolve("error") else deff.resolve("ok")
+    if runner.logger.transports.couchdb?
+      db = require('nano')('http://'+runner.logger.transports.couchdb.host+':5984/qat_log')
+      db.view 'suits','all', { key : runner.sysinfo.starttimeid }, (err, suits)->
+        if((err) || (suits.rows.length!=1)) 
+          console.log "!!! Cant get suite or key is not unique !!!"
+          deff.resolve("err")
+          return
+        suite=suits.rows[0]
+        suite.value.params.status   = "complete"
+        suite.value.params.result   = plugin.queries.common._store
+        suite.value.params.duration = Math.round((new Date() - new Date(runner.sysinfo.starttimeid)) / 1000)
+        db.insert suite.value, suite._id, (err, msg)->
+          runner.spammer "report", key:runner.sysinfo.starttimeid  
+          if err then deff.resolve("error") else deff.resolve("ok")
  
     console.log archy mkTree()
     

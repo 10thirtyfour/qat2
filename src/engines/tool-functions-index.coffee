@@ -209,9 +209,8 @@ module.exports = ->
 
   runner.spammer = (fun,params)->
     unless @argv["skype-notify"] then return
-    params.function = fun
     params.contact ?= "REST protocol"
-    http.get("http://"+@logger.transports.couchdb.host+":14952/d&"+qs.stringify(params))
+    http.get("http://"+@logger.transports.couchdb.host+"/skype/"+fun+"?"+qs.stringify(params))
     .on "error", (e)-> 
       return (true)  
   
@@ -284,7 +283,7 @@ module.exports = ->
       .then( (qfglout)->
         if qfglout?
           rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
-          rr.spammer "sendMessage", message: """
+          rr.spammer "message", message: """
             !! #{rr.sysinfo.starttimeid}
             QAT started on #{rr.sysinfo.host}
             Platform : #{rr.sysinfo.platform} (#{rr.sysinfo.database})
@@ -298,7 +297,7 @@ module.exports = ->
       .then( ->
         inetEnvSetDatabase())
       .catch( (err)->
-        rr.spammer "sendMessage", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
+        rr.spammer "message", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
         _this.fail "Unable to read environ : "+err.message
         throw "Unable to read environ : "+err.message
       )  
