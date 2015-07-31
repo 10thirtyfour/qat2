@@ -6,6 +6,11 @@ module.exports = ->
     common:
       options:
         databaseProfile: "mysql-odbc" 
+      timeouts:
+        line: 120000
+        run: 600000
+        compile: 200000
+        build: 600000
 
     logger:
       transports:
