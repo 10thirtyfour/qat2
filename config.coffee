@@ -66,7 +66,7 @@ module.exports = ->
 
       "mssql-odbc":
         LYCIA_DB_DRIVER: "odbc"
-        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;" 
+        SQLSERVER:"DSN=msodbc;Uid=informix;Pwd=default2375;" 
 
       "mysql-odbc":
         LYCIA_DB_DRIVER: "odbc"
