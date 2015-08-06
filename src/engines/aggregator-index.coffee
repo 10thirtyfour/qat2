@@ -81,6 +81,7 @@ module.exports = ->
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
     deff = Q.defer()
+    p = deff.promise.timeout(10000)
     if runner.logger.transports.couchdb?
       db = require('nano')('http://'+runner.logger.transports.couchdb.host+':5984/qat_log')
       db.view 'suits','all', { key : runner.sysinfo.starttimeid }, (err, suits)->
@@ -95,10 +96,11 @@ module.exports = ->
         db.insert suite.value, suite._id, (err, msg)->
           runner.spammer "report", key:runner.sysinfo.starttimeid  
           if err then deff.resolve("error") else deff.resolve("ok")
+    else
+      deff.resolve("no couchdb")
  
     console.log archy mkTree()
     
     context=@
-    deff.promise.timeout(10000)
-    .then( ()-> donePromise.call context)
+    return p.then( ()-> donePromise.call context)
   @reg plugin
