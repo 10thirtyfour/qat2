@@ -6,9 +6,8 @@ module.exports = ->
       options:
         databaseProfile: "informix" 
     logger:
-      transports:
-        couchdb:
-          host: "10.38.57.55"
+      disable:
+        couchdb: false
 
     dbprofiles:
       informix:         

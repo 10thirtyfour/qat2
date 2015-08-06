@@ -13,9 +13,8 @@ module.exports = ->
         build: 600000
 
     logger:
-      transports:
-        couchdb:
-          host: "10.38.57.55"
+      disable:
+        couchdb: false
           
     globLoader:
       disable:

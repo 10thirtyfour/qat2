@@ -12,11 +12,11 @@ module.exports = ->
           DBDATE: "MDY4/"
           
     logger:
+      disable:
+        couchdb: false
       transports:
         console:
           level: "info"
-        couchdb:
-          host: "10.38.57.55"
           
     globLoader:
       root: "./tests"

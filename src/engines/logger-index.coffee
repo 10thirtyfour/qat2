@@ -67,13 +67,13 @@ module.exports = ->
     {transports,levels,colors} = plugin
     runner.logger = logger = logger = new winston.Logger
       exitOnError: false
-    for n, v of transports # unless plugin.disable[n]
+    for n, v of transports when not plugin.disable[n]
       switch n
         when "file" then logger.add winston.transports.File, v
         when "console" then logger.add winston.transports.Console, v
-        when "couchdb"
-          logger.add require("winston-couchdb").Couchdb, v
-        else continue      
+        when "couchdb" then logger.add require("winston-couchdb").Couchdb, v
+        else continue
+
     logger.setLevels levels
     winston.addColors colors
     obj.logger = logger
