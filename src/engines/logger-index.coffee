@@ -90,7 +90,7 @@ module.exports = ->
       descr.promise = ->
         @data.timeid = runner.sysinfo.starttimeid
         @info "starting"
-        basePromise.call(this).then(
+        Q(basePromise.call(this)).then(
           (t) =>
             if failOnly 
               @info t
