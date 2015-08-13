@@ -291,6 +291,30 @@ module.exports = ->
             return false;
           """)
       )
+      
+      wd.addPromiseMethod(
+        "getRect"
+        (el) -> 
+          #workaround for IE (1)
+          if @qx$browserName == "ie"
+            s = {}
+            sel = @getSelector(el)
+            s.width   = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
+            s.height  = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
+            s.left    = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
+            s.right   = yp @execute "return $('#{sel}')[0].getBoundingClientRect().right"
+            s.top     = yp @execute "return $('#{sel}')[0].getBoundingClientRect().top"
+            s.bottom  = yp @execute "return $('#{sel}')[0].getBoundingClientRect().bottom"
+            s.width = Math.round(s.width)
+            s.height = Math.round(s.height)
+            s.left = Math.round(s.left)
+            s.top = Math.round(s.top)
+            return s
+            #return yp @execute "return $('#{sel}')[0].getClientRects()"   
+          #
+          return yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
+      )
+      
       wd.addPromiseMethod(
         "check"
         (el, options) ->
@@ -308,7 +332,13 @@ module.exports = ->
           
           throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
           
-          res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
+          #workaround for IE (2)
+          res = {}
+          if @qx$browserName == "ie" then res = yp @getRect(el)
+          #
+          else
+            res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
+          
           res.width = Math.floor(res.width)
           res.height = Math.floor(res.height)
           res.left = Math.floor(res.left)
@@ -322,7 +352,6 @@ module.exports = ->
           
           mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
-          
           for attr,expected of params
             continue if attr in ["mess","precision","selector","w","h","x","y","deferred"]
             
@@ -331,7 +360,7 @@ module.exports = ->
 
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
-            
+
             if expected isnt res[attr]
               errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
@@ -380,12 +409,6 @@ module.exports = ->
             return (false)
           (true)
       )      
-
-      wd.addPromiseMethod(
-        "getRect"
-        (el) -> 
-          return yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
-      )
 
       wd.addPromiseMethod(
         "toolbutton"
