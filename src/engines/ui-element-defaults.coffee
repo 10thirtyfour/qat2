@@ -28,6 +28,8 @@ elements =
       
       defaults :
         height : 24
+        ie$w :
+          height : 23
         chrome$l:
           height : 23
     
@@ -57,6 +59,8 @@ elements =
                         return 'unchecked';"
       defaults :
         height : 22
+        ie$w :
+          height : 21
         chrome$l:
           height : 21
         
@@ -76,6 +80,8 @@ elements =
     get :
       defaults:
         height : 20
+        ie$w :
+          height : 19
         chrome$l :
           height : 19
 
@@ -96,9 +102,11 @@ elements =
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 22
+        ie$w :
+          height : 21
         chrome$l :
           height : 21
-  
+        
   "list-box" :
     qxclass : "qx-aum-list-box"                                
     get :
@@ -235,6 +243,8 @@ elements =
     
       defaults : 
         height : 16
+        ie$w :
+          height : 15
         chrome$l :
           height : 15
     
@@ -245,6 +255,8 @@ elements =
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} .qx-main-cell > input').val());"
       defaults :
         height : 19
+        ie$w :
+          height : 18
         chrome$l :
           height : 17
     set :
@@ -307,6 +319,8 @@ elements =
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 18
+        ie$w :
+          height : 17
         chrome$l :
           height : 17
      set :
@@ -330,6 +344,8 @@ elements =
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
         height : 18
+        ie$w :
+          height : 17
         chrome$l :
           height : 17
      set :
@@ -350,6 +366,8 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
         height : 18
+        ie$w :
+          height : 17
         chrome$l :
           height : 17
       
