@@ -155,7 +155,9 @@ module.exports = ->
         testData: testData  
         failOnly : testData.failOnly
         promise: rr.toolfuns.regBuild
-
+      
+      testData.buildTestName
+      
     RegWD : (obj, params) ->
       rr = @runner
       if _.isFunction obj
