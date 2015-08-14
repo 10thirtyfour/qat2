@@ -46,7 +46,6 @@ class Runner
     keysColor: "magenta"
     dashColor: "magenta"
   os: require "os"
-  http : require "q-io/http"
   graph: new graphlib.Graph
   fs: fs
   colors: require "colors"

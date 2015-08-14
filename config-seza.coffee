@@ -12,7 +12,7 @@ module.exports = ->
           DBDATE: "MDY4/"
     logger:
       disable:
-        couchdb: false
+        couchdb: true
 
       transports:
         console:
@@ -20,7 +20,7 @@ module.exports = ->
         couchdb:
           host: "10.38.57.55"
     globLoader:
-      root: "./tests"
+      root: "./temp"
     dbprofiles:
       informix:
         INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"

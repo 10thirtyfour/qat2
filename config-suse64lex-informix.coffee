@@ -21,10 +21,3 @@ module.exports = ->
 
     scenario: "default"
 
-  @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
-  @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.46.0.jar"
-  @seleniumServerPort = 9515
-  @qatDefaultInstance = "default-1889"
-  @tempPath = "./tests"
-  @deployPath = "/opt/Querix/Lycia/progs"
-

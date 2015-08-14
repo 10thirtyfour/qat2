@@ -98,10 +98,10 @@ module.exports = ->
           
           params ?= {}
           params.wait ?= (true)
-          params.instance ?= runner.qatDefaultInstance
+          params.instance ?= runner.opts.qatDefaultInstance
           
           command += ".exe" if process.platform[0] is "w"
-          programUrl = runner.lyciaWebUrl + params.instance + "/" + command
+          programUrl = runner.opts.lyciaWebUrl + params.instance + "/" + command
 
           if params.args then programUrl+=params.args
 

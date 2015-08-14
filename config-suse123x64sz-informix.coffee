@@ -51,10 +51,5 @@ module.exports = ->
         ODBC_DSN: "myodbc"
 
 
-  @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
-  @pathToSeleniumJar = "d:\work\selenium-server-standalone-2.39.0.jar"
-  @seleniumServerPort = 9515
-  @qatDefaultInstance = "default-1889"
-  @tempPath = "./tests"
-  @deployPath = "/opt/Querix/Lycia/progs"
+
 
