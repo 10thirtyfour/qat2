@@ -32,7 +32,7 @@ module.exports = ->
       listenerXml = new dom().parseFromString(fs.readFileSync(runner.environ.LISTENERXML).toString())
       inetEnvFn = xpath.select("/xml/service[name[text() = 'default-1889']]/envfile/text()",listenerXml).toString()
       inetEnv= fs.readFileSync(inetEnvFn).toString()
-      
+      inetEnvironments={}
       if inetEnv.indexOf(qatHeader)>-1
         if inetEnv.indexOf(qatFooter)>-1
           footer = inetEnv.slice(inetEnv.indexOf(qatFooter) + qatFooter.length)     
@@ -41,10 +41,13 @@ module.exports = ->
         inetEnv=inetEnv.slice(0,inetEnv.indexOf(qatHeader)) + footer
       
       dbProps?=runner.opts.dbprofiles[runner.sysinfo.database]
-
+      inetEnvironments=runner.opts.inetEnvironment
+      
       inetEnv+=qatHeader
       for key,val of dbProps
         inetEnv+="#{key}=#{dbProps[key]}\n"
+      for key,val of inetEnvironments
+        inetEnv+="#{key}=#{inetEnvironments[key]}\n"
       inetEnv+=qatFooter
 
       fs.writeFileSync(inetEnvFn,inetEnv)
