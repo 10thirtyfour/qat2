@@ -1,3 +1,5 @@
+funVersion = 2.00
+
 genProgram = require("./gen/fglbuilder").program
 genForm =  require("./gen/formbuilder")
 
@@ -6,6 +8,9 @@ module.exports = ->
   runner.extfuns =  
     #uniformName : runner.toolfuns.uniformName
     log : console.log
+    ver : (v)->
+      if funVersion<v 
+        throw "Update QAT! Required version : #{v}. Current : #{funVersion}"
     CheckXML: (testData) ->
       rr = @runner
       yp.frun => 
