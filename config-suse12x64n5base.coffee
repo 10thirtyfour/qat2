@@ -5,8 +5,6 @@ module.exports = ->
     common:
       options:
         databaseProfile: "informix" 
-    
-    scenario: "default"
 
     logger:
       disable:
