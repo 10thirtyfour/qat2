@@ -16,7 +16,7 @@
 _ = require "lodash"
 prettyjson = require "prettyjson"
 
-formitems = 
+formitems =
   containers : []
   widgets : []
   rangefields : [ "progressbar", "scrollbar", "slider", "spinner" ]
@@ -26,10 +26,10 @@ class Builder
 class ElemBuilder extends Builder
   constructor: (@elem,type,@par) ->
     @elem ?= {}
-    _.merge @elem, 
+    _.merge @elem,
       _type: type
       _widget: true
-      enable: true
+      #enable: true
       visible: true
   attr: (val) ->
     _.merge @elem, val
@@ -92,15 +92,15 @@ class ItemsBuilder extends ContBuilder
     _.merge el, opts
     items.push el
     b
-    
+
 class TableColumnBuilder extends ContBuilder
   constructor: (elem, type, par) ->
     super elem, type, par
   contFieldName: "control"
-  
+
   _ext: {}
 
-    
+
 class TableBuilder extends ItemsBuilder
   constructor: (elem, ty, par) ->
     super elem, ty, par
@@ -112,13 +112,13 @@ class TableBuilder extends ItemsBuilder
     _.merge el, opts
     items.push el
     b
-  block: (name,text)->  
+  block: (name,text)->
     @elem.blocks?=[]
     text?='DISPLAY "'+name+'"'
     @elem.blocks.push {name:name,text:text}
     @
   _ext: {}
-  
+
 
 class GridBuilder extends ItemsBuilder
   constructor: (elem, ty, par) ->
@@ -155,7 +155,7 @@ class CoordPanelBuilder extends ItemsBuilder
       @attr location: {xcoord:x, ycoord:y}
       @
 
-class BorderPanelBuilder extends ItemsBuilder 
+class BorderPanelBuilder extends ItemsBuilder
   constructor: (elem, ty, par) ->
     super elem, ty, par
   _ext:
@@ -178,7 +178,7 @@ class GridLenBuilder extends Builder
       {gridLength: gridLengthType: "Relative", gridLengthValue: n}
       opts)
     @
-    
+
   pixels: (n, opts) ->
     @cur.push _.merge(
       {gridLength: gridLengthType: "Pixels", gridLengthValue: n}
@@ -192,7 +192,7 @@ class GridLenBuilder extends Builder
     @cur.push _.merge(
       {gridLength: gridLengthType: "Percent", gridLengthValue: n}
       opts)
-    @    
+    @
   min: (val) ->
     if @cur.length is 0
       throw new Error("no elements")
@@ -223,16 +223,16 @@ class TextWidgetBuilder extends ElemBuilder
       delete @elem[@textFieldName] if @elem[@textFieldName]
       return @
     @elem[@textFieldName] = t
-    
+
     @
 
 tyToBuilder = {}
-labelFields = 
+labelFields =
   checkbox : "title"
   label : "text"
   button : "text"
   radiobutton: "title"
-  
+
 defaultOpts = {}
 
 
@@ -253,7 +253,7 @@ class RangeWidgetBuilder extends ElemBuilder
     @
   steps: (small=1,large=10) ->
     switch @elem._type
-      when "scrollbar" 
+      when "scrollbar"
         @elem.smallStep=small
         @elem.largeStep=large
       when "spinner","progressbar"
@@ -263,19 +263,19 @@ class RangeWidgetBuilder extends ElemBuilder
         @elem.majorTick=large
     @
 
-class BoolWidgetBuilder extends ElemBuilder    
+class BoolWidgetBuilder extends ElemBuilder
   constructor: (el,ty,par) ->
     super el, ty, par
     @values(1,0)
   values: ( checked, unchecked ) ->
-    @elem.checkedvalue = 
+    @elem.checkedvalue =
       type:"stringliteral"
       stringValue : checked
-    @elem.uncheckedvalue = 
+    @elem.uncheckedvalue =
       type:"stringliteral"
       stringValue : unchecked
-    @  
-    
+    @
+
 regBuilder = (name, builder, skip) ->
   formitems.containers.push(name) unless skip?
   ContBuilder.prototype[name] = (opts) -> @content name
@@ -297,7 +297,7 @@ regSimpleField = (name, topts, builder) ->
 class ComboBuilder extends TextWidgetBuilder
   constructor: (elem, type, par) ->
     super elem, type, par
-  editable: (val) -> 
+  editable: (val) ->
     val ?= (true)
     @attr editable: val
   items: (items...) ->
@@ -305,15 +305,15 @@ class ComboBuilder extends TextWidgetBuilder
     for i in items
       selected = false
       if i[0] is "+"
-        selected = (true) 
+        selected = (true)
         i = i.substr 1
       res.push
         _type : "comboboxitem"
         text: i
         isSelected: selected
     @
-  
- 
+
+
 
 regBuilder "borderpanel", BorderPanelBuilder
 regBuilder "coordpanel", CoordPanelBuilder
@@ -339,7 +339,7 @@ regSimpleField "textarea", _record: "FormOnly"
 regSimpleField "textfield", _record: "FormOnly"
 
 
-ElemBuilder::record = (name) -> @attr 
+ElemBuilder::record = (name) -> @attr
   _record: (name ? "FormOnly")
   fieldType: "FORM_ONLY"
   fieldtable: "formonly"
@@ -351,7 +351,7 @@ lift = (old, fun) ->
     return (args...) -> fun.call @, old.apply @, args
 
 regField = (name) ->
-  lift name, -> 
+  lift name, ->
     #console.log "RECORD"
     @record()
 
@@ -359,16 +359,16 @@ regField "textfield"
 regField "textarea"
 
 ElemBuilder::dfs = (fun) ->
-  go = (obj) -> 
+  go = (obj) ->
     for i, v of obj
-     continue unless v?  
+     continue unless v?
      if v.length
       if v.length > 0 and v[0]._type?
         for j in v
           res = fun.call j
-          return false if res is (false) 
-          if res isnt (true) 
-            return (false) if go(j) is (false) 
+          return false if res is (false)
+          if res isnt (true)
+            return (false) if go(j) is (false)
      else if _.isObject v
       res = (null)
       if v._type?
@@ -388,9 +388,9 @@ ElemBuilder::widgets = (fun) ->
 
 class ScreenRecordBuilder extends Builder
   constructor: (@rec) ->
-  isGrid: (v) -> 
+  isGrid: (v) ->
     @rec._isGrid = v
-  field: (f) -> 
+  field: (f) ->
     return @ for i in @rec.fields when i["#text"] is f.name
     @rec.fields.push
       "#text": f.identifier
@@ -417,10 +417,10 @@ FormBuilder::end = ->
   @widgets ->
     # default names
     {identifier:name, _type:type} = @
-    
+
     if name?
       grid = knownNames[name]
-      knownNames[name] = (true)  
+      knownNames[name] = (true)
     else
       cur = names[type] ?= 0
       loop
@@ -436,7 +436,7 @@ FormBuilder::end = ->
       r.blocks @blocks
       for f in @tabledatamodel.tablecolumns
         f.control._record = @identifier
-         
+
     if @_record?
       rec = form.screenrec(@_record).field(@)
       rec.isGrid(true) if grid
@@ -453,7 +453,7 @@ FormBuilder::end = ->
     return
   res = super()
   #console.log "widgets:", prettyjson.render res
-  
+
   res
 
 ElemBuilder::size = (w,h) -> @attr preferredsize: { width: w, height: h }
@@ -463,7 +463,7 @@ ElemBuilder::maxSize = (w,h) -> @attr maxsize: { width: w, height: h }
 event = (name) ->
   (msg) ->
     obj = {}
-    obj[name] = msg ? (true)  
+    obj[name] = msg ? (true)
     @attr _actions: obj
 
 ElemBuilder::event = (name,msg) -> event(name).call(@, msg)
@@ -484,6 +484,6 @@ ElemBuilder::uncheck = event "OnUncheck"
 
 module.exports =
     form: (name)-> new FormBuilder( {_name:name} )
-    formitems: -> 
+    formitems: ->
       formitems.elements = formitems.widgets.concat(formitems.containers)
       formitems
