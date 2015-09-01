@@ -5,7 +5,10 @@ module.exports = ->
     common:
       options:
         databaseProfile: "informix" 
+
     logger:
+      disable:
+        couchdb: false
       transports:
         couchdb:
           host: "10.38.57.55"
