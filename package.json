@@ -39,6 +39,9 @@
     "xpath": "*",
     "yield-on-promise": "*"
   },
+  "optionalDependencies":{
+    "cwinperfcounter": "0.0.18"
+  },
   "devDependencies": {
     "grunt": "*",
     "grunt-cli": "*",

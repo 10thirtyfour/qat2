@@ -3,6 +3,7 @@ spawn = require("child_process").spawn
 http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
+Counter = require "./process_counters"
 
 
 {CallbackReadWrapper} = require "./readercallback"
@@ -449,8 +450,8 @@ module.exports = ->
           params = new cmdlineType( [ @testData.programExecutable, "-d", opt.env.LYCIA_DB_DRIVER ] )
           params.add @testData.programArgs
           child = spawn( exename, params.args, opt)
-
-          @testData.ignoreHeadlessErrorlevel = true; #????
+          cnt = Counter( child.pid )
+          @testData.ignoreHeadlessErrorlevel = true #????
 
           @testData.runTimeout ?= @timeouts.run
           @testData.lineTimeout ?= @timeouts.line
@@ -459,7 +460,8 @@ module.exports = ->
 
           logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
           res = yp Q.all( [ childPromise, logPromise ] )
-
+          @data.worksetpeak = cnt.data.worksetpeak
+          cnt.stop()
           "Code : "+res.join ". "
 
         finally
