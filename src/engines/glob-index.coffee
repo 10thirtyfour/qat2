@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 # module which scans some folder for specified pattern and execute scripts
 # form it
 
@@ -42,7 +27,7 @@ module.exports = ->
             newName += "$#{@_curCnt}" if @_curCnt isnt 0
             @_curCnt++
             info.name = newName
-      
+
       res = for name, {pattern, root, opts, parseFile} of @items
         continue if @disable[name]
         continue if @disable.pattern[pattern]
@@ -57,13 +42,13 @@ module.exports = ->
                   @trace "found files:", fn
                   counter=0
                   for i in fn
-                  
+
                     if @disable.file.pattern?
                       if _.some(
                        for j in utils.mkArray @disable.file.pattern
                           minimatch i, j)
                         @trace "#{i} matched disabling pattern"
-                        continue 
+                        continue
                     if @only.file.pattern?
                       unless _.some(
                         for j in utils.mkArray @only.file.pattern

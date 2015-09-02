@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 _ = require "lodash"
 builder = require "xmlbuilder"
 
@@ -61,7 +46,7 @@ module.exports = (opts) ->
       cur.up()
     objectInner: (cur, val) ->
       for n, v of val when n[0] isnt "_"
-        cur = @field(cur, n, v) 
+        cur = @field(cur, n, v)
       cur
     number: atomicField
     date: atomicField
@@ -82,4 +67,3 @@ module.exports = (opts) ->
     opts.objectInner(
       builder.create("form", {version: '1.0', encoding: 'UTF-8'}).att("xmlns","http://namespaces.querix.com/2011/fglForms")
       obj).end pretty: true
-

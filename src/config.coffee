@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 module.exports = ->
   # we run scripts in following order
   # ./config (js or coffee)
@@ -42,7 +27,7 @@ module.exports = ->
     qreqconfig "../config-#{user}"
     qreqconfig "../config-#{os.hostname()}-#{user}"
   qreqconfig("#{home}/.qat") if home?
-    
+
   if process.env.QAT_CONFIG?
     qreqconfig "#{process.env.QAT_CONFIG}"
   if @config?
@@ -51,4 +36,3 @@ module.exports = ->
   return
 
 # different locale is actually different users
-

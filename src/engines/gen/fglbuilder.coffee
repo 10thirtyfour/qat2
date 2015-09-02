@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 _ = require "lodash"
 mkdirp = require "mkdirp"
 format = require("./formxml")()
@@ -22,11 +7,11 @@ dom = require("xmldom").DOMParser
 path = require "path"
 
 indent = (str) -> (("  " + i) for i in str.split "\n").join "\n"
-punctuate = (lines) -> 
+punctuate = (lines) ->
   ("#{i}," for i in lines[0...lines.length-1]).join("\n")+"\n"+
     lines[lines.length-1]
 
-dummyProject =  
+dummyProject =
   """
     <?xml version="1.0" encoding="UTF-8"?>
     <projectDescription>
@@ -43,7 +28,7 @@ dummyProject =
         <nature>com.querix.fgl.core.fglnature</nature>
       </natures>
     </projectDescription>
-""" 
+"""
 
 dummyFglProject =
   """
@@ -59,8 +44,8 @@ dummyFglProject =
     </fglProject>
   """
 
-      
-class Builder 
+
+class Builder
 
 class SimpleBuilder extends Builder
   constructor: (@txt) ->
@@ -70,7 +55,7 @@ class RecordBuilder extends Builder
   constructor: (@par) ->
     @fields = {}
   initCode: ->
-    initSingle = (varname, x) => 
+    initSingle = (varname, x) =>
       for i,v of @fields
         res = """  LET #{varname}.#{i} ="""
         switch v.ty
@@ -86,7 +71,7 @@ class RecordBuilder extends Builder
                 res += v.val._fglVal
               else
                 res += if x? then x else "100"
-            else 
+            else
               if v.val._fglVal?
                 res += v.val._fglVal
               else
@@ -97,7 +82,7 @@ class RecordBuilder extends Builder
     unless @varname?
       @varname = @par.uniq.newName_ @name
     @par.defs.push """DEFINE #{@varname} #{@typeRef()}"""
-    
+
     if @_isGrid
       @_itemCount?=100
       @par.commands.push "FOR i = 1 TO #{@_itemCount}"
@@ -108,11 +93,11 @@ class RecordBuilder extends Builder
       initSingle @varname
   field: (name, ty, val) ->
     ty?= val._fglType
-    @fields[name] = 
+    @fields[name] =
       ty: ty ? "STRING"
       val: val
   typeRef: -> "#{@typeName}"
-  type: -> 
+  type: ->
     """#{if @_isGrid then "DYNAMIC ARRAY OF " else ""}RECORD
     #{punctuate ("  #{n} #{t.ty}" for n, t of @fields)}
     END RECORD"""
@@ -132,8 +117,8 @@ class UniqNames
       "#{scope}#{cur}"
   newName_ : (scope) -> @newName(scope)()
 
-class ProgramBuilder extends Builder 
-  constructor: ( name , root ) -> 
+class ProgramBuilder extends Builder
+  constructor: ( name , root ) ->
     @name = name
     @projectRoot = root
     @commands = []
@@ -146,9 +131,9 @@ class ProgramBuilder extends Builder
     @forms = []
     @activeWindowName =""
   windowWithForm: (name) ->
-    @activeWindowName = name 
+    @activeWindowName = name
     @commands.push """OPEN WINDOW #{name} AT 1,1 WITH FORM "form/#{name}" ATTRIBUTE(BORDER)"""
-    
+
 
   initScreenRec: (screenRec) ->
     return if screenRec.fields.length is 0
@@ -158,28 +143,28 @@ class ProgramBuilder extends Builder
     b._isGrid = screenRec._isGrid
     b.initCode()
     return b.varname
-    
+
   inputScreenRec: (screenRec, params = { dialog : false }) ->
-    return if screenRec.fields.length is 0 
+    return if screenRec.fields.length is 0
     params.varname ?= @initScreenRec screenRec
     wd = if screenRec._withDefaults or params.dialog then "" else " WITHOUT DEFAULTS"
     attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
 
     stmt = if screenRec._isGrid
-      if params.dialog 
+      if params.dialog
         """DISPLAY ARRAY #{params.varname}#{wd} TO #{screenRec.identifier}.*#{attrib}"""
       else
         """INPUT ARRAY #{params.varname}#{wd} FROM #{screenRec.identifier}.*#{attrib}"""
-    else 
+    else
       """INPUT BY NAME #{params.varname}.*#{wd}#{attrib}"""
-    
-    
+
+
     interaction = stmt.split(" ")[0]
     for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
         stmt += """\n  ON ACTION #{v}\n    DISPLAY "#{v}" """
 
-    #console.log screenRec._blocks  
+    #console.log screenRec._blocks
     if screenRec._blocks?
       for block in screenRec._blocks
         stmt += "\n  ON #{block.name}\n    #{block.text}"
@@ -187,11 +172,11 @@ class ProgramBuilder extends Builder
           # add dnd variable
           if @defs.indexOf("DEFINE dnd ui.DragDrop") is -1
             @defs.push "DEFINE dnd ui.DragDrop"
-      
-    
+
+
     unless params.dialog
       stmt += "\n  ON KEY(F10)\n    EXIT #{interaction}"
-    
+
     stmt+= "\nEND #{interaction}\n"
     @commands.push stmt
   openForm: (form,x) ->
@@ -203,14 +188,14 @@ class ProgramBuilder extends Builder
       @inputScreenRec form.screenrecords[x]
     #@closeWindow name
     @
-    
+
   dialog: (form,attr)->
     @forms.push form
     name = form._name ?= @uniq.newName_ (@name + "_form")
     @windowWithForm name
     varnames = for sr in form.screenrecords
       @initScreenRec sr
-      
+
     @commands.push "\nDIALOG" + if attr? then " ATTRIBUTES(#{attr})" else ""
     for sr,i in form.screenrecords
       @inputScreenRec sr, dialog:true, varname:varnames[i]
@@ -226,7 +211,7 @@ class ProgramBuilder extends Builder
             DISPLAY #{actName}
           """
     @
-    
+
   showRecord: (f,x,sep)->
     f?=0
     x?=0
@@ -238,13 +223,13 @@ class ProgramBuilder extends Builder
         for field in form.screenrecords[x].fields
           if mess.length then mess+="||'#{sep}'||"
           mess+="NVL(formonly1.#{field._val.identifier},'NULL')"
-        @commands.push "MESSAGE "+mess  
+        @commands.push "MESSAGE "+mess
     @
-    
+
   command: (str) ->
     @commands.push str
     @
-  closeWindow: (name) -> 
+  closeWindow: (name) ->
     name?=@activeWindowName
     @command "CLOSE WINDOW #{name}"
   getKey: () -> @command "CALL fgl_getkey()"
@@ -253,51 +238,51 @@ class ProgramBuilder extends Builder
     GLOBALS
       #{(indent(i) for i in @globals).join("\n")}
     END GLOBALS
-    
+
     MAIN
       DEFINE i INT
     #{(indent(i) for i in @defs).join("\n")}
     #{(indent(i) for i in @commands).join("\n")}
     END MAIN
     """
-  
+
   save: ( name , root ) ->
-    
+
     name ?= @name ? "main"
     root ?= @projectRoot
-    
+
     # target for Build command
-    @target = 
+    @target =
       projectPath : root
       programName : name
       deploy : (true)
-    
+
     mkdirp.sync "#{root}/source/form"
     fs.writeFileSync "#{root}/source/#{name}.4gl", @end()
     for i in @forms
       fs.writeFileSync "#{root}/source/form/#{i._name}.fm2", format.write i
-    
+
     # create or update project file here
-    unless fs.existsSync "#{root}/.project" then fs.writeFileSync "#{root}/.project",dummyProject 
-    
+    unless fs.existsSync "#{root}/.project" then fs.writeFileSync "#{root}/.project",dummyProject
+
     xml = new dom().parseFromString if fs.existsSync("#{root}/.fglproject")
       fs.readFileSync("#{root}/.fglproject",'utf8')
     else
       dummyFglProject
 
     targets = xml.getElementById("com.querix.fgl.core.buildtargets")
-    # TODO: 
-    # Check this element for existence. 
+    # TODO:
+    # Check this element for existence.
     # Empty eclipse project may don't have it.
     targetExists = (false)
     for el in targets.getElementsByTagName("buildTarget")
       if el.getAttribute("name") is name then targetExists = (true)
-    unless targetExists  
+    unless targetExists
       targets.appendChild( xml.createTextNode("\n      "))
       targets.appendChild( new dom().parseFromString "<buildTarget location=\"\" name=\"#{name}\" type=\"fgl-program\"/>")
-      
+
     fs.writeFileSync "#{root}/.fglproject", xml.toString()
-    
+
     # create program file here
     target =  """
                 <?xml version="1.0" encoding="UTF-8"?>

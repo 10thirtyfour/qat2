@@ -1,18 +1,3 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
 glob = require "glob"
 _ = require "lodash"
 _.mixin require "lodash-deep"
@@ -71,7 +56,7 @@ class Runner
     @notInGraph.push descr
     @graph.setNode name
   # schedules next actions for execution
-  # res - initial result, there report is aggregating 
+  # res - initial result, there report is aggregating
   # may be some statistics information
   # this is default implantation and may be overridden by some extension
   # default implementation simply runs all tests sequentially
@@ -96,17 +81,17 @@ class Runner
       unless pt?
         @info "Node #{node} has invalid predecessor #{i}. Ignoring."
         continue
-      
+
       unless pt.done
         @trace "not all dependencies satisfied #{i}"
         return Q({})
-      t.error = t.error or pt.error is true 
-    t.started = true 
+      t.error = t.error or pt.error is true
+    t.started = true
     r = @prePromise()
     if not t.disabled and t.promise? and (not t.error or t.runAnyway)
       r = r.then(-> t.promise())
         .catch (e) ->
-          t.error = true 
+          t.error = true
           throw e
     else
       @trace "skipping #{node}"
@@ -133,7 +118,7 @@ class Runner
     @reg = (i) ->
       fun.call @, i
       prevReg.call @, i
-  # CONFOPT: enables/or disables tracing 
+  # CONFOPT: enables/or disables tracing
   sync: ->
     graph = @graph
     t = @tests
@@ -149,7 +134,7 @@ class Runner
           graph.setEdge name, "run"
         else
           graph.setEdge "run", name
-      unless name is "done" 
+      unless name is "done"
         graph.setEdge name, "done"
       if before?
         for i in @utils.mkArray before
@@ -202,4 +187,3 @@ runner.reg
 require("./utils").call runner
 
 module.exports = runner
-

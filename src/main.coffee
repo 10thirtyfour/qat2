@@ -8,7 +8,7 @@ require("source-map-support").install()
 
 require("./config").call runner
 
-qrequire = (p) -> 
+qrequire = (p) ->
   for i in glob.sync("**/*-index.js", cwd: "lib/#{p}")
     mod = require "./#{p}/#{i}"
     if mod? and mod.call?
@@ -19,4 +19,3 @@ qrequire "engines"
 qrequire "tests"
 
 runner.go().done()
-
