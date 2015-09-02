@@ -90,10 +90,13 @@ module.exports = ->
       descr.promise = ->
         @data.timeid = runner.sysinfo.starttimeid
         @info "starting"
+        @started=(new Date()).getTime()
         context = this
-        Q.fcall( ()-> basePromise.call(context) ).then(
+        Q.fcall( ()-> basePromise.call(context) )
+        .finally( -> context.data.duration=(new Date()).getTime() - context.started)
+        .then(
           (t) =>
-            if failOnly 
+            if failOnly
               @info t
             else
               @pass t
