@@ -42,7 +42,6 @@ module.exports = ->
                   @trace "found files:", fn
                   counter=0
                   for i in fn
-
                     if @disable.file.pattern?
                       if _.some(
                        for j in utils.mkArray @disable.file.pattern

@@ -444,13 +444,21 @@ module.exports = ->
           setCurrentStatus = (logL,outL) =>
             logLine = logL
             outLine = outL
-
           exename = path.join(opt.env.LYCIA_DIR, "bin", "qrun")
 
           params = new cmdlineType( [ @testData.programExecutable, "-d", opt.env.LYCIA_DB_DRIVER ] )
           params.add @testData.programArgs
           child = spawn( exename, params.args, opt)
-          cnt = Counter( child.pid )
+          if process.platform is "win32"
+            d=@data
+            statChild = spawn( "./utils/timem.exe" , [child.pid] )
+            statChild.on "exit", ->
+              result = JSON.parse(@stdout.read().toString())
+              d.UserTime = result.UserTime
+              d.KernelTime = result.KernelTime
+              d.ElapsedTime = result.ElapsedTime
+              d.PeakWorkingSetSize = result.PeakWorkingSetSize
+
           @testData.ignoreHeadlessErrorlevel = true #????
 
           @testData.runTimeout ?= @timeouts.run
@@ -460,8 +468,7 @@ module.exports = ->
 
           logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
           res = yp Q.all( [ childPromise, logPromise ] )
-          @data.worksetpeak = cnt.data.worksetpeak
-          cnt.stop()
+
           "Code : "+res.join ". "
 
         finally
