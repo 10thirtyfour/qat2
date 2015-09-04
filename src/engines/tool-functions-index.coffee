@@ -465,7 +465,7 @@ module.exports = ->
           childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
 
           logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
-          res = yp Q.all( [ childPromise, logPromise ] )
+          res = yp Q.all( [ childPromise, logPromise, exitPromise(statChild).timeout(@testData.runTimeout) ] )
 
           "Code : "+res.join ". "
 
