@@ -3,8 +3,6 @@ spawn = require("child_process").spawn
 http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
-Counter = require "./process_counters"
-
 
 {CallbackReadWrapper} = require "./readercallback"
 
