@@ -15,3 +15,10 @@ module.exports = ->
     globLoader:
       root: "./tests"
 
+    dbprofiles:
+      informix:
+        LYCIA_DB_DRIVER: "informix"
+        INFORMIXSERVER: "querix_test"
+        LOGNAME: "informix"
+        INFORMIXPASS: "default2375"
+        INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
