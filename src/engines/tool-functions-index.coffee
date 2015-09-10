@@ -447,6 +447,17 @@ module.exports = ->
           params = new cmdlineType( [ @testData.programExecutable, "-d", opt.env.LYCIA_DB_DRIVER ] )
           params.add @testData.programArgs
           child = spawn( exename, params.args, opt)
+
+          @testData.ignoreHeadlessErrorlevel = true #????
+
+          @testData.runTimeout ?= @timeouts.run
+          @testData.lineTimeout ?= @timeouts.line
+
+          childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
+          logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
+
+          promises = [ childPromise, logPromise ]
+
           if process.platform is "win32"
             d=@data
             statChild = spawn( "./utils/timem.exe" , [child.pid] )
@@ -456,23 +467,18 @@ module.exports = ->
               d.KernelTime = result.KernelTime
               d.ElapsedTime = result.ElapsedTime
               d.PeakWorkingSetSize = result.PeakWorkingSetSize
+            promises.push exitPromise(statChild).timeout(@testData.runTimeout)
 
-          @testData.ignoreHeadlessErrorlevel = true #????
+          res = yp Q.all( promises )
 
-          @testData.runTimeout ?= @timeouts.run
-          @testData.lineTimeout ?= @timeouts.line
-
-          childPromise = exitPromise(child, ignoreError : @testData.ignoreHeadlessErrorlevel ).timeout(@testData.runTimeout, "Log timeout")
-
-          logPromise = yp.frun( => runLog( child , @testData, setCurrentStatus) )
-          res = yp Q.all( [ childPromise, logPromise, exitPromise(statChild).timeout(@testData.runTimeout) ] )
-
-          "Code : "+res.join ". "
+          "Code : " + res.join ". "
 
         finally
           child.kill('SIGKILL')
 
       )
+
+
 
     LoadHeaderData : (logFileName) ->
       testData =
