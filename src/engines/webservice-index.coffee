@@ -3,8 +3,9 @@ runner = {}
 stopResponces = ['<interact_wswaitcall/>','']
 log = console.log
 requestTimeout = 5000
-testTimeout = 20000
-wsStartUpDelay = 1000
+testTimeout = 30000
+WS_defaultDelay = 1000
+WS_initialDelay = 2000 # this is must be removed, once appserver gni is fixed
 
 getResponse = (s)->
   r=/<response>([\s\S]*)<\/response>/.exec(s)
@@ -18,7 +19,8 @@ getResults = (s)->
 
 class WStools
   constructor: ( opts={} )->
-    @promise = runner.Q({})
+    opts.delay?=WS_initialDelay
+    @promise = runner.Q({}).delay( opts.delay );
     @quitSent = false
     @webUrl = "#{runner.opts.lyciaWebUrl}sapi/"
     @headers = {}
@@ -96,7 +98,7 @@ class WStools
     )
     @
 
-  delay : ( msec=wsStartUpDelay )->
+  delay : ( msec=WS_defaultDelay )->
     @promise = runner.Q(@promise).delay( msec )
     @
 
