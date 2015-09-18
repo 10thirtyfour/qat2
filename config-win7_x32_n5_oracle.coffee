@@ -9,7 +9,7 @@ module.exports = ->
 
     logger:
       disable:
-        couchdb: false
+        couchdb: true
           
     globLoader:
       disable:
