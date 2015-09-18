@@ -1,5 +1,5 @@
 # version used to prevent new features run with obsolete QAT
-funVersion = 2.00
+funVersion = 2.51
 
 genProgram = require("./gen/fglbuilder").program
 genForm =  require("./gen/formbuilder")
