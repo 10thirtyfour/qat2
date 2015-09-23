@@ -136,7 +136,7 @@ module.exports = ->
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
-          r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
+          r = yp @getRect(selector:".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss(".qx-o-identifier-#{wnd}")
