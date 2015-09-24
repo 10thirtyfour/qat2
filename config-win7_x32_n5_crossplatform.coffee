@@ -25,6 +25,7 @@ module.exports = ->
       chrome: (true)
       firefox: (true)
       ie: (true)
+
     common:
       timeouts:
         wd: 180000

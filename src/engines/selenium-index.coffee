@@ -45,6 +45,7 @@ module.exports = ->
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"
+      edge: "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
     browsers:
       chrome:
@@ -53,6 +54,8 @@ module.exports = ->
         browserName: "firefox"
       ie:
         browserName: "ie"
+      edge:
+        browserName: "edge"
       safari:
         browserName: "safari"
       opera:

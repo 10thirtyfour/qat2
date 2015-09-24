@@ -9,6 +9,10 @@ module.exports = ->
     
     scenario: "default"
 
+    browserList :
+      chrome: (true)
+      edge: (true)
+
     logger:
       disable:
         couchdb: false
