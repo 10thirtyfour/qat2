@@ -73,7 +73,6 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-
           @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
           )
 
@@ -90,7 +89,7 @@ module.exports = ->
           command += ".exe" if process.platform[0] is "w"
           programUrl = runner.opts.lyciaWebUrl + params.instance + "/" + command
 
-          if params.args then programUrl+=params.args
+          if params.args then programUrl+=params.args+"&skipunload" else programUrl+="?skipunload"
 
           if params.wait
             return @get(programUrl).waitIdle(30000)
@@ -102,7 +101,8 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           timeout ?= 3000
-          @waitForElementByCssSelector("#qx-application-restart",timeout))
+          if @qx$browserName != "edge"
+            @waitForElementByCssSelector("#qx-application-restart",timeout))
 
 
       wd.addPromiseMethod(
@@ -547,10 +547,9 @@ module.exports = ->
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
-                r = r.finally =>
+                r = r.finally => 
                   browser.quit()
               return r.then(-> "Pass")
-              #return r.then(-> "Pass. Duration time = "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
 
             @reg binfo
             binfo.data.browser = i
