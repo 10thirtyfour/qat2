@@ -48,7 +48,7 @@ module.exports = ->
       root: "./tests"
       disable:
         file: 
-          pattern: []
+          pattern: ["**/*-perf-rest.tlog"]
 
     browserList :
       chrome: (true)
