@@ -45,6 +45,7 @@ module.exports = ->
     links:
       chrome: "http://localhost:9515/"
       ie: "http://localhost:5555/"
+      edge: "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
     browsers:
       chrome:
@@ -53,6 +54,8 @@ module.exports = ->
         browserName: "firefox"
       ie:
         browserName: "ie"
+      edge:
+        browserName: "edge"
       safari:
         browserName: "safari"
       opera:
@@ -70,7 +73,6 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-
           @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
           )
 
@@ -87,7 +89,7 @@ module.exports = ->
           command += ".exe" if process.platform[0] is "w"
           programUrl = runner.opts.lyciaWebUrl + params.instance + "/" + command
 
-          if params.args then programUrl+=params.args
+          if params.args then programUrl+=params.args+"&skipunload" else programUrl+="?skipunload"
 
           if params.wait
             return @get(programUrl).waitIdle(30000)
@@ -99,13 +101,17 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           timeout ?= 3000
-          @waitForElementByCssSelector("#qx-application-restart",timeout))
+          if @qx$browserName != "edge"
+            @waitForElementByCssSelector("#qx-application-restart",timeout))
 
 
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          yp(@elementByCssSelectorIfExists(getSelector(el)))?
+          if @qx$browserName == "edge"
+            if yp(@execute "return $('#{getSelector(el)}').length") > 0 then return (true) else return (false)
+          else
+            yp(@elementByCssSelectorIfExists(getSelector(el)))?
           )
 
 
@@ -136,7 +142,7 @@ module.exports = ->
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
-          r = yp @execute "return $('.qx-o-identifier-#{wnd} > .ui-resizable-#{h}')[0].getBoundingClientRect()"
+          r = yp @getRect(selector:".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss(".qx-o-identifier-#{wnd}")
@@ -544,10 +550,9 @@ module.exports = ->
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
-                r = r.finally =>
+                r = r.finally => 
                   browser.quit()
               return r.then(-> "Pass")
-              #return r.then(-> "Pass. Duration time = "+(binfo.duration.finishTime - binfo.duration.startTime)/1000+" (sec.)")
 
             @reg binfo
             binfo.data.browser = i

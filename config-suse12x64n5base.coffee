@@ -6,6 +6,11 @@ module.exports = ->
       options:
         databaseProfile: "informix" 
 
+    globLoader:
+      disable:
+        file: 
+          pattern: ["**/*-perf-rest.tlog"]
+
     logger:
       disable:
         couchdb: false
