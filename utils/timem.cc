@@ -1,6 +1,7 @@
 #include <windows.h>                      
 #include <stdio.h>
 #include <tchar.h>
+//# define PSAPI_VERSION 1
 #include <psapi.h>
 
 
@@ -8,7 +9,7 @@ void PrintMemoryAndTimeInfo (DWORD processID)
 {
     HANDLE hProcess;
     DWORD ExitCode=-1;
-    PROCESS_MEMORY_COUNTERS pmc;
+    PROCESS_MEMORY_COUNTERS_EX pmc;
     FILETIME CreationTime;
     FILETIME ExitTime;
     FILETIME KernelTime;
@@ -18,14 +19,14 @@ void PrintMemoryAndTimeInfo (DWORD processID)
     ULONGLONG ktime=0;
     ULONGLONG utime=0;
     ULONGLONG ptime=0;
-    ZeroMemory(&pmc, sizeof(PROCESS_MEMORY_COUNTERS));
+    ZeroMemory(&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
 
     // Get a handle for the process
-    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | SYNCHRONIZE ,
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | SYNCHRONIZE,
                            FALSE, processID);
 
-    fprintf(stdout, "{\n");
 
+    fprintf(stdout, "{\n");
 
     if (NULL == hProcess) {
         fprintf(stdout, "}\n");
@@ -58,20 +59,21 @@ void PrintMemoryAndTimeInfo (DWORD processID)
         }
     }
 
-    fprintf(stdout, "   \"pid\" : \"%d\",\n",processID);
+    fprintf(stdout, "  \"pid\" : \"%d\",\n",processID);
 
     fprintf(stdout, "  \"CreationTime\" : \"%u\",\n", ctime / 10000 - 11644473600000);
     fprintf(stdout, "  \"ExitTime\"     : \"%u\",\n", etime / 10000 - 11644473600000);
-    fprintf(stdout, "  \"KernelTime\"   : \"%u\",\n", ktime);
-    fprintf(stdout, "  \"UserTime\"     : \"%u\",\n", utime);
-    fprintf(stdout, "  \"ElapsedTime\"  : \"%u\",\n", ptime / 10000);
+    fprintf(stdout, "  \"KernelTime\"   : \"%u\",\n", (ktime + 5000)/ 10000);
+    fprintf(stdout, "  \"UserTime\"     : \"%u\",\n", (utime + 5000)/ 10000);
+    fprintf(stdout, "  \"ElapsedTime\"  : \"%u\",\n", (ptime + 5000)/ 10000);
 
-    GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc));
+    GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
     fprintf(stdout, "  \"PageFaultCount\" : \"%d\",\n", pmc.PageFaultCount);
     fprintf(stdout, "  \"PeakWorkingSetSize\" : \"%d\",\n", pmc.PeakWorkingSetSize);
     fprintf(stdout, "  \"QuotaPeakPagedPoolUsage\" : \"%d\",\n", pmc.QuotaPeakPagedPoolUsage);
     fprintf(stdout, "  \"QuotaPeakNonPagedPoolUsage\" : \"%d\",\n", pmc.QuotaPeakNonPagedPoolUsage);
     fprintf(stdout, "  \"PeakPagefileUsage\" : \"%d\",\n", pmc.PeakPagefileUsage);
+    fprintf(stdout, "  \"PrivateUsage\" : \"%d\",\n", pmc.PrivateUsage);
 
     GetExitCodeProcess(hProcess, &ExitCode);
     fprintf(stdout, "  \"ExitCode\" : \"%d\"\n", ExitCode);
