@@ -26,7 +26,7 @@ module.exports = ->
       #ie: (true)
     common:
       timeouts:
-        wd: 1200000
+        wd: 1000000
 
     dbprofiles:
       informix:         

@@ -20,11 +20,11 @@ module.exports = ->
    
     common:
       timeouts:
-        line: 12000
+        line: 10000
         run: 60000
-        compile: 20000
+        compile: 30000
         build: 60000
-        wd: 120000
+        wd: 100000
 
       options:
         buildMode: "rebuild"
