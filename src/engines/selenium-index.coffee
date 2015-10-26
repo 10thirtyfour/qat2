@@ -136,12 +136,19 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "getWindow"
-        (name) -> @elementByCss ".qx-o-identifier-#{name}")
+        (name) -> 
+          #workaround for vior
+          yp(@execute("$('.qx-identifier-#{name}').closest('.ui-dialog').addClass('qx-o-identifier-#{name}')"))
+          #
+          @elementByCss ".qx-o-identifier-#{name}")
 
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
+          #workaround for vior
+          yp(@execute("$('.qx-identifier-#{wnd}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd}')"))
+          #
           r = yp @getRect(selector:".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
@@ -156,6 +163,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "moveWindow"
         (wnd,dx,dy) ->
+          #workaround for vior
+          yp(@execute("$('.qx-identifier-#{wnd}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd}')"))
+          #
           r = yp @execute "return $('.qx-o-identifier-#{wnd} > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
