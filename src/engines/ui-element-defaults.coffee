@@ -254,11 +254,11 @@ elements =
       text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} .qx-main-cell > input').val());"
       defaults :
-        height : 19
+        height : 20
         ie$w :
-          height : 18
+          height : 19
         chrome$l :
-          height : 17
+          height : 18
     set :
       value : (el,val)->
         # setValue with mouse
