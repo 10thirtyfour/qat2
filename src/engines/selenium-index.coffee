@@ -92,7 +92,7 @@ module.exports = ->
           if params.args then programUrl+=params.args+"&skipunload" else programUrl+="?skipunload"
 
           if params.wait
-            return @get(programUrl).waitIdle(30000)
+            return @get(programUrl).waitIdle(30000).sleep(500)
           else
             return @get(programUrl).sleep(500)
           )
