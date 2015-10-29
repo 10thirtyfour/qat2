@@ -539,10 +539,9 @@ module.exports = ->
 
     regXPath : ->
       yp.frun =>
-        rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/2011/fglForms"',"")
+        rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(/ xmlns="http:\/\/namespaces\.querix\.com\/20\d\d\/fglForms"/,"")
         xml = new dom().parseFromString(rawxml)
         s = xpath[@testData.method](@testData.query, xml).toString()
-
         if s is @testData.sample
           return "Matched!"
         else
