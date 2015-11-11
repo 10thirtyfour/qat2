@@ -20,6 +20,7 @@ getResults = (s)->
 class WStools
   constructor: ( opts={} )->
     opts.delay?=WS_initialDelay
+    @timeout?=testTimeout
     @promise = runner.Q({}).delay( opts.delay );
     @quitSent = false
     @webUrl = "#{runner.opts.lyciaWebUrl}sapi/"
@@ -158,15 +159,14 @@ class WStools
     @
 
   end : ( opts = {message : "ok"})->
-    it = @
-    runner.Q( it.promise )
-    .timeout( testTimeout )
-    .finally( (r)->
-      if it.quitSent or opts.noquit
+    runner.Q( @promise )
+    .timeout( @timeout )
+    .finally( ((r)->
+      if @quitSent or opts.noquit
         return r
       runner.logger.trace " >>> sending quit"
-      it.promQuit()
-    )
+      @promQuit()
+    ).bind(@))
     .then( -> opts.message )
 
   then : (args...)->
