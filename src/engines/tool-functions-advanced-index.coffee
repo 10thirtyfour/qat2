@@ -1,17 +1,15 @@
 # version used to prevent new features run with obsolete QAT
-funVersion = 2.51
-
 genProgram = require("./gen/fglbuilder").program
 genForm =  require("./gen/formbuilder")
 
 module.exports = ->
-  {Q,yp,fs,path,_} = runner = @
+  {Q,yp,fs,path,_, opts} = runner = @
   runner.extfuns =
     #uniformName : runner.toolfuns.uniformName
     log : console.log
     ver : (v)->
-      if funVersion<v
-        throw "Update QAT! Required version : #{v}. Current : #{funVersion}"
+      if opts.version<v
+        throw "Update QAT! Required version : #{v}. Current : #{opts.version}"
     CheckXML: (testData) ->
       rr = @runner
       yp.frun =>

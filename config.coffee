@@ -2,6 +2,7 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
+    version : 2.51
     lyciaWebUrl : "http://localhost:9090/LyciaWeb/"
     qatDefaultInstance : "default-1889"
     tempPath : "./tests"
