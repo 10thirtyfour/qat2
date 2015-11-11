@@ -91,7 +91,7 @@ elements =
   "group-box" :
     qxclass : "qx-aum-group-box"  
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} legend').html()"
+      text : (el) -> "return $('.qx-identifier-#{el} .qx-groupbox-header .qx-text').html()"
 
   "label" :
     qxclass  : "qx-aum-label"
