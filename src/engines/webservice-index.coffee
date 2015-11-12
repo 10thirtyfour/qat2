@@ -20,7 +20,8 @@ getResults = (s)->
 class WStools
   constructor: ( opts={} )->
     opts.delay?=WS_initialDelay
-    @timeout?=testTimeout
+    opts.timeout?=testTimeout
+    @timeout=opts.timeout
     @promise = runner.Q({}).delay( opts.delay );
     @quitSent = false
     @webUrl = "#{runner.opts.lyciaWebUrl}sapi/"
