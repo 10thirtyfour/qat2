@@ -27,11 +27,11 @@ elements =
                       return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
       
       defaults :
-        height : 30
+        height : 26
         ie$w :
-          height : 29
+          height : 25
         chrome$l:
-          height : 29
+          height : 25
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -58,18 +58,18 @@ elements =
                         if (typeof cb.prop('checked') == 'undefined') {return false;}
                         return 'unchecked';"
       defaults :
-        height : 28
+        height : 24
         ie$w :
-          height : 27
+          height : 23
         chrome$l:
-          height : 27
+          height : 23
         
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-combo-content .qx-text').text()"
       defaults :
-        height : 22
+        height : 18
 
   "coord-panel" :
     qxclass : "qx-aum-coord-panel"
@@ -79,11 +79,11 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     get :
       defaults:
-        height : 26
+        height : 22
         ie$w :
-          height : 25
+          height : 21
         chrome$l :
-          height : 25
+          height : 21
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
@@ -101,11 +101,11 @@ elements =
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
-        height : 28
+        height : 24
         ie$w :
-          height : 27
+          height : 23
         chrome$l :
-          height : 27
+          height : 23
         
   "list-box" :
     qxclass : "qx-aum-list-box"                                
@@ -173,7 +173,12 @@ elements =
       value : (el) -> "var rb = $('.qx-identifier-#{el} input');
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
-
+      defaults :
+        height : 24
+        ie$w :
+          height : 23
+        chrome$l :
+          height : 23
  
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
@@ -207,7 +212,7 @@ elements =
                         }
                       """
       defaults : 
-        height : 12    
+        height : 10    
     set :
       value : (el,val) -> 
         # step direction and count must be placed into val property, like 
@@ -242,11 +247,11 @@ elements =
                         return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
     
       defaults : 
-        height : 22
+        height : 18
         ie$w :
-          height : 21
+          height : 17
         chrome$l :
-          height : 21
+          height : 17
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
@@ -254,9 +259,9 @@ elements =
       text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} .qx-main-cell > input').val());"
       defaults :
-        height : 26
+        height : 22
         chrome$l :
-          height : 25
+          height : 21
     set :
       value : (el,val)->
         # setValue with mouse
@@ -316,11 +321,11 @@ elements =
       text: (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
-        height : 24
+        height : 20
         ie$w :
-          height : 23
+          height : 19
         chrome$l :
-          height : 23
+          height : 19
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
@@ -341,11 +346,11 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
-        height : 24
+        height : 20
         ie$w :
-          height : 23
+          height : 19
         chrome$l :
-          height : 23
+          height : 19
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
@@ -363,11 +368,11 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
-        height : 24
+        height : 20
         ie$w :
-          height : 23
+          height : 19
         chrome$l :
-          height : 23
+          height : 19
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
