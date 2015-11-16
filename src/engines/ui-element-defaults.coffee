@@ -31,7 +31,7 @@ elements =
         ie$w :
           height : 25
         chrome$l:
-          height : 25
+          height : 24
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -62,7 +62,7 @@ elements =
         ie$w :
           height : 23
         chrome$l:
-          height : 23
+          height : 22
         
   "combo-box" :
     qxclass : "qx-aum-combo-box"
@@ -83,7 +83,7 @@ elements =
         ie$w :
           height : 21
         chrome$l :
-          height : 21
+          height : 20
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
@@ -105,7 +105,7 @@ elements =
         ie$w :
           height : 23
         chrome$l :
-          height : 23
+          height : 22
         
   "list-box" :
     qxclass : "qx-aum-list-box"                                
@@ -178,7 +178,7 @@ elements =
         ie$w :
           height : 23
         chrome$l :
-          height : 23
+          height : 22
  
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
@@ -251,7 +251,7 @@ elements =
         ie$w :
           height : 17
         chrome$l :
-          height : 17
+          height : 16
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
@@ -261,7 +261,7 @@ elements =
       defaults :
         height : 22
         chrome$l :
-          height : 21
+          height : 19
     set :
       value : (el,val)->
         # setValue with mouse
@@ -325,7 +325,7 @@ elements =
         ie$w :
           height : 19
         chrome$l :
-          height : 19
+          height : 18
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
@@ -350,7 +350,7 @@ elements =
         ie$w :
           height : 19
         chrome$l :
-          height : 19
+          height : 18
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
@@ -372,7 +372,7 @@ elements =
         ie$w :
           height : 19
         chrome$l :
-          height : 19
+          height : 18
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
