@@ -29,6 +29,7 @@
     "prettyjson": "^1.1.0",
     "q": "~1.1.2",
     "q-io": "^1.13.1",
+    "robotjs": "^0.3.3",
     "source-map-support": "^0.3.3",
     "tsort": "0.0.1",
     "wd": "^0.3.11",
@@ -62,5 +63,8 @@
   ],
   "author": "Querix team",
   "private": true,
-  "license": "ALLRIGHTSRESERVED"
+  "license": "ALLRIGHTSRESERVED",
+  "optionalDependencies": {
+    "edge": "^4.0.0"
+  }
 }

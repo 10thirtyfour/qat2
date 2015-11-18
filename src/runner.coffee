@@ -129,7 +129,7 @@ class Runner
       {name,before,after,setup} = descr
       @trace "building: #{name}"
       if name isnt "setup" and name isnt "run"
-       if setup
+        if setup
           graph.setEdge "setup", name
           graph.setEdge name, "run"
         else

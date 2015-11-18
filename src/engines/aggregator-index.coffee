@@ -38,7 +38,7 @@ module.exports = ->
           kind = p.kind ? "nokind"
           emit([p.level,kind,p.name], 1) if p? and p.name and p.level
     promise: ->
-      class Transport 
+      class Transport
         constructor: (@opts) ->
           @name = "aggregator"
       util.inherits Transport, winston.Transport
@@ -80,12 +80,15 @@ module.exports = ->
     tree
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
+    runner.logger.trace "done.promise started"
     deff = Q.defer()
-    p = deff.promise.timeout(10000)
+    p = deff.promise
     if runner.logger.transports.couchdb?
+      runner.logger.trace "done.promise CouchDB Found!"
       db = require('nano')('http://'+runner.logger.transports.couchdb.host+':5984/qat_log')
       db.view 'suits','all', { key : runner.sysinfo.starttimeid }, (err, suits)->
-        if((err) || (suits.rows.length!=1)) 
+        if((err) || (suits.rows.length!=1))
+          runner.logger.trace "done.promise !!! Cant get suite !!!"
           console.log "!!! Cant get suite or key is not unique !!!"
           deff.resolve("err")
           return
@@ -93,14 +96,23 @@ module.exports = ->
         suite.value.params.status   = "complete"
         suite.value.params.result   = plugin.queries.common._store
         suite.value.params.duration = Math.round((new Date() - new Date(runner.sysinfo.starttimeid)) / 1000)
+        runner.logger.trace "done.promise Updating suit info..."
         db.insert suite.value, suite._id, (err, msg)->
-          runner.spammer "report", key:runner.sysinfo.starttimeid  
-          if err then deff.resolve("error") else deff.resolve("ok")
+          runner.spammer "report", key:runner.sysinfo.starttimeid
+          if err
+            deff.resolve("error")
+            runner.logger.trace "done.promise Update failed..."
+          else
+            deff.resolve("ok")
+            runner.logger.trace "done.promise Update complete..."
     else
+      runner.logger.trace "done.promise No couchdb"
       deff.resolve("no couchdb")
- 
+
+    runner.logger.trace "done.promise Drawing tree"
     console.log archy mkTree()
-    
+
     context=@
-    return p.then( ()-> donePromise.call context)
+    runner.logger.trace "done.promise Return promise"
+    return p.timeout(20000).then( ()-> donePromise.call context)
   @reg plugin

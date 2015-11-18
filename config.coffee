@@ -18,7 +18,11 @@ module.exports = ->
       win_x64: 'C:/ProgramData/Querix/Lycia 7/progs'
       lin_ia32: '/opt/Querix/Lycia/progs'
       lin_x64: '/opt/Querix/Lycia/progs'
-   
+
+    defaultAssemblyPath:
+      win_ia32: "C:/Program Files/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.5/"
+      win_x64:  "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.5/"
+    
     common:
       timeouts:
         line: 10000
@@ -49,7 +53,7 @@ module.exports = ->
       root: "./tests"
       disable:
         file: 
-          pattern: ["**/*-perf-rest.tlog"]
+          pattern: ["**/*-perf-rest.tlog","**/output/**"]
 
     browserList :
       chrome: (true)
@@ -89,4 +93,5 @@ module.exports = ->
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
   @tempPath = "./tests"
+
 

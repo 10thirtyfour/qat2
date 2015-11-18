@@ -472,10 +472,8 @@ module.exports = ->
           res = yp Q.all( promises )
 
           "Code : " + res.join ". "
-
         finally
           child.kill('SIGKILL')
-
       )
 
 

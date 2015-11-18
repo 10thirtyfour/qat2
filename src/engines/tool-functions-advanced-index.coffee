@@ -1,10 +1,10 @@
-# version used to prevent new features run with obsolete QAT
 genProgram = require("./gen/fglbuilder").program
 genForm =  require("./gen/formbuilder")
 
 module.exports = ->
   {Q,yp,fs,path,_, opts} = runner = @
-  runner.extfuns =
+  runner.extfuns?={}
+  _.merge runner.extfuns,
     #uniformName : runner.toolfuns.uniformName
     log : console.log
     ver : (v)->
@@ -91,7 +91,6 @@ module.exports = ->
         if testData.ext?
           unless testData.ext[0] is "." then testData.ext="."+testData.ext
         else
-          # .4gl used as default extension"
           testData.ext=".4gl"
         testData.fileName = path.join(path.resolve path.dirname(@fileName), path.dirname(testData.fileName),path.basename(testData.fileName))
 
@@ -163,19 +162,19 @@ module.exports = ->
       testData.buildTestName
 
     RegWD : (obj, params) ->
-      rr = @runner
+      runner = @runner
       if _.isFunction obj
         params ?= {}
         params.syn = obj
       else
         params = obj
       params.after     ?= @lastBuiltTestName ? []
-      params.name      ?= rr.toolfuns.uniformName(path.relative(rr.tests.globLoader.root,@fileName))
+      params.name      ?= runner.toolfuns.uniformName(path.relative(runner.tests.globLoader.root,@fileName))
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt
       if params.testId? then params.name+="$"+params.testId
 
-      rr.regWD params
+      runner.regWD params
 
     reg : (params...) ->
       @runner.reg params...

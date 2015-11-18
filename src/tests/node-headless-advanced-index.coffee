@@ -35,13 +35,11 @@ module.exports = ->
           pattern: ["**/*-test.coffee"]
           parseFile: (fn) ->
             yp.frun =>
-              #console.log " COFEEE >> #{fn}"
               contextParams = 
                 fileName: fn
                 testName : runner.toolfuns.filenameToTestname(fn)
                 relativeName: path.relative(runner.tests.globLoader.root, fn)
                 runner: runner
-                
               for n,f of runner.extfuns
                 do (n,f) =>
                   contextParams[n] = (params...) ->
