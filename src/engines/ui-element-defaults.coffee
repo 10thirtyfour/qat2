@@ -317,10 +317,9 @@ elements =
 
   "text-area" :
     qxclass : "qx-aum-text-area"
-    #get_text : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
     get :
-      text: (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-      value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
+      text: (el) -> "return $('.qx-identifier-#{el} .qx-text').val()"
+      value : (el) -> "return $('.qx-identifier-#{el} textarea').val()"
       defaults :
         height : 20
         ie$w :
