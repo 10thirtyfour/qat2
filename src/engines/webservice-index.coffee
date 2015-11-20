@@ -33,9 +33,9 @@ class WStools
 
   promRequest : ( opts )->
     it = @
-    it.recentPath = opts.path
+    @recentPath = opts.path
     runner.logger.trace " >>> Request : #{opts.path}"
-    runner.logger.trace "     #{it.headers.cookie}"
+    runner.logger.trace "     #{@headers.cookie}"
 
 
     req =
