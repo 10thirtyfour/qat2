@@ -28,8 +28,6 @@ elements =
       
       defaults :
         height : 26
-        ie$w :
-          height : 25
         chrome$l:
           height : 24
     
@@ -59,15 +57,15 @@ elements =
                         return 'unchecked';"
       defaults :
         height : 24
-        ie$w :
-          height : 23
+        firefox$w:
+          height : 22
         chrome$l:
           height : 22
         
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
+      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').val()"
       defaults :
         height : 18
 
@@ -80,8 +78,8 @@ elements =
     get :
       defaults:
         height : 22
-        ie$w :
-          height : 21
+        firefox$w :
+          height : 20
         chrome$l :
           height : 20
 
@@ -102,8 +100,8 @@ elements =
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
         height : 24
-        ie$w :
-          height : 23
+        firefox$w :
+          height : 22
         chrome$l :
           height : 22
         
@@ -249,8 +247,8 @@ elements =
     
       defaults : 
         height : 18
-        ie$w :
-          height : 17
+        firefox$w :
+          height : 16
         chrome$l :
           height : 16
     
@@ -261,6 +259,8 @@ elements =
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} .qx-main-cell > input').val());"
       defaults :
         height : 22
+        firefox$w :
+          height : 21
         chrome$l :
           height : 19
     set :
@@ -321,11 +321,11 @@ elements =
       text: (el) -> "return $('.qx-identifier-#{el} .qx-text').val()"
       value : (el) -> "return $('.qx-identifier-#{el} textarea').val()"
       defaults :
-        height : 20
-        ie$w :
-          height : 19
+        height : 38
+        firefox$w :
+          height : 55    
         chrome$l :
-          height : 18
+          height : 34
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
@@ -347,8 +347,8 @@ elements =
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
         height : 20
-        ie$w :
-          height : 19
+        firefox$w :
+          height : 18
         chrome$l :
           height : 18
      set :
@@ -369,8 +369,6 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
         height : 20
-        ie$w :
-          height : 19
         chrome$l :
           height : 18
       
