@@ -6,3 +6,5 @@ log
 qat.log
 logs
 tests
+debug.log
+temp

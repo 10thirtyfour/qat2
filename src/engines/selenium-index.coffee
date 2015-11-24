@@ -136,7 +136,7 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "getWindow"
-        (name) -> 
+        (name) ->
           #workaround for vior
           yp(@execute("$('.qx-identifier-#{name}').closest('.ui-dialog').addClass('qx-o-identifier-#{name}')"))
           #
@@ -297,6 +297,7 @@ module.exports = ->
           if @qx$browserName == "ie"
             s = {}
             sel = @getSelector(el)
+
             s.width = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
             s.height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
             s.left = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
@@ -560,7 +561,7 @@ module.exports = ->
               r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
-                r = r.finally => 
+                r = r.finally =>
                   browser.quit()
               return r.then(-> "Pass")
 
