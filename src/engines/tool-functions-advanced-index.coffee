@@ -177,6 +177,7 @@ module.exports = ->
       runner.regWD params
 
     reg : (params...) ->
+      params.name?=@testName
       @runner.reg params...
 
     form : genForm.form
