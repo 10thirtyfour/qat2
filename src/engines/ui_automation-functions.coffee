@@ -214,3 +214,127 @@ module.exports =
         }
       }
     ###
+
+  transformWindow : ->
+    ###
+      using System;
+      using System.Windows;
+      using System.ComponentModel;
+      using System.Windows.Automation;
+      using System.Threading.Tasks;
+      using System.Threading;
+      using System.Collections.Generic;
+
+      public class myRect {
+        public int width { get; set; }
+        public int height { get; set; }
+        public int top { get; set; }
+        public int left { get; set; }
+        public myRect( AutomationElement el ) {
+          System.Windows.Rect r = (System.Windows.Rect)(
+          el.GetCurrentPropertyValue(
+            AutomationElement.BoundingRectangleProperty,
+            true));
+          width  = (int)r.Width;
+          height = (int)r.Height;
+          top    = (int)r.Top;
+          left   = (int)r.Left;
+        }
+      }
+
+      public class Winfo
+      {
+        public string name { get; set; }
+        public string automationId { get; set; }
+        public int processId { get; set; }
+        public myRect window { get; set; }
+        public myRect browser { get; set; }
+      }
+
+      public class Startup {
+        public async Task<object> Invoke(dynamic input) {
+          string wname = (string)input.name;
+          AutomationElement el = AutomationElement.RootElement.FindFirst(
+            TreeScope.Children,
+            new PropertyCondition( AutomationElement.NameProperty, wname ));
+            var p = (el.GetCurrentPattern(TransformPattern.Pattern)
+              as TransformPattern);
+
+          try {
+            object[] move = (object[])input.move;
+            p.Move((int)move[0],(int)move[1]);
+          } catch { }
+
+          try {
+            object[] resize = (object[])input.resize;
+            p.Resize((int)resize[0],(int)resize[1]);
+          } catch { }
+
+          return(true);
+
+        }
+      }
+    ###
+
+
+  closeWindow : ->
+    ###
+      using System;
+      using System.Windows;
+      using System.ComponentModel;
+      using System.Windows.Automation;
+      using System.Threading.Tasks;
+      using System.Threading;
+      using System.Collections.Generic;
+
+      public class myRect {
+        public int width { get; set; }
+        public int height { get; set; }
+        public int top { get; set; }
+        public int left { get; set; }
+        public myRect( AutomationElement el ) {
+          System.Windows.Rect r = (System.Windows.Rect)(
+          el.GetCurrentPropertyValue(
+            AutomationElement.BoundingRectangleProperty,
+            true));
+          width  = (int)r.Width;
+          height = (int)r.Height;
+          top    = (int)r.Top;
+          left   = (int)r.Left;
+        }
+      }
+
+      public class Winfo
+      {
+        public string name { get; set; }
+        public string automationId { get; set; }
+        public int processId { get; set; }
+        public myRect window { get; set; }
+        public myRect browser { get; set; }
+      }
+
+      public class Startup {
+        public async Task<object> Invoke(dynamic input) {
+          var names = (object[])input;
+          int closedWindowsCount = 0;
+          foreach (object oname in names) {
+            string wname = oname as string;
+
+            var els = AutomationElement.RootElement.FindAll(
+              TreeScope.Children,
+              new PropertyCondition( AutomationElement.NameProperty, wname ));
+
+            foreach (AutomationElement el in els) {
+              try {
+                (el.GetCurrentPattern(WindowPattern.Pattern)
+                  as WindowPattern).Close();
+                closedWindowsCount++;
+              } catch {
+                Console.WriteLine("Cant close {0}",wname);
+              }
+            }
+          }
+          return(closedWindowsCount);
+        }
+      }
+    ###

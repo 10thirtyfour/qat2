@@ -5,10 +5,15 @@ module.exports = ()->
 
   runner.robot = require('robotjs')
   edge = require('edge')
+  edgeFuns = require("./ui_automation-functions")
   url = require "url"
-  platform = if process.env.hasOwnProperty('ProgramFiles(x86)') then "win_x64" else "win_ia32"
+  if process.env.hasOwnProperty('ProgramFiles(x86)')
+    platform = "win_x64"
+  else
+    platform =  "win_ia32"
   spawn = require("child_process").spawn
   exec = require("child_process").exec
+
 
   opts.assemblyPath?=opts.defaultAssemblyPath[platform]
   refs = [
@@ -45,18 +50,47 @@ module.exports = ()->
     promisify : (fun, key="")->
       return (obj)->
         t = @timeout
-        @promise = Q( @promise ).then( (p)->
+        @then (p)->
           fun( Object.assign( {
             params   : p,
             required : key.startsWith("wait"),
             requiredMessage : "#{key} didn't return a value!",
             timeout  : t
           }, obj) )
-        )
-        @
+
+
+    closeWindow : (obj)->
+      pr = edgeToPromise( edge.func(
+        source: edgeFuns["closeWindow"] ,
+        references: refs ))
+      @then (p)->
+        obj?=p
+        list = []
+        addToCloseList = (w)->
+          isUnique = (s)->(typeof s is "string" and !~list.indexOf(s))
+          list.push(w) if isUnique(w)
+          list.push(w.name) if isUnique(w.name)
+
+        if typeof obj is "object" and obj.length>0
+          obj.forEach(addToCloseList)
+        else
+          addToCloseList(obj)
+        return pr(list)
+
+    transformWindow : (obj)->
+      pr = edgeToPromise( edge.func(
+        source: edgeFuns["transformWindow"] ,
+        references: refs ))
+      @then (p={})->
+        obj.name?= p.name if p.hasOwnProperty("name")
+        return pr(obj)
+
+
 
     addEdge : ->
-      for key,val of require("./ui_automation-functions")
+      # add rest of functions
+      for key,val of edgeFuns
+        continue if key of @
         prom = edgeToPromise( edge.func( source: val, references: refs ))
         @[key] = @promisify(prom, key)
 
@@ -72,7 +106,7 @@ module.exports = ()->
           for prog in @progs
             if typeof prog.kill is "function" then prog.kill('SIGKILL')
           for name in @progNames
-            console.log "taskkill /F /T /IM #{name}"
+            #console.log "taskkill /F /T /IM #{name}"
             exec "taskkill /F /T /IM #{name}"
           res
         ).bind(@)
