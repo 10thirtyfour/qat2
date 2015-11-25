@@ -5,7 +5,6 @@ module.exports = ()->
 
   runner.robot = require('robotjs')
   edge = require('edge')
-  edgeFuns = require("./ui_automation-functions")
   url = require "url"
   if process.env.hasOwnProperty('ProgramFiles(x86)')
     platform = "win_x64"
@@ -22,10 +21,20 @@ module.exports = ()->
       "WindowsBase.dll"].map( (dll)->
         opts.assemblyPath + dll
       )
-  throwWithoutResult = (message)->
-    (res)->
-      throw new error(message) unless res
-      return res
+
+  getWindowList = (obj)->
+    addToCloseList = (w)->
+      isUnique = (s)->(typeof s is "string" and !~list.indexOf(s))
+      list.push(w) if isUnique(w)
+      list.push(w.name) if isUnique(w.name)
+
+    list = []
+    if typeof obj is "object" and obj.length>0
+      obj.forEach(addToCloseList)
+    else
+      addToCloseList(obj)
+    list
+
 
   edgeToPromise = (fun)->
     (obj)->
@@ -37,6 +46,9 @@ module.exports = ()->
       )
       return def.promise
 
+  EdgeCall = edgeToPromise( edge.func(
+    source: require("./ui_automation-functions-single").AllInOne,
+    references: refs))
 
   class UIauto
     constructor: ( params={} )->
@@ -44,60 +56,65 @@ module.exports = ()->
       @promise = Q( {} )
       @progs = []
       @progNames = []
-      @addEdge()
       @
-
-    promisify : (fun, key="")->
-      return (obj)->
-        t = @timeout
-        @then (p)->
-          fun( Object.assign( {
-            params   : p,
-            required : key.startsWith("wait"),
-            requiredMessage : "#{key} didn't return a value!",
-            timeout  : t
-          }, obj) )
 
 
     closeWindow : (obj)->
-      pr = edgeToPromise( edge.func(
-        source: edgeFuns["closeWindow"] ,
-        references: refs ))
-      @then (p)->
-        obj?=p
-        list = []
-        addToCloseList = (w)->
-          isUnique = (s)->(typeof s is "string" and !~list.indexOf(s))
-          list.push(w) if isUnique(w)
-          list.push(w.name) if isUnique(w.name)
-
-        if typeof obj is "object" and obj.length>0
-          obj.forEach(addToCloseList)
-        else
-          addToCloseList(obj)
-        return pr(list)
+      @then (p={})->
+        param = Object.assign({
+          method : "closeWindow"
+          names : getWindowList( obj ? p )
+        })
+        EdgeCall(param)
 
     transformWindow : (obj)->
-      pr = edgeToPromise( edge.func(
-        source: edgeFuns["transformWindow"] ,
-        references: refs ))
       @then (p={})->
-        obj.name?= p.name if p.hasOwnProperty("name")
-        return pr(obj)
+        param = Object.assign({
+          method: "transformWindow",
+          name : p.name ? p[0].name
+          },obj )
+        EdgeCall( param )
 
+    getConsoleText : (obj)->
+      @then (p={})->
+        param = Object.assign({
+          method : "getConsoleText"
+        })
+        EdgeCall( param)
 
+    getWindows : (obj)->
+      @then (p={})->
+        param = Object.assign({
+          method : "getWindows",
+          all : false
+        }, obj)
+        EdgeCall( param )
 
-    addEdge : ->
-      # add rest of functions
-      for key,val of edgeFuns
-        continue if key of @
-        prom = edgeToPromise( edge.func( source: val, references: refs ))
-        @[key] = @promisify(prom, key)
-
+    waitWindow : (obj)->
+      t = @timeout
+      @then (p={})->
+        param = Object.assign({
+          method   : "waitWindow",
+          name     : p.name
+          required : true
+          requiredMessage : "waitWindow failed"
+          timeout  : t
+        },obj )
+        EdgeCall( param )
+        .then( (res)->
+          if res is null and param.required
+            throw new Error(param.requiredMessage)
+          res)
 
     then : (arg)->
       @promise = Q(@promise).then(arg)
       @
+
+    log : (arg)->
+      @then (p)->
+        console.log p
+        p
+
 
     done : (res)->
       @promise=Q(@promise)
