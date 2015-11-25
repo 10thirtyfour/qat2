@@ -119,6 +119,7 @@ module.exports =
     ###
       using System;
       using System.Windows;
+      using System.Diagnostics;
       using System.ComponentModel;
       using System.Windows.Automation;
       using System.Threading.Tasks;
@@ -181,9 +182,10 @@ module.exports =
         }
 
         public async Task<object> Invoke(dynamic input) {
-
+          bool gotWindow;
           int t;
           try { t = (int)input.timeout; } catch { t = 0; };
+
           string wname;
           try { wname = (string)input.name; } catch { wname = ""; };
 
@@ -206,10 +208,20 @@ module.exports =
               }
             );
 
-            waitHandle.WaitOne(t);
+            var watch = Stopwatch.StartNew();
+            gotWindow = waitHandle.WaitOne(t);
+            watch.Stop();
+            t -= (int)watch.ElapsedMilliseconds;
             Automation.RemoveAllEventHandlers();
+
           }
 
+          if((t>0) && (el!=null)) {
+            // Still have some time to wait for ready
+            (el.GetCurrentPattern(WindowPattern.Pattern)
+              as WindowPattern).WaitForInputIdle(t);
+            el.SetFocus();
+          }
           return( getWinInfo(el) );
         }
       }
@@ -252,6 +264,32 @@ module.exports =
       }
 
       public class Startup {
+        private Winfo getWinInfo( AutomationElement el ) {
+          if ( el == null ) return( null );
+          Winfo winfo = new Winfo {
+            name = el.Current.Name,
+            automationId = el.Current.AutomationId,
+            processId = el.Current.ProcessId,
+            window = new myRect(el)
+          };
+
+          try {
+            var tmpWeb = el
+              .FindFirst( TreeScope.Descendants,
+                new PropertyCondition(
+                  AutomationElement.ClassNameProperty,
+                  "CefBrowserWindow") )
+              .FindFirst( TreeScope.Descendants,
+                new PropertyCondition(
+                  AutomationElement.NameProperty,
+                  "Chrome Legacy Window"));
+
+            winfo.browser = new myRect(tmpWeb);
+          } catch { winfo.browser = null; }
+
+          return(winfo);
+        }
+
         public async Task<object> Invoke(dynamic input) {
           string wname = (string)input.name;
           AutomationElement el = AutomationElement.RootElement.FindFirst(
@@ -260,17 +298,34 @@ module.exports =
             var p = (el.GetCurrentPattern(TransformPattern.Pattern)
               as TransformPattern);
 
+
           try {
-            object[] move = (object[])input.move;
-            p.Move((int)move[0],(int)move[1]);
-          } catch { }
+            string sizeMode = (string)input.resize;
+            var wp=el.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+            if(sizeMode=="max") {
+              wp.SetWindowVisualState(WindowVisualState.Maximized);
+            }
+            if(sizeMode=="min") {
+              wp.SetWindowVisualState(WindowVisualState.Minimized);
+            }
+            if(sizeMode=="normal") {
+              wp.SetWindowVisualState(WindowVisualState.Normal);
+            }
+          } catch {}
+
 
           try {
             object[] resize = (object[])input.resize;
             p.Resize((int)resize[0],(int)resize[1]);
           } catch { }
 
-          return(true);
+          try {
+            object[] move = (object[])input.move;
+            p.Move((int)move[0],(int)move[1]);
+          } catch { }
+
+
+        return(getWinInfo(el));
 
         }
       }

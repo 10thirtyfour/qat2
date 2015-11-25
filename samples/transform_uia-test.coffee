@@ -2,14 +2,17 @@
 # transformWindow accepts an object argument with following properties :
 #  name : "window name"
 #  move : [ x,y ] an array with coords
-#  resize : [ w,h ] an array with dimensions
+#  resize : [ w,h ] an array with dimensions or following values :
+#  "min", "max", "normal"
+
 #
 #  .transformWindow( name : "w", move : [100,200], resize : [ 400, 400 ] )
 #  .transformWindow( name : "w", move : [100,200] )
 #  .transformWindow( name : "w", resize : [ 400, 400 ] )
+#  .transformWindow( name : "w", resize : "max" )
 #
 # name property can be omitted! In this case it will be acquired 
-# from previous function (currently only waitWindow is supported)
+# from previous function (currently only waitWindow, transformWindow is supported)
 #
 #  .waitWindow( name : "w" )
 #  .transformWindow( move : [100,200], resize : [ 400, 400 ] )
@@ -33,5 +36,18 @@ reg
     .waitWindow( name : "w" )
     .delay(1000)
     .transformWindow( move : [100,200], resize : [ 700, 400 ] )
-    .delay(5000)
+    .delay(2000)
+    .transformWindow( resize : "max" )
+    .delay(2000)
+    .transformWindow( resize : [ 600, 600 ] )
+    .delay(2000)
+    .transformWindow( resize : "min" )
+    .delay(2000)
+    .transformWindow( move : [100,200], resize : [ 700, 400 ] )
+    .delay(2000)
+    .transformWindow( resize : "normal" )
+    .delay(2000)
+    .transformWindow( move : [800,600], resize : [ 50, 50 ] )
+    .delay(2000)
+
     .done()
