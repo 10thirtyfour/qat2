@@ -4,7 +4,7 @@ module.exports = ()->
   { yp, opts, _, path, Q } = runner = @
 
   url = require "url"
-  runner.robot = require('robotjs')
+
   edge = require('edge')
 
   if process.env.hasOwnProperty('ProgramFiles(x86)')
@@ -128,7 +128,6 @@ module.exports = ()->
       @progs?=[]
       LDcmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
       webUrl = url.parse(opts.lyciaWebUrl).host
-
       params = [
         "--server=#{webUrl}",
         "--instance=#{opts.qatDefaultInstance}",
@@ -138,6 +137,7 @@ module.exports = ()->
 
     getConsoleText : ()->
       yp EdgeCall(method:"getConsoleText")
+    robot : require('robotjs')
 
   @reg
     name : "ld"

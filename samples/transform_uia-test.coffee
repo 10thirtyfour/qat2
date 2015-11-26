@@ -15,5 +15,6 @@ RegLD ->
   if ww.length>1
     ww[0].close()
     ww[1].resize("max")
+  @robot.getScreenSize()
   #w.close()
   #@closeWindow("w")
