@@ -245,7 +245,7 @@ module.exports =
                 text = textPattern.DocumentRange.GetText(-1);
               }
             } catch {
-              Console.WriteLine("error");
+              //Console.WriteLine("No Lycia Console window found!");
               text = "";
             }
           return(text);

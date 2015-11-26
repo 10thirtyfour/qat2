@@ -161,6 +161,17 @@ module.exports = ->
 
       testData.buildTestName
 
+    RegLD : (obj, params) ->
+      runner = @runner
+      if _.isFunction obj
+        params ?= {}
+        params.syn = obj
+      else
+        params = obj
+      params.after     ?= @lastBuiltTestName ? []
+      params.name      ?= @testName
+      runner.regLD params
+
     RegWD : (obj, params) ->
       runner = @runner
       if _.isFunction obj
