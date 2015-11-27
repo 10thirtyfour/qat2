@@ -4,8 +4,8 @@ module.exports = ()->
   { yp, opts, _, path, Q } = runner = @
 
   url = require "url"
-
   edge = require('edge')
+  runner.robot = require('robotjs')
 
   if process.env.hasOwnProperty('ProgramFiles(x86)')
     platform = "win_x64"
@@ -23,11 +23,11 @@ module.exports = ()->
       )
 
   killProg = (prog)->
+    #console.log prog
     if typeof prog.child.kill is "function" then prog.child.kill('SIGKILL')
     n = path.basename(prog.name,",exe")+".exe"
     exec "taskkill /F /T /IM #{n}"
     exec "taskkill /F /T /IM qrun.exe"
-
     #exec "taskkill /F /T /IM #{name}.exe"
 
     #console.log n
@@ -96,15 +96,39 @@ module.exports = ()->
         names : [@name]
       })
 
+    moveMouse : (x,y)->
+      runner.robot.moveMouse(@browser.left+x, @browser.top+y)
+      @
+      
+    mouseMove : (x,y)->
+      runner.robot.moveMouse(@browser.left+x, @browser.top+y)
+      @
+
+    moveMouseSmooth : (x,y)->
+      runner.robot.moveMouseSmooth(@browser.left+x, @browser.top+y)
+      @
+
+    mouseClick : (button="left", double=false)->
+      runner.robot.mouseClick(button, double)
+      @
+
+    mouseToggle : (down="down", button="left")->
+      runner.robot.mouseToggle(down, button)
+      @
+
 
   DesktopFunctions =
     waitWindow : (obj)->
-      new DesktopWindow yp EdgeCall( Object.assign({
+      params =
         method:"waitWindow"
         required : true
         requiredMessage : "wainWindow failed"
         timeout : opts.common.timeouts.run
-      }, obj))
+      if typeof obj is "string"
+        params.name=obj
+      else
+        Object.assign( params, obj)
+      new DesktopWindow yp EdgeCall( params )
 
 
     getWindows : (obj)->
@@ -122,10 +146,13 @@ module.exports = ()->
 
 
     delay : (ms)->
-      yp Q(true).delay(ms)
+      #fool proof delay
+      yp Q(true).delay(Math.min(ms,@timeout))
 
     runProgram : (name)->
       @progs?=[]
+      name?=@testName
+
       LDcmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
       webUrl = url.parse(opts.lyciaWebUrl).host
       params = [
@@ -137,7 +164,13 @@ module.exports = ()->
 
     getConsoleText : ()->
       yp EdgeCall(method:"getConsoleText")
-    robot : require('robotjs')
+
+    # close all LD windows and console
+    cleanUp : ()->
+      yp EdgeCall(method:"cleanUp")
+    robot : runner.robot
+
+
 
   @reg
     name : "ld"
@@ -147,18 +180,23 @@ module.exports = ()->
     promise : ->
       plugin = @
       runner.regLD = (info)->
-        d = Object.assign( { kind : "win.desktop" }, info.data )
-        @reg
-          name : info.name
-          data : d
-          promise : ->
-            testContext = Object.assign({ errorMessage:""},DesktopFunctions )
-            (yp.frun ->
-              res = info.syn.call testContext
-              if testContext.errorMessage and testContext.errorMessage.length
-                throw new Error(testContext.errorMessage)
-              res)
-            .timeout( opts.common.timeouts.run )
-            .finally( -> testContext.progs.forEach( killProg ) )
-
+        binfo = _.clone info
+        binfo.data = Object.assign({ kind : "win.desktop" }, info.data )
+        testContext = Object.assign({
+          timeout : opts.common.timeouts.run
+          errorMessage : ""
+          testName : info.name
+          }, binfo.data , DesktopFunctions )
+        binfo.promise = ->
+          (yp.frun ->
+            res = info.syn.call testContext
+            if testContext.errorMessage and testContext.errorMessage.length
+              throw new Error(testContext.errorMessage)
+            res)
+          .timeout( testContext.timeout )
+          .finally( ->
+            testContext.progs.forEach( killProg )
+            EdgeCall(method:"cleanUp")
+          )
+        @reg binfo
       true

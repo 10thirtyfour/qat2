@@ -162,6 +162,7 @@ module.exports = ->
       testData.buildTestName
 
     RegLD : (obj, params) ->
+      return if process.platform[0] isnt "w"
       runner = @runner
       if _.isFunction obj
         params ?= {}
@@ -184,7 +185,6 @@ module.exports = ->
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt
       if params.testId? then params.name+="$"+params.testId
-
       runner.regWD params
 
     reg : (obj,other...) ->

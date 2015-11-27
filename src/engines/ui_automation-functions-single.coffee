@@ -46,26 +46,27 @@ module.exports =
           return(new edgeError{ errorMessage = message });
         }
         private Winfo getWinInfo( AutomationElement el ) {
-          if ( el == null ) return( null );
+          if ( el == null ) { return( null ); }
           Winfo winfo = new Winfo {
             name = el.Current.Name,
             automationId = el.Current.AutomationId,
             processId = el.Current.ProcessId,
-            window = new myRect(el)
           };
 
+
+
           try {
+            winfo.window = new myRect(el);
             var tmpWeb = el
-              .FindFirst( TreeScope.Descendants,
+              .FindFirst( TreeScope.Children,
                 new PropertyCondition(
                   AutomationElement.ClassNameProperty,
-                  "CefBrowserWindow") )
+                  "wxWindowNR") )
               .FindFirst( TreeScope.Descendants,
                 new PropertyCondition(
                   AutomationElement.NameProperty,
                   "Chrome Legacy Window"));
-
-            winfo.browser = new myRect(tmpWeb);
+            if (tmpWeb!=null) winfo.browser = new myRect(tmpWeb);
           } catch { winfo.browser = null; }
 
           return(winfo);
@@ -86,6 +87,7 @@ module.exports =
             case "waitWindow" : return waitWindow(input);
             case "getWindows" : return getWindows(input);
             case "getConsoleText" : return getConsoleText(input);
+            case "cleanUp" : return cleanUp(input);
           }
           return("allinone");
         }
@@ -103,14 +105,7 @@ module.exports =
               TreeScope.Children,
               new PropertyCondition( AutomationElement.NameProperty, wname ));
             foreach (AutomationElement el in els) {
-              try {
-                var p = (el.GetCurrentPattern(WindowPattern.Pattern)
-                  as WindowPattern);
-                if (p!=null) p.Close();
-                closedWindowsCount++;
-              } catch {
-                Console.WriteLine("Cant close {0}",wname);
-              }
+              closedWindowsCount+=closeWindowHelper(el);
             }
           }
           return(closedWindowsCount);
@@ -249,6 +244,45 @@ module.exports =
               text = "";
             }
           return(text);
+        }
+
+        // ==========================
+
+        private int closeWindowHelper( AutomationElement el ) {
+          string name="";
+          try {
+            name = el.Current.Name;
+            var p = (el.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern);
+            if (p!=null) p.Close();
+            return(1);
+          } catch {
+            Console.WriteLine("Cant close {0}", name);
+          }
+          return(0);
+        }
+
+        // ==========================
+
+        private object cleanUp(dynamic input) {
+          int closedWindowsCount=0;
+          var els = AutomationElement.RootElement.FindAll(
+            TreeScope.Children,
+            Condition.TrueCondition);
+          foreach (AutomationElement el in els) {
+            if (el.Current.Name=="Lycia Console") {
+              closedWindowsCount+=closeWindowHelper(el);
+              continue;
+            }
+
+            Winfo winfo = getWinInfo(el);
+            if((winfo!=null) && (winfo.browser!=null)) {
+              closedWindowsCount+=closeWindowHelper(el);
+            }
+
+
+
+          }
+          return(closedWindowsCount);
         }
 
       }
