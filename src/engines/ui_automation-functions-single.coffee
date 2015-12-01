@@ -37,6 +37,8 @@ module.exports =
         public string automationId { get; set; }
         public int processId { get; set; }
         public myRect window { get; set; }
+        public string visualState {get; set; }
+        public bool isModal {get; set; }
         public myRect browser { get; set; }
       }
 
@@ -52,6 +54,14 @@ module.exports =
             automationId = el.Current.AutomationId,
             processId = el.Current.ProcessId,
           };
+
+          try {
+            var wp=el.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+              winfo.isModal=wp.Current.IsModal;
+              winfo.visualState=wp.Current.WindowVisualState.ToString();
+
+            } catch {     }
+
 
 
 

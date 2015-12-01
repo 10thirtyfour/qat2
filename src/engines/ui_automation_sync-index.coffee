@@ -70,6 +70,8 @@ module.exports = ()->
       @name = params.name
       @automationId = params.automationId
       @processId = params.processId
+      @isModal=params.isModal
+      @visualState=params.visualState
       @window =if params.window  then Object.assign({},params.window ) else null
       @browser=if params.browser then Object.assign({},params.browser) else null
       @
@@ -184,6 +186,12 @@ module.exports = ()->
     cleanUp : ()->
       yp EdgeCall(method:"cleanUp")
     robot : runner.robot
+
+    assertEqual : (p1,p2,message)->
+      if p1 isnt p2
+        message?="Assertion failed. Expected : #{p2}. Actual : #{p1}"
+        throw new Error(message)
+      true
 
 
 
