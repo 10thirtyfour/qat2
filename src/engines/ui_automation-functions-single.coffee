@@ -158,36 +158,43 @@ module.exports =
         private object waitWindow(dynamic input) {
           int timeleft;
           try { timeleft = (int)input.timeout; } catch { timeleft = 0; };
-
           string wname;
           try { wname = (string)input.name; } catch { wname = ""; };
 
-          AutomationElement el = AutomationElement.RootElement.FindFirst(
+          AutomationElement el = null;
+
+          Automation.RemoveAllEventHandlers();
+          waitHandle = new AutoResetEvent(false);
+
+          Automation.AddAutomationEventHandler(
+            WindowPattern.WindowOpenedEvent,
+            AutomationElement.RootElement,
+            TreeScope.Children,
+            (sender, e) => {
+              var obj = sender as AutomationElement;
+              if (obj.Current.Name == wname) {
+                el = obj;
+                waitHandle.Set();
+              }
+            }
+          );
+
+          AutomationElement elf = AutomationElement.RootElement.FindFirst(
             TreeScope.Children,
             new PropertyCondition( AutomationElement.NameProperty, wname ));
 
-          if ( el == null ) {
-            waitHandle = new AutoResetEvent(false);
-            Automation.AddAutomationEventHandler(
-              WindowPattern.WindowOpenedEvent,
-              AutomationElement.RootElement,
-              TreeScope.Children,
-              (sender, e) => {
-                var obj = sender as AutomationElement;
-                if (obj.Current.Name == wname) {
-                  el = obj;
-                  waitHandle.Set();
-                }
-              }
-            );
-
-            var watch = Stopwatch.StartNew();
-            waitHandle.WaitOne(timeleft);
-            watch.Stop();
-            timeleft -= (int)watch.ElapsedMilliseconds;
+          if (elf!=null) {
             Automation.RemoveAllEventHandlers();
-
+            waitHandle.Set();
+            el=elf;
           }
+
+          var watch = Stopwatch.StartNew();
+          waitHandle.WaitOne(timeleft);
+          watch.Stop();
+
+          timeleft -= (int)watch.ElapsedMilliseconds;
+          Automation.RemoveAllEventHandlers();
 
           if((timeleft>0) && (el!=null)) {
             (el.GetCurrentPattern(WindowPattern.Pattern)
