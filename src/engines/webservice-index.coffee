@@ -22,7 +22,7 @@ class WStools
     opts.delay?=WS_initialDelay
     opts.timeout?=testTimeout
     @timeout=opts.timeout
-    @promise = runner.Q({}).delay( opts.delay );
+    @promise = runner.Q({}).delay( opts.delay )
     @quitSent = false
     @webUrl = "#{runner.opts.lyciaWebUrl}sapi/"
     @headers = {}
@@ -177,7 +177,6 @@ class WStools
 
 module.exports = ->
   runner = @
-
   runner.qio =
     http : require "q-io/http"
     fs : require "q-io/fs"

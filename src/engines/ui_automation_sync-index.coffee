@@ -99,10 +99,9 @@ module.exports = ()->
     moveMouse : (x,y)->
       runner.robot.moveMouse(@browser.left+x, @browser.top+y)
       @
-      
+
     mouseMove : (x,y)->
-      runner.robot.moveMouse(@browser.left+x, @browser.top+y)
-      @
+      @moveMouse(x,y)
 
     moveMouseSmooth : (x,y)->
       runner.robot.moveMouseSmooth(@browser.left+x, @browser.top+y)
@@ -162,8 +161,24 @@ module.exports = ()->
         "--command=\"#{name}\" -d #{opts.common.options.databaseProfile}"]
       @progs.push( name : name, child : spawn(LDcmd,params))
 
-    getConsoleText : ()->
+    getConsoleText : (timeout)->
+      if timeout?
+        @waitWindow( name:"Lycia Console", timeout:timeout, requiredMessage:"Console not found!" )
+
       yp EdgeCall(method:"getConsoleText")
+
+    getConsole : (timeout)->
+      @getConsoleText(timeout)
+
+    getLine : (timeout)->
+      if timeout?
+        @waitWindow( name:"Lycia Console", timeout:timeout, requiredMessage:"Console not found!" )
+
+      conLines = (yp(EdgeCall(method:"getConsoleText"))).split("\r\n")
+      if(conLines).length is 1
+        return ""
+      else
+        return conLines[conLines.length-2]
 
     # close all LD windows and console
     cleanUp : ()->
@@ -192,6 +207,7 @@ module.exports = ()->
             res = info.syn.call testContext
             if testContext.errorMessage and testContext.errorMessage.length
               throw new Error(testContext.errorMessage)
+            if typeof res is "undefined" then res = "ok"
             res)
           .timeout( testContext.timeout )
           .finally( ->
