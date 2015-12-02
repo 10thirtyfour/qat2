@@ -76,6 +76,7 @@ elements =
     qxclass : "qx-aum-function-field-abs" 
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     get :
+      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
       defaults:
         height : 22
         firefox$w :
@@ -108,9 +109,9 @@ elements =
   "list-box" :
     qxclass : "qx-aum-list-box"                                
     get :
-      state : (el) -> "if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
-                   if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
-                   return $('select."+@qxclass+".qx-identifier-#{el}').attr('class');"
+      state : (el) -> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
+                   if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
+                   return $('div."+@qxclass+".qx-identifier-#{el}').attr('class');"
       text : (el) -> "return $('.qx-identifier-#{el} option').text()"
 
   "menu-command" :
@@ -122,7 +123,6 @@ elements =
       state : (el) -> "if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('li."+@qxclass+".qx-identifier-#{el}').attr('class');"
-
   "menu-group" :
     qxclass  : "qx-aum-menu-group"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-group').length > 0)"
