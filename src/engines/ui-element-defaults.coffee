@@ -65,7 +65,7 @@ elements =
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').val()"
+      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
       defaults :
         height : 18
 
@@ -112,7 +112,7 @@ elements =
                    if ($('select."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('select."+@qxclass+".qx-identifier-#{el}').attr('class');"
       text : (el) -> "return $('.qx-identifier-#{el} option').text()"
-	  
+
   "menu-command" :
     qxclass  : "qx-aum-menu-command"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-command').length > 0)"
@@ -182,8 +182,7 @@ elements =
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
     get :
-      # Warning!!! Need testing it  
-      text  : (el) -> "return $('.qx-identifier-#{el} .qx-aum-radio-button-list-item.qx-active .qx-title-cell.qx-text').html()"
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-title-cell.qx-text').html()"
 
   "radio-button-list-item" :
     qxclass : "qx-aum-radio-button-list-item"
