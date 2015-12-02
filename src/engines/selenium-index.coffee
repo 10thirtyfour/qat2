@@ -29,7 +29,7 @@ module.exports = ->
     # exact selector was provided
     if el.selector? then return el.selector
     # string as id
-    if _.isString(el) then return ".qx-identifier-#{el}"
+    if _.isString(el) then return ".qx-identifier-#{el.toLowerCase()}"
     # table row selector
     if el.table? and el.row?
       return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
@@ -132,27 +132,27 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "getElement"
-        (name) -> @elementByCss ".qx-identifier-#{name}")
+        (name) -> @elementByCss ".qx-identifier-#{name.toLowerCase()}")
 
       wd.addPromiseMethod(
         "getWindow"
         (name) ->
           #workaround for vior
-          yp(@execute("$('.qx-identifier-#{name}').closest('.ui-dialog').addClass('qx-o-identifier-#{name}')"))
+          yp(@execute("$('.qx-identifier-#{name.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{name}')"))
           #
-          @elementByCss ".qx-o-identifier-#{name}")
+          @elementByCss ".qx-o-identifier-#{name.toLowerCase()}")
 
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
           #workaround for vior
-          yp(@execute("$('.qx-identifier-#{wnd}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd}')"))
+          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd.toLowerCase()}')"))
           #
-          r = yp @getRect(selector:".qx-o-identifier-#{wnd} > .ui-resizable-#{h}")
+          r = yp @getRect(selector:".qx-o-identifier-#{wnd.toLowerCase()} > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
-          yp @elementByCss(".qx-o-identifier-#{wnd}")
+          yp @elementByCss(".qx-o-identifier-#{wnd.toLowerCase()}")
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
@@ -164,9 +164,9 @@ module.exports = ->
         "moveWindow"
         (wnd,dx,dy) ->
           #workaround for vior
-          yp(@execute("$('.qx-identifier-#{wnd}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd}')"))
+          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd.toLowerCase()}')"))
           #
-          r = yp @execute "return $('.qx-o-identifier-#{wnd} > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
+          r = yp @execute "return $('.qx-o-identifier-#{wnd.toLowerCase()} > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss('#qx-home-form')
@@ -180,7 +180,7 @@ module.exports = ->
         "resizeElement"
         (el,dx,dy,h) ->
           h?="e"
-          r = yp @execute "return $('.qx-identifier-#{el} .ui-resizable-#{h}')[0].getBoundingClientRect()"
+          r = yp @execute "return $('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
 
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
@@ -205,7 +205,7 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click?
-            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss("#{el}"))
+            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss("#{el.toLowerCase()}"))
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall el, "click"
           else
@@ -214,7 +214,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "getClasses",
         (el) ->
-          element = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}")) ? yp(@elementByCssIfExists("#{el}")) ? (null)
+          element = yp(@elementByCssSelectorIfExists(".qx-identifier-#{el.toLowerCase()}")) ? yp(@elementByCssIfExists("#{el.toLowerCase()}")) ? (null)
           if element is (null)
             return ""
           yp(element.getAttribute("class")).split(" ")
@@ -255,7 +255,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "invokeElement",
         (el) ->
-          unless el.click? then el = @elementByCss ".qx-identifier-#{el}"
+          unless el.click? then el = @elementByCss ".qx-identifier-#{el.toLowerCase()}"
           if plugin.hacks.invoke[@qx$browserName]
             @remoteCall(el, "click")
               .waitIdle()
@@ -269,7 +269,7 @@ module.exports = ->
         (el, nm, args...) ->
           if _.isString el
             @execute(
-              "return $().#{nm}.apply($('.qx-identifier-#{el}'),arguments)"
+              "return $().#{nm}.apply($('.qx-identifier-#{el.toLowerCase()}'),arguments)"
               args)
           else
             @execute(
@@ -483,7 +483,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "getSelector", (el)->
           if el.selector? then return el.selector
-          if _.isString(el) then return ".qx-identifier-#{el}"
+          if _.isString(el) then return ".qx-identifier-#{el.toLowerCase()}"
           if el.table? and el.row?
             return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
       )
