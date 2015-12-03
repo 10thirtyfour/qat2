@@ -182,12 +182,12 @@ elements =
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
     get :
-      text  : (el) -> "return $('.qx-identifier-#{el} .qx-title-cell.qx-text').html()"
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
 
   "radio-button-list-item" :
     qxclass : "qx-aum-radio-button-list-item"
     get :
-      text  : (el) -> "return $('.qx-identifier-#{el} .qx-title-cell.qx-text').html()"
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text-cell.qx-text').html()"
       value : (el) -> "var rb = $('.qx-identifier-#{el} input');
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
