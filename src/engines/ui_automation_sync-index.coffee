@@ -1,6 +1,10 @@
 module.exports = ()->
   return if process.platform[0] isnt "w"
 
+  DesktopDefaults =
+    topMenuHeight : 19
+    menuHeight : 22
+
   { yp, opts, _, path, Q } = runner = @
 
   url = require "url"
@@ -30,9 +34,6 @@ module.exports = ()->
     exec "taskkill /F /T /IM qrun.exe"
     #exec "taskkill /F /T /IM #{name}.exe"
 
-    #console.log n
-    #exec "C:\\Windows\\System32\\wbem\\WMIC.exe PROCESS WHERE NAME=\"#{n}\" DELETE"
-
   getWindowList = (obj)->
     addToCloseList = (w)->
       isUnique = (s)->(typeof s is "string" and !~list.indexOf(s))
@@ -61,6 +62,15 @@ module.exports = ()->
     source: require("./ui_automation-functions-single").AllInOne,
     references: refs))
 
+  menuBarToObject = (menuBarArray)->
+    return null if menuBarArray is null
+    obj = {}
+    if menuBarArray and menuBarArray.length
+      menuBarArray.forEach (el)->
+        obj[el.name]=el
+    obj
+
+
   class DesktopWindow
     constructor: ( params )->
       @set(params)
@@ -72,9 +82,18 @@ module.exports = ()->
       @processId = params.processId
       @isModal=params.isModal
       @visualState=params.visualState
+      @menuBar = menuBarToObject(params.menuBar)
       @window =if params.window  then Object.assign({},params.window ) else null
       @browser=if params.browser then Object.assign({},params.browser) else null
       @
+
+
+    getMenu : (group="")->
+      menuBarToObject yp EdgeCall({
+        method:"getMenu"
+        name  : @name
+        group : group
+      })
 
     move : (x,y)->
       @set yp EdgeCall({
@@ -102,8 +121,6 @@ module.exports = ()->
       runner.robot.moveMouse(@browser.left+x, @browser.top+y)
       @
 
-    mouseMove : (x,y)->
-      @moveMouse(x,y)
 
     moveMouseSmooth : (x,y)->
       runner.robot.moveMouseSmooth(@browser.left+x, @browser.top+y)
@@ -113,9 +130,23 @@ module.exports = ()->
       runner.robot.mouseClick(button, double)
       @
 
+    click : (dx,dy)->
+      runner.robot.moveMouse(@browser.left+dx, @browser.top+dy)
+      runner.robot.mouseClick("left",false)
+      @
+
     mouseToggle : (down="down", button="left")->
       runner.robot.mouseToggle(down, button)
       @
+
+
+  # ==========================
+  runner.robot.moveTo = (rect)->
+    r = if rect.hasOwnProperty("rect") then rect.rect else rect
+    tx=r.left + r.width/2
+    ty=r.top + r.height/2
+    runner.robot.moveMouse( tx, ty )
+
 
 
   DesktopFunctions =
@@ -185,14 +216,33 @@ module.exports = ()->
     # close all LD windows and console
     cleanUp : ()->
       yp EdgeCall(method:"cleanUp")
+
     robot : runner.robot
 
-    assertEqual : (p1,p2,message)->
+    assert : runner.assert
+
+    assertEqual : (p1,p2,message="")->
       if p1 isnt p2
-        message?="Assertion failed. Expected : #{p2}. Actual : #{p1}"
-        throw new Error(message)
+        if message.length then message+=" "
+        message+="Expected : #{p2}, Actual : #{p1}"
+        if @aggregateError
+          @errorMessage+=message
+        else
+          throw new Error(message)
       true
 
+    mustHave : (actual, expected, msg="")->
+      for prop,val of expected
+        unless actual.hasOwnProperty(prop)
+          msg+="#{prop} property is missing in actual result.\n"
+        else
+          if typeof val is "object" and val isnt null
+            msg+=@mustHave(actual[prop],val)
+          else
+            if actual[prop] isnt val
+              msg+="#{prop} mismatch. Expected #{val}. Actual #{actual[prop]}.\n"
+      msg
+    DesktopDefaults : DesktopDefaults
 
 
   @reg

@@ -27,6 +27,28 @@ module.exports =
         }
       }
 
+      public class menuItem {
+        public string name { get; set; }
+        public string automationId { get; set; }
+        public bool enabled { get; set; }
+        public myRect rect { get; set;}
+        public string group { get; set;}
+        public menuItem(AutomationElement el) {
+          name = el.Current.Name;
+          enabled = el.Current.IsEnabled;
+          rect = new myRect(el);
+          try {
+            var p = el.GetCurrentPattern(ExpandCollapsePattern.Pattern) as
+              ExpandCollapsePattern;
+            group = p.Current.ExpandCollapseState.ToString();
+
+          } catch {
+            group=null;
+          }
+        }
+
+      }
+
       public class edgeError {
         public string errorMessage { get; set; }
       }
@@ -40,13 +62,44 @@ module.exports =
         public string visualState {get; set; }
         public bool isModal {get; set; }
         public myRect browser { get; set; }
+        public menuItem[] menuBar { get; set; }
       }
+
+
 
       public class Startup {
         private static AutoResetEvent waitHandle;
         private edgeError ThrowError( string message ) {
           return(new edgeError{ errorMessage = message });
         }
+
+        private AutomationElement findWindow(dynamic input){
+          string wname = (string)input.name;
+          var el = AutomationElement.RootElement.FindFirst(
+                  TreeScope.Children,
+            new PropertyCondition( AutomationElement.NameProperty, wname ));
+          return(el);
+        }
+
+        public menuItem[] getMenuItems(AutomationElement bar) {
+          if (bar==null) { return(null); };
+          var items = bar.FindAll( TreeScope.Children,
+            new PropertyCondition(
+            AutomationElement.LocalizedControlTypeProperty,
+            "menu item"));
+
+          if((items==null) || (items.Count==0)) { return(null); };
+
+          var menuItems = new menuItem[items.Count];
+          int i = 0;
+          while(i<items.Count) {
+            //Console.WriteLine(items[i].Current.Name);
+            menuItems[i]=new menuItem(items[i]);
+            i++;
+          }
+          return(menuItems);
+        }
+
         private Winfo getWinInfo( AutomationElement el ) {
           if ( el == null ) { return( null ); }
           Winfo winfo = new Winfo {
@@ -63,8 +116,6 @@ module.exports =
             } catch {     }
 
 
-
-
           try {
             winfo.window = new myRect(el);
             var tmpWeb = el
@@ -78,6 +129,16 @@ module.exports =
                   "Chrome Legacy Window"));
             if (tmpWeb!=null) winfo.browser = new myRect(tmpWeb);
           } catch { winfo.browser = null; }
+
+          // try to get menu if browser is here
+          if (winfo.browser!=null) {
+            var bar = el.FindFirst( TreeScope.Children,
+              new PropertyCondition(
+                AutomationElement.LocalizedControlTypeProperty,
+                "menu bar") );
+            winfo.menuBar = getMenuItems(bar);
+
+          }
 
           return(winfo);
         }
@@ -98,13 +159,36 @@ module.exports =
             case "getWindows" : return getWindows(input);
             case "getConsoleText" : return getConsoleText(input);
             case "cleanUp" : return cleanUp(input);
+            case "getMenu" : return getMenu(input);
           }
           return("allinone");
         }
 
-
         // ====================================================================
 
+        private object getMenu(dynamic input) {
+          string group="";
+          try { group = (string)input.group; } catch { };
+          var el = findWindow(input);
+          if (el==null) {return(null);};
+
+          AutomationElement bar;
+          if(group=="") {
+            bar = el.FindFirst( TreeScope.Children, new PropertyCondition(
+              AutomationElement.LocalizedControlTypeProperty,"menu bar"));
+          } else {
+            bar = el.FindFirst( TreeScope.Descendants,
+              new AndCondition(
+                new PropertyCondition(
+                  AutomationElement.LocalizedControlTypeProperty,"menu"),
+                new PropertyCondition(
+                  AutomationElement.NameProperty,group)));
+          }
+          return(getMenuItems(bar));
+        }
+
+
+        // ====================================================================
 
         private object closeWindow(dynamic input) {
           var names = (object[])input.names;
@@ -126,10 +210,7 @@ module.exports =
 
 
         private object transformWindow(dynamic input) {
-          string wname = (string)input.name;
-          AutomationElement el = AutomationElement.RootElement.FindFirst(
-            TreeScope.Children,
-            new PropertyCondition( AutomationElement.NameProperty, wname ));
+          AutomationElement el = findWindow(input);
           var pattern = (el.GetCurrentPattern(TransformPattern.Pattern)
             as TransformPattern);
 
@@ -269,7 +350,7 @@ module.exports =
           string name="";
           try {
             name = el.Current.Name;
-            var p = (el.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern);
+            var p=(el.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern);
             if (p!=null) p.Close();
             return(1);
           } catch {
