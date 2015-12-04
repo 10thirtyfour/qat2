@@ -111,11 +111,11 @@ module.exports = ()->
         resize: if typeof w is "string" then w else [w,h]
       })
 
-    close : ()->
-      yp EdgeCall({
+    close : ( obj )->
+      yp EdgeCall( Object.assign({
         method:"closeWindow"
         names : [@name]
-      })
+      },obj))
 
     moveMouse : (x,y)->
       runner.robot.moveMouse(@browser.left+x, @browser.top+y)
@@ -192,7 +192,9 @@ module.exports = ()->
         "--instance=#{opts.qatDefaultInstance}",
         "-c",
         "--command=\"#{name}\" -d #{opts.common.options.databaseProfile}"]
-      @progs.push( name : name, child : spawn(LDcmd,params))
+      child = spawn(LDcmd,params)
+
+      @progs.push( name : name, child : child )
 
     getConsoleText : (timeout)->
       if timeout?
@@ -231,16 +233,16 @@ module.exports = ()->
           throw new Error(message)
       true
 
-    mustHave : (actual, expected, msg="")->
+    mustHave : (actual, expected, msg="", path="")->
       for prop,val of expected
         unless actual.hasOwnProperty(prop)
           msg+="#{prop} property is missing in actual result.\n"
         else
           if typeof val is "object" and val isnt null
-            msg+=@mustHave(actual[prop],val)
+            msg+=@mustHave(actual[prop],val,"",path+prop+".")
           else
             if actual[prop] isnt val
-              msg+="#{prop} mismatch. Expected #{val}. Actual #{actual[prop]}.\n"
+              msg+="#{path}#{prop} mismatch. Expected #{val}. Actual #{actual[prop]}.\n"
       msg
     DesktopDefaults : DesktopDefaults
 

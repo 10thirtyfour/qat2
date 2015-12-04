@@ -75,8 +75,15 @@ module.exports =
 
         private AutomationElement findWindow(dynamic input){
           string wname = (string)input.name;
+
+          var scope = TreeScope.Children;
+          try {
+            if((string)input.scope == "all") {
+              scope = TreeScope.Descendants;
+            };
+          } catch { };
           var el = AutomationElement.RootElement.FindFirst(
-                  TreeScope.Children,
+                  scope,
             new PropertyCondition( AutomationElement.NameProperty, wname ));
           return(el);
         }
@@ -192,12 +199,23 @@ module.exports =
 
         private object closeWindow(dynamic input) {
           var names = (object[])input.names;
+
+          var scope = TreeScope.Children;
+          try {
+            if((string)input.scope == "all") {
+              scope = TreeScope.Descendants;
+              Console.WriteLine("all");
+            };
+          } catch { };
+
+
           int closedWindowsCount = 0;
           foreach (object oname in names) {
             string wname = oname as string;
             var els = AutomationElement.RootElement.FindAll(
-              TreeScope.Children,
-              new PropertyCondition( AutomationElement.NameProperty, wname ));
+              scope,
+              new PropertyCondition( AutomationElement.NameProperty, wname )
+              );
             foreach (AutomationElement el in els) {
               closedWindowsCount+=closeWindowHelper(el);
             }
@@ -252,6 +270,14 @@ module.exports =
           string wname;
           try { wname = (string)input.name; } catch { wname = ""; };
 
+          var scope = TreeScope.Children;
+
+          try {
+            if((string)input.scope == "all") {
+              scope = TreeScope.Descendants;
+            };
+          } catch { };
+
           AutomationElement el = null;
 
           Automation.RemoveAllEventHandlers();
@@ -260,7 +286,7 @@ module.exports =
           Automation.AddAutomationEventHandler(
             WindowPattern.WindowOpenedEvent,
             AutomationElement.RootElement,
-            TreeScope.Children,
+            scope,
             (sender, e) => {
               var obj = sender as AutomationElement;
               if (obj.Current.Name == wname) {
@@ -270,9 +296,9 @@ module.exports =
             }
           );
 
-          AutomationElement elf = AutomationElement.RootElement.FindFirst(
-            TreeScope.Children,
-            new PropertyCondition( AutomationElement.NameProperty, wname ));
+
+
+          AutomationElement elf = findWindow(input);
 
           if (elf!=null) {
             Automation.RemoveAllEventHandlers();
@@ -363,9 +389,12 @@ module.exports =
 
         private object cleanUp(dynamic input) {
           int closedWindowsCount=0;
+
+
           var els = AutomationElement.RootElement.FindAll(
             TreeScope.Children,
             Condition.TrueCondition);
+
           foreach (AutomationElement el in els) {
             if (el.Current.Name=="Lycia Console") {
               closedWindowsCount+=closeWindowHelper(el);
