@@ -83,8 +83,8 @@ module.exports = ()->
       @isModal=params.isModal
       @visualState=params.visualState
       @menuBar = menuBarToObject(params.menuBar)
-      @window =if params.window  then Object.assign({},params.window ) else null
-      @browser=if params.browser then Object.assign({},params.browser) else null
+      @window =if params.window  then _.assign({},params.window ) else null
+      @browser=if params.browser then _.assign({},params.browser) else null
       @
 
 
@@ -112,7 +112,7 @@ module.exports = ()->
       })
 
     close : ( obj )->
-      yp EdgeCall( Object.assign({
+      yp EdgeCall( _.assign({
         method:"closeWindow"
         names : [@name]
       },obj))
@@ -159,19 +159,19 @@ module.exports = ()->
       if typeof obj is "string"
         params.name=obj
       else
-        Object.assign( params, obj)
+        _.assign( params, obj)
       new DesktopWindow yp EdgeCall( params )
 
 
     getWindows : (obj)->
-      (yp EdgeCall(Object.assign({
+      (yp EdgeCall(_.assign({
         method:"getWindows"
         all:false
       },obj))
         .map((w)-> new DesktopWindow(w)))
 
     closeWindow : (obj)->
-      yp EdgeCall(Object.assign({
+      yp EdgeCall(_.assign({
         method:"closeWindow"
         names : getWindowList( obj )
       },obj))
@@ -256,8 +256,8 @@ module.exports = ()->
       plugin = @
       runner.regLD = (info)->
         binfo = _.clone info
-        binfo.data = Object.assign({ kind : "win.desktop" }, info.data )
-        testContext = Object.assign({
+        binfo.data = _.assign({ kind : "win.desktop" }, info.data )
+        testContext = _.assign({
           timeout : opts.common.timeouts.run
           errorMessage : ""
           testName : info.name
