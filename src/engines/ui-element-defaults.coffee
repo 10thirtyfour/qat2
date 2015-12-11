@@ -27,9 +27,9 @@ elements =
                       return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
       
       defaults :
-        height : 26
+        height : 20
         chrome$l:
-          height : 24
+          height : 20
     
   "calendar" :
     qxclass : "qx-aum-calendar"
