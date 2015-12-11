@@ -11,9 +11,8 @@ module.exports = ->
       if opts.version<v
         throw "Update QAT! Required version : #{v}. Current : #{opts.version}"
     CheckXML: (testData) ->
-      rr = @runner
       yp.frun =>
-        testData.fileName?=testData.fn or rr.toolfuns.filenameToTestname(@fileName)
+        testData.fileName?=testData.fn or runner.toolfuns.filenameToTestname(@fileName)
         testData.method?="select"
         testData.reverse?=testData.fail
         testData.timeout?=10000
@@ -29,9 +28,9 @@ module.exports = ->
         suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
 
         if testData.ext is ".per"
-          compileTestName = rr.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
-          unless compileTestName of rr.tests
-            rr.reg
+          compileTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
+          unless compileTestName of runner.tests
+            runner.reg
               name: compileTestName
               failOnly: true
               data:
@@ -39,26 +38,26 @@ module.exports = ->
               testData:
                 fileName: testData.fileName+".per"
                 options: testData.options
-              promise: rr.toolfuns.regCompile
+              promise: runner.toolfuns.regCompile
           testData.ext = ".fm2"
 
         testData.fileName = testData.fileName+".fm2"
-        formTestName = rr.toolfuns.uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}")
+        formTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}")
         n = 0
         loop
           testName = "#{formTestName}$#{n}"
           n+=1
-          unless testName of rr.tests then break
+          unless testName of runner.tests then break
 
-        unless formTestName of rr.tests
-          rr.reg
+        unless formTestName of runner.tests
+          runner.reg
             name : formTestName
             data :
               kind : "xpath"
             promise : ->
               @runner.Q("OK")
 
-        rr.reg
+        runner.reg
           name: testName
           after: compileTestName
           before : formTestName
@@ -66,19 +65,18 @@ module.exports = ->
           data:
             kind: "xpath"
           testData: testData
-          promise: rr.toolfuns.regXPath
+          promise: runner.toolfuns.regXPath
         return ->
           nop=0
 
     Compile: (arg, additionalParams) ->
-      rr = @runner
       yp.frun =>
         if typeof arg is "string"
           testData = _.defaults(fileName:arg,additionalParams)
         else
-          testData = if arg? then arg else fileName:rr.toolfuns.filenameToTestname(@fileName)
+          testData = if arg? then arg else fileName:runner.toolfuns.filenameToTestname(@fileName)
 
-        testData.fileName?=(testData.fn or rr.toolfuns.filenameToTestname(@fileName))
+        testData.fileName?=(testData.fn or runner.toolfuns.filenameToTestname(@fileName))
         testData.reverse?=testData.fail
         testData.errorCode?=(testData.error or testData.err)
         testData.options?=testData.opts
@@ -101,63 +99,61 @@ module.exports = ->
 
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
 
-        rr.reg
-          name: rr.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
+        runner.reg
+          name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
           testData: testData
-          promise: rr.toolfuns.regCompile
+          promise: runner.toolfuns.regCompile
         return ->
           nop=0
 
     Build: (arg, testData={}) ->
-      rr = @runner
-
       if typeof arg is "string"
         testData.programName = arg
       else
         testData = arg ? {}
 
       testData.testFileName = @fileName
-      testData = rr.toolfuns.combTestData(testData)
+      testData = runner.toolfuns.combTestData(testData)
 
       unless testData.programName? then throw "Build. Can not read programName"
       unless testData.projectPath? then throw "Build. Can not read projectPath"
 
       testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
-      progRelativeName = path.relative rr.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
-      testData.buildTestName = rr.toolfuns.uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
+      progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
+      testData.buildTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
 
       # storing test name and program name in test context for future use in WD test
       @lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
-        testData.deployTestName = rr.toolfuns.uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
+        testData.deployTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
         @lastBuiltTestName = testData.deployTestName
 
       # ------  deploy workaround
       if testData.deployTestName?
-        rr.reg
+        runner.reg
           name: testData.deployTestName
           after: [ testData.buildTestName ]
           silent : (true)
           data:
             kind: "deploy"
           testData: testData
-          promise: rr.toolfuns.regDeploy
+          promise: runner.toolfuns.regDeploy
       # ------ end of deploy workaround
 
       testData.failOnly ?= testData.deploy
 
-      rr.reg
+      runner.reg
         name: testData.buildTestName
         data:
           kind: "build"
         testData: testData
         failOnly : testData.failOnly
-        promise: rr.toolfuns.regBuild
+        promise: runner.toolfuns.regBuild
 
       testData.buildTestName
 
@@ -171,6 +167,7 @@ module.exports = ->
         params = obj
       params.after     ?= @lastBuiltTestName ? []
       params.name      ?= @testName
+      params.source     = path.relative( runner.tests.globLoader.root, @fileName)
       runner.regLD params
 
     RegWD : (obj, params) ->

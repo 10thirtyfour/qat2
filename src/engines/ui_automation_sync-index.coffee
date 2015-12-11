@@ -1,3 +1,6 @@
+# robot js syntax
+# https://github.com/octalmage/robotjs/wiki/Syntax
+
 module.exports = ()->
   return if process.platform[0] isnt "w"
 
@@ -139,7 +142,11 @@ module.exports = ()->
       runner.robot.mouseToggle(down, button)
       @
 
+    getPixel : (dx,dy)->
+      @getPixelColor(dx,dy)
 
+    getPixelColor : (dx,dy)->
+      runner.robot.getPixelColor(@broser.left + dx, @browser.top + dy)
   # ==========================
   runner.robot.moveTo = (rect)->
     r = if rect.hasOwnProperty("rect") then rect.rect else rect
@@ -147,14 +154,12 @@ module.exports = ()->
     ty=r.top + r.height/2
     runner.robot.moveMouse( tx, ty )
 
-
-
   DesktopFunctions =
     waitWindow : (obj)->
       params =
         method:"waitWindow"
         required : true
-        requiredMessage : "wainWindow failed"
+        requiredMessage : "waitWindow failed"
         timeout : opts.common.timeouts.run
       if typeof obj is "string"
         params.name=obj
@@ -223,15 +228,26 @@ module.exports = ()->
 
     assert : runner.assert
 
-    assertEqual : (p1,p2,message="")->
-      if p1 isnt p2
+    assertEqual : (actual,expected,message="")->
+      if actual isnt expected
         if message.length then message+=" "
-        message+="Expected : #{p2}, Actual : #{p1}"
+        message+="Expected : #{expected}, Actual : #{actual}"
         if @aggregateError
           @errorMessage+=message
         else
           throw new Error(message)
       true
+
+    assertNotEqual : (actual,expected,message="")->
+      if actual is expected
+        if message.length then message+=" "
+        message+="Expected notEqual to: #{expected}, Actual : #{actual}"
+        if @aggregateError
+          @errorMessage+=message
+        else
+          throw new Error(message)
+      true
+
 
     mustHave : (actual, expected, msg="", path="")->
       for prop,val of expected
@@ -256,7 +272,7 @@ module.exports = ()->
       plugin = @
       runner.regLD = (info)->
         binfo = _.clone info
-        binfo.data = _.assign({ kind : "win.desktop" }, info.data )
+        binfo.data = _.assign({ kind : "win.desktop", source : info.source }, info.data )
         testContext = _.assign({
           timeout : opts.common.timeouts.run
           errorMessage : ""
