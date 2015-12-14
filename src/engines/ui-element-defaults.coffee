@@ -29,7 +29,7 @@ elements =
       defaults :
         height : 20
         chrome$l:
-          height : 20
+          height : 18
     
   "calendar" :
     qxclass : "qx-aum-calendar"
