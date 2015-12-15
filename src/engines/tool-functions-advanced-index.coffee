@@ -132,7 +132,6 @@ module.exports = ->
         testData.deployTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
         @lastBuiltTestName = testData.deployTestName
-
       # ------  deploy workaround
       if testData.deployTestName?
         runner.reg
@@ -183,6 +182,11 @@ module.exports = ->
       params.testId    ?= params.lastBuilt
       if params.testId? then params.name+="$"+params.testId
       runner.regWD params
+
+    RunLean : (opts={})->
+      opts.lastBuilt = @lastBuilt
+      opts.testName = @testName
+      runner.runLean(opts)
 
     reg : (obj,other...) ->
       obj.name?=@testName
