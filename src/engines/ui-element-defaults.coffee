@@ -29,7 +29,7 @@ elements =
       defaults :
         height : 20
         chrome$l:
-          height : 20
+          height : 18
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -183,7 +183,10 @@ elements =
     qxclass : "qx-aum-radio-button-list"
     get :
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
-
+      state : (el)-> "if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
+                   if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
+                   return $('ul."+@qxclass+".qx-identifier-#{el}').attr('class');"
+	
   "radio-button-list-item" :
     qxclass : "qx-aum-radio-button-list-item"
     get :
@@ -191,6 +194,7 @@ elements =
       value : (el) -> "var rb = $('.qx-identifier-#{el} input');
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
+      
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
