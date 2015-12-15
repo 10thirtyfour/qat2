@@ -87,7 +87,7 @@ module.exports = ->
           params.instance ?= runner.opts.qatDefaultInstance
 
           command += ".exe" if process.platform[0] is "w"
-          programUrl = runner.opts.lyciaWebUrl + params.instance + "/" + command
+          programUrl = runner.opts.lyciaWebUrl + "run/" + params.instance + "/" + command
 
           if params.args then programUrl+=params.args+"&skipunload" else programUrl+="?skipunload"
 
