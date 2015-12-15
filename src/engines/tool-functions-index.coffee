@@ -1,5 +1,6 @@
 byline = require "byline"
 spawn = require("child_process").spawn
+execSync = require("child_process").execSync
 http = require "http"
 qs = require "querystring"
 fse = require "fs-extra"
@@ -243,7 +244,7 @@ module.exports = ->
       _this=@
 
 
-      rr.sysinfo =
+      runner.sysinfo =
         host : rr.os.hostname()
         starttimeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
@@ -547,9 +548,9 @@ module.exports = ->
 
     regDeploy : ->
       yp.frun( =>
-        rr = @runner
         try
-          rawxml=fs.readFileSync(@testData.fileName,'utf8').replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
+          rawxml=fs.readFileSync(@testData.fileName,'utf8')
+          .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
           xml = new dom().parseFromString(rawxml)
           filesToCopy = [@testData.programName]
           if process.platform[0] is "w" then filesToCopy[0]+='.exe'
@@ -566,25 +567,41 @@ module.exports = ->
           filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
           #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
           filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
-          tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
 
+          tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
           for fn in filesToCopy
             try
               sourceFile = path.join(@testData.projectPath,@testData.projectOutput,fn)
-              targetFile = path.join(rr.opts.deployPath,fn)
+              targetFile = path.join(runner.opts.deployPath,fn)
               fse.ensureDirSync path.dirname(targetFile)
               fse.copySync(sourceFile,targetFile)
             catch e
-              rr.info "Failed to copy file : "+fn
+              runner.info "Failed to copy file : "+fn
             tr2file+='  <Resource path="'+fn+'"/>\n'
           tr2file+='</Resources>\n'
-          fs.writeFileSync(path.join(rr.opts.deployPath,@testData.programName+".tr2"),tr2file)
-
+          fs.writeFileSync(path.join(runner.opts.deployPath,@testData.programName+".tr2"),tr2file)
+          exeName=path.join(runner.opts.deployPath,filesToCopy[0])
           if process.platform[0] is "l"
-            ffn = path.join(rr.opts.deployPath,filesToCopy[0])
-            fs.chmodSync( ffn , "755")
+            fs.chmodSync( exeName , "755")
+
+          #build object cache
+
+          if @testData.aot
+            opt =
+              cwd: path.resolve(@testData.projectPath)
+              env: _.assign(
+                {}
+                @runner.environ
+                @options.env
+                @runner.opts.dbprofiles[@options.databaseProfile]
+                @testData.env
+              )
+            qrun = path.join(opt.env.LYCIA_DIR,"bin","qrun")
+
+            execSync('"'+qrun+'" --aot "'+exeName+'"', opt)
 
           "Files deployed : #{filesToCopy.length}"
         catch e
+          console.log e
           throw e
       )
