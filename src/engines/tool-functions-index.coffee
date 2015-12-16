@@ -598,7 +598,11 @@ module.exports = ->
               )
             qrun = path.join(opt.env.LYCIA_DIR,"bin","qrun")
 
-            execSync('"'+qrun+'" --aot "'+exeName+'"', opt)
+            child = spawn( qrun , ["--aot",exeName] , opt)
+            result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
+            if result
+              err=child.stderr.read()
+              throw new Error("Aot failed for #{exeName} with error : #{err}.")
 
           "Files deployed : #{filesToCopy.length}"
         catch e

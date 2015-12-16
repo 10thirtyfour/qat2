@@ -8,7 +8,7 @@ module.exports = ()->
   urlRunApp = (appName)->
     "#{runner.opts.lyciaWebUrl}run/#{runner.opts.qatDefaultInstance}/#{appName}"
 
-  class RunLean
+  class WebSession
     constructor: (params={})->
       @timeout = params.timeout or 30000
       appName = params.program or params.name or params.lastBuilt
@@ -33,7 +33,6 @@ module.exports = ()->
       @queue ->
         ci = @last.body.indexOf('querix.comms.startup("/LyciaWeb/",')
         if ci<1
-          console.log @last
           throw new Error("can't get cid.")
         pi = @last.body.indexOf(",", ci + 35 )
         @cid = @last.body.substring(ci+35,pi).trim()
@@ -83,5 +82,6 @@ module.exports = ()->
         ).bind(@))
 
 
-  runner.runLean = (opts)->
-    return new RunLean(opts)
+  runner.WebSession = WebSession
+    #(opts)->
+    #return new session(opts)
