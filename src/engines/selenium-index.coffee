@@ -505,7 +505,7 @@ module.exports = ->
       runner.regWD = (info) ->
         wdTimeout = @opts.common.timeouts.wd
         d = info.data ?= {}
-        _.merge d, kind: "wd"
+        #_.merge d, kind: "wd"
         info.enable = _.merge {}, plugin.enable, info.enable
         for i,v of plugin.browsers when info.enable.browser[i]
           #wdTimeout = @opts.common.timeouts.wd[i]
@@ -513,7 +513,8 @@ module.exports = ->
             binfo = _.clone info
             binfo.duration ?= {}
             binfo.data = _.clone info.data
-            binfo.data.kind = "wd-#{i}"
+            binfo.data.kind ?= "wd"
+            binfo.data.kind +="-#{i}"
             promise = binfo.promise
             unless promise?
               if binfo.syn?
