@@ -258,8 +258,8 @@ elements =
   "spinner" :
     qxclass  : "qx-aum-spinner"
     get :
-      text : (el) -> "return $('div.qx-identifier-#{el} .qx-main-cell > input').val()"
-      value: (el) -> "return parseInt($('div.qx-identifier-#{el} .qx-main-cell > input').val());"
+      text : (el) -> "return $('div.qx-identifier-#{el} > input').val()"
+      value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
       defaults :
         height : 22
         firefox$w :
