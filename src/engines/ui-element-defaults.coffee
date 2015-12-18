@@ -78,11 +78,11 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
       defaults:
-        height : 22
+        height : 25
         firefox$w :
-          height : 20
+          height : 23
         chrome$l :
-          height : 20
+          height : 23
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
@@ -261,11 +261,11 @@ elements =
       text : (el) -> "return $('div.qx-identifier-#{el} > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
       defaults :
-        height : 22
+        height : 20
         firefox$w :
-          height : 21
-        chrome$l :
           height : 19
+        chrome$l :
+          height : 18
     set :
       value : (el,val)->
         # setValue with mouse
@@ -349,11 +349,11 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
-        height : 20
+        height : 21
         firefox$w :
-          height : 18
+          height : 19
         chrome$l :
-          height : 18
+          height : 19
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
