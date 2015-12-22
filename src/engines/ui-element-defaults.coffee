@@ -65,7 +65,7 @@ elements =
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
+      text : (el) -> "return $('.qx-identifier-#{el} div.qx-text').text()"
       defaults :
         height : 18
 
