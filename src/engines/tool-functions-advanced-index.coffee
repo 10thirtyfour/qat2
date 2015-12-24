@@ -145,9 +145,11 @@ module.exports = ->
       # ------ end of deploy workaround
 
       testData.failOnly ?= testData.deploy
-
+      testData.after ?= []
+      
       runner.reg
         name: testData.buildTestName
+        after: testData.after
         data:
           kind: "build"
         testData: testData
