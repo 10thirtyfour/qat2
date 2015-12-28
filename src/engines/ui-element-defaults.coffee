@@ -27,9 +27,9 @@ elements =
                       return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
       
       defaults :
-        height : 20
+        height : 17
         chrome$l:
-          height : 18
+          height : 16
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -78,11 +78,11 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
       defaults:
-        height : 25
+        height : 17
         firefox$w :
-          height : 23
+          height : 16
         chrome$l :
-          height : 23
+          height : 16
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
@@ -249,11 +249,11 @@ elements =
                         return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
     
       defaults : 
-        height : 18
+        height : 14
         firefox$w :
-          height : 16
+          height : 14
         chrome$l :
-          height : 16
+          height : 14
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
@@ -261,11 +261,11 @@ elements =
       text : (el) -> "return $('div.qx-identifier-#{el} > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
       defaults :
-        height : 20
+        height : 17
         firefox$w :
-          height : 19
+          height : 16
         chrome$l :
-          height : 18
+          height : 16
     set :
       value : (el,val)->
         # setValue with mouse
@@ -349,11 +349,11 @@ elements =
       text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
-        height : 21
+        height : 17
         firefox$w :
-          height : 19
+          height : 16
         chrome$l :
-          height : 19
+          height : 16
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
@@ -371,9 +371,9 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
-        height : 20
+        height : 17
         chrome$l :
-          height : 18
+          height : 16
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
