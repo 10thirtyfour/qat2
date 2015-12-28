@@ -343,12 +343,13 @@ module.exports = ->
           res.left = Math.floor(res.left)
           res.top = Math.floor(res.top)
           res.type = el_type
-
+                 
           params.width = params.w if (params.w?)
           params.height = params.h if (params.h?)
           params.left = params.x if (params.x?)
           params.top = params.y if (params.y?)
-
+          params.precision?=0
+          
           mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
           for attr,expected of params
@@ -360,9 +361,9 @@ module.exports = ->
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
 
-            if expected isnt res[attr]
+            unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
               errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-
+              if params.precision > 0 then errmsg +=" precision = #{params.precision}"
 
           if errmsg is "" then return ""
 
