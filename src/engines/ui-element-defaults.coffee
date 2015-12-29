@@ -25,11 +25,10 @@ elements =
                       if ($('div.qx-aum-button.qx-disabled.qx-inactive.qx-readonly.ui-state-disabled.qx-identifier-#{el}
                         :not(.qx-enabled):not(.qx-active):not(.qx-not-readonly)').length > 0) { return 'disabled' }                               
                       return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
-      
-      defaults :
-        height : 17
-        chrome$l:
-          height : 16
+      defaults : 
+        height : 20
+        chrome$l :
+          height : 20
     
   "calendar" :
     qxclass : "qx-aum-calendar"
@@ -77,12 +76,10 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
-      defaults:
-        height : 17
-        firefox$w :
-          height : 16
+      defaults : 
+        height : 20
         chrome$l :
-          height : 16
+          height : 20
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
@@ -141,7 +138,9 @@ elements =
     qxclass : "qx-aum-progress-bar"
     get :
       defaults :
-        height : 2 #6.65625
+        height : 20
+        chrome$l :
+          height : 20
       orientation : (el) -> """
                                 if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-orientation-vertical')) {
                                   return 'vertical';
@@ -186,7 +185,7 @@ elements =
       state : (el)-> "if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('ul."+@qxclass+".qx-identifier-#{el}').attr('class');"
-	
+
   "radio-button-list-item" :
     qxclass : "qx-aum-radio-button-list-item"
     get :
@@ -214,7 +213,8 @@ elements =
                         }
                       """
       defaults : 
-        height : 10    
+        height : 20
+
     set :
       value : (el,val) -> 
         # step direction and count must be placed into val property, like 
@@ -247,25 +247,20 @@ elements =
                           return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.left.slice(0,-1)); }
                         if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-vertical')) {
                         return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
-    
       defaults : 
-        height : 14
-        firefox$w :
-          height : 14
+        height : 20
         chrome$l :
-          height : 14
+          height : 20
     
   "spinner" :
     qxclass  : "qx-aum-spinner"
     get :
       text : (el) -> "return $('div.qx-identifier-#{el} > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
-      defaults :
-        height : 17
-        firefox$w :
-          height : 16
+      defaults : 
+        height : 20
         chrome$l :
-          height : 16
+          height : 20
     set :
       value : (el,val)->
         # setValue with mouse
@@ -348,12 +343,10 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
-      defaults :
-        height : 17
-        firefox$w :
-          height : 16
+      defaults : 
+        height : 20
         chrome$l :
-          height : 16
+          height : 20
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-field").click()
@@ -362,7 +355,8 @@ elements =
          .sendKeys(['\uE009','a','\uE009','\uE017'])
          .sendKeys(val)
          @waitIdle()
-                   
+      
+   
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     set :
@@ -371,9 +365,9 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
       defaults :
-        height : 17
+        height : 20
         chrome$l :
-          height : 16
+          height : 20
       
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
