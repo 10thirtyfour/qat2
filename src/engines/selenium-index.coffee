@@ -114,8 +114,6 @@ module.exports = ->
             yp(@elementByCssSelectorIfExists(getSelector(el)))?
           )
 
-
-
       wd.addPromiseMethod(
         "waitMessageBox",
         (timeout) ->
@@ -132,25 +130,23 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "getElement"
-        (name) -> @elementByCss ".qx-identifier-#{name.toLowerCase()}")
+        (el) -> @elementByCss "#{getSelector(el)}")
 
       wd.addPromiseMethod(
         "getWindow"
-        (name) ->
-          #workaround for vior
-          yp(@execute("$('.qx-identifier-#{name.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{name}')"))
-          #
-          @elementByCss ".qx-o-identifier-#{name.toLowerCase()}")
+        (wnd) ->
+          yp @setDialogID(wnd,"win_qat")
+          @elementByCss ".qx-identifier-win_qat")
 
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
-          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qat-identifier-#{wnd.toLowerCase()}')"))
-          r = yp @getRect(selector:".qat-identifier-#{wnd.toLowerCase()} > .ui-resizable-#{h}")
+          yp @setDialogID(wnd,"win_qat")
+          r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)-1
           y = Math.round(r.top + r.height / 2)-1
-          yp @elementByCss(".qat-identifier-#{wnd.toLowerCase()}")
+          yp @elementByCss(".qx-identifier-win_qat")
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
@@ -161,10 +157,8 @@ module.exports = ->
       wd.addPromiseMethod(
         "moveWindow"
         (wnd,dx,dy) ->
-          #workaround for vior
-          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd.toLowerCase()}')"))
-          #
-          r = yp @execute "return $('.qx-o-identifier-#{wnd.toLowerCase()} > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
+          yp @setDialogID(wnd,"win_qat")
+          r = yp @execute "return $('.qx-identifier-win_qat > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss('#qx-home-form')
@@ -179,10 +173,9 @@ module.exports = ->
         (el,dx,dy,h) ->
           h?="e"
           r = yp @execute "return $('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
-
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
-          #console.log dx,dy
+
           yp @elementByCss('#qx-home-form')
             .moveTo( x, y )
             .buttonDown(0)
@@ -217,7 +210,6 @@ module.exports = ->
             return ""
           yp(element.getAttribute("class")).split(" ")
       )
-
 
       wd.addPromiseMethod(
         "checkClasses",
@@ -291,11 +283,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "getRect"
         (el) ->
-          #workaround for IE (1)
           if @qx$browserName == "ie"
             s = {}
             sel = @getSelector(el)
-
             s.width = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
             s.height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
             s.left = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
@@ -307,8 +297,6 @@ module.exports = ->
             s.left = Math.round(s.left)
             s.top = Math.round(s.top)
             return s
-            #return yp @execute "return $('#{sel}')[0].getClientRects()"
-          #
           return yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
       )
 
@@ -329,10 +317,9 @@ module.exports = ->
 
           throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
 
-          #workaround for IE (2)
           res = {}
-          if @qx$browserName == "ie" then res = yp @getRect(el)
-          #
+          if @qx$browserName in ["ie","edge"]
+            res = yp @getRect(el)
           else
             res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
 
@@ -369,7 +356,7 @@ module.exports = ->
                 
            
           if errmsg is "" then return ""
-
+          
           mess+=" : #{errmsg}"
           
           if params.precision > 0 then mess +="\n Precision = <#{params.precision}>" 
@@ -427,7 +414,6 @@ module.exports = ->
           yp (@execute("return $('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
       )
 
-
       wd.addPromiseMethod(
         "dndInit",
         (el,button=0)->
@@ -470,9 +456,7 @@ module.exports = ->
           selector = @getSelector(el)
           @elementByCss("#{selector}").moveTo().buttonUp(@draggable.button)
           @draggable={}
-
       )
-
 
       wd.addPromiseMethod(
         "messageBox"
@@ -485,14 +469,14 @@ module.exports = ->
             else
               throw "Isn't implemented for this messageBox element yet"
       )
-      
+
       wd.addPromiseMethod(
         "setDialogID", (el,id)->
           if _.isString(el) then id?="d_"+el
           if el.selector? then id?="d_"+el.id
           return yp @execute("$('#{@getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
       )
-      
+
       wd.addPromiseMethod(
         "getSelector", (el)->
           if el.selector? then return el.selector
