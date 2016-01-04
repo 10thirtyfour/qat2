@@ -146,13 +146,11 @@ module.exports = ->
         "resizeWindow"
         (wnd,dx,dy,h) ->
           h?="se"
-          #workaround for vior
-          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qx-o-identifier-#{wnd.toLowerCase()}')"))
-          #
-          r = yp @getRect(selector:".qx-o-identifier-#{wnd.toLowerCase()} > .ui-resizable-#{h}")
-          x = Math.round(r.left + r.width / 2)
-          y = Math.round(r.top + r.height / 2)
-          yp @elementByCss(".qx-o-identifier-#{wnd.toLowerCase()}")
+          yp(@execute("$('.qx-identifier-#{wnd.toLowerCase()}').closest('.ui-dialog').addClass('qat-identifier-#{wnd.toLowerCase()}')"))
+          r = yp @getRect(selector:".qat-identifier-#{wnd.toLowerCase()} > .ui-resizable-#{h}")
+          x = Math.round(r.left + r.width / 2)-1
+          y = Math.round(r.top + r.height / 2)-1
+          yp @elementByCss(".qat-identifier-#{wnd.toLowerCase()}")
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
