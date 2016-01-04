@@ -360,15 +360,22 @@ module.exports = ->
 
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
-
-            unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
-              errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-              if params.precision > 0 then errmsg +=" precision = #{params.precision}"
-
+            
+            if attr in ["width","height","left","top"]
+              unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
+                errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
+                
+            else    
+              unless res[attr] is expected
+                errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
+                
+           
           if errmsg is "" then return ""
 
           mess+=" : #{errmsg}"
-
+          
+          if params.precision > 0 then mess +="\n Precision = <#{params.precision}>" 
+          
           params.deferred?=@aggregateError
           unless params.deferred
             throw mess
