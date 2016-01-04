@@ -485,7 +485,14 @@ module.exports = ->
             else
               throw "Isn't implemented for this messageBox element yet"
       )
-
+      
+      wd.addPromiseMethod(
+        "setDialogID", (el,id)->
+          if _.isString(el) then id?="d_"+el
+          if el.selector? then id?="d_"+el.id
+          return yp @execute("$('#{@getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
+      )
+      
       wd.addPromiseMethod(
         "getSelector", (el)->
           if el.selector? then return el.selector
