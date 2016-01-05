@@ -399,7 +399,7 @@ elements =
   "unknown" :
     qxclass : "unknown"
     get :
-      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
+      text  : (el) -> "return $('.qx-identifier-#{el}').text()"
       image : () -> "return;"
       value : () -> "return;"
       state : () -> "return;"
