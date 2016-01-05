@@ -48,7 +48,7 @@ elements =
   "check-box" :
     qxclass : "qx-aum-check-box"
     get :
-      text : (el) -> "return $('.qx-identifier-#{el} label').text()"
+      text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       value : (el) -> "var cb = $('.qx-identifier-#{el} input');
                         if (cb.prop('indeterminate')) {return 'indeterminate';} 
                         if (cb.prop('checked')) {return 'checked';}
@@ -116,7 +116,7 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-command').length > 0)"
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
-      text  : (el) -> "return $('.qx-identifier-#{el} > a').text()"
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       state : (el) -> "if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('li."+@qxclass+".qx-identifier-#{el}').attr('class');"
@@ -125,7 +125,7 @@ elements =
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-group').length > 0)"
     get :
       image : (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
-      text  : (el) -> "return $('.qx-identifier-#{el} > a').text()"
+      text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       state : (el) -> "if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('li."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('li."+@qxclass+".qx-identifier-#{el}').attr('class');"
@@ -399,7 +399,7 @@ elements =
   "unknown" :
     qxclass : "unknown"
     get :
-      text  : (el) -> "return $('.qx-identifier-#{el}').text()"
+      text  : (el) -> "return $('.qx-identifier-#{el}') .qx-text').html()"
       image : () -> "return;"
       value : () -> "return;"
       state : () -> "return;"
