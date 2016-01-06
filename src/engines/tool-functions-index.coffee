@@ -391,13 +391,12 @@ module.exports = ->
     regBuild: ->
       yp.frun( =>
         opt =
-          env: {}
           cwd: path.resolve(@testData.projectPath)
-
-        _.merge opt.env, @runner.environ
-        _.merge opt.env, @options.env
-        _.merge opt.env, @runner.opts.dbprofiles[@options.databaseProfile]
-        _.merge opt.env, @testData.env
+          env: Object.assign( {},
+            runner.environ,
+            @options.env,
+            runner.opts.dbprofiles[@options.databaseProfile],
+            @testData.env)
 
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
 
@@ -492,8 +491,8 @@ module.exports = ->
         # environment variable search
         if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>"))
           # inserting params into testData with path
-          matches[1].split('.').reduce( (prev,curr,i,ar)->
-            if i+1==ar.length then return (prev[curr]=matches[2]) else return (prev[curr]?={})
+          matches[1].split('.').reduce( (td,prop,i,ar)->
+            if i+1==ar.length then return (td[prop]=matches[2]) else return (td[prop]?={})
           , testData)
 
         else
@@ -516,6 +515,7 @@ module.exports = ->
       # removing ".exe"
       if testData.programName.lastIndexOf(".exe")>testData.programName.length - 5
          testData.programName=testData.programName.substr(0,testData.programName.length - 4)
+
       tempPath = path.resolve(logFileName)
 
       while (tempPath != ( tempPath = path.dirname tempPath ))

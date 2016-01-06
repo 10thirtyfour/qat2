@@ -14,57 +14,54 @@
 # #L%
 ###
 
-process.maxTickDepth = Infinity 
+process.maxTickDepth = Infinity
 
 module.exports = ->
   {path,yp,toolfuns} = runner = @
-  
-  @runner.tests.globLoader.disable.file.pattern?=[]
-  for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile 
-    @runner.tests.globLoader.disable.file.pattern.push "**/*-#{dbp}-db-rest.tlog"
-    
+
+  runner.tests.globLoader.disable.file.pattern?=[]
+  for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile
+    runner.tests.globLoader.disable.file.pattern.push "**/*-#{dbp}-db-rest.tlog"
+
   @reg
     name: "tlogLoader"
     before: ["globLoader"]
-    setup: true  
-    disabled: false 
+    setup: true
+    disabled: false
     promise: ->
-      yp.frun =>
-        @runner.tests.globLoader.regGlob
+      yp.frun ->
+        runner.tests.globLoader.regGlob
           name: "node$headless-indexer"
           pattern: ["**/*.tlog"]
           parseFile: (fn) ->
-            #console.log fn
-            yp.frun =>
-              try 
-                testData = toolfuns.LoadHeaderData(fn)
-              catch e
-                runner.info "#{fn}. #{e}"
+            yp.frun ->
+              td = new runner.TestData(fn)
+              if !td.projectInfo or !td.projectInfo.path or !td.projectInfo.name
+                runner.info "#{fn}. Project info read failed!"
                 return true
-              progRelativeName = path.relative(runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource,testData.programName))
-              buildPromiseName = []
 
-              unless runner.argv["skip-build"] 
-                buildPromiseName = runner.toolfuns.uniformName("headless$#{progRelativeName}$build")
+              buildPromiseName = []
+              #testData = toolfuns.LoadHeaderData(fn)
+
+              unless runner.argv["skip-build"]
+                buildPromiseName="#{td.projectInfo.name}/#{td.tlogHeader.prog}"
                 unless buildPromiseName of runner.tests
-                  runner.reg 
+                  runner.reg
                     name: buildPromiseName
-                    failOnly: (true)
+                    failOnly: true
                     data:
-                      kind: "build" 
-                    testData : testData
-                    promise: toolfuns.regBuild 
-                
-              logRelativeName = path.relative(runner.tests.globLoader.root, fn)
+                      kind: "build"
+                      src : fn
+                    testData : td
+                    promise: toolfuns.regBuild
+
               runner.reg
-                name: runner.toolfuns.uniformName("headless$#{logRelativeName}$play")
+                name: "#{td.projectInfo.name}/#{td.testName}"
                 data:
-                  kind: "common-tlog"
-                testData : testData  
+                  kind: "tlog"
+                  src : fn
+                testData : td
                 after: buildPromiseName
                 promise: toolfuns.regLogRun
               (true)
-        (true)    
-        
-
-
+        (true)
