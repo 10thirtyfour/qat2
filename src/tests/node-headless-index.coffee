@@ -41,7 +41,7 @@ module.exports = ->
                 return true
 
               buildPromiseName = []
-              #testData = toolfuns.LoadHeaderData(fn)
+              testData = toolfuns.LoadHeaderData(fn)
 
               unless runner.argv["skip-build"]
                 buildPromiseName="#{td.projectInfo.name}/#{td.tlogHeader.prog}"
@@ -52,7 +52,7 @@ module.exports = ->
                     data:
                       kind: "build"
                       src : fn
-                    testData : td
+                    testData : testData
                     promise: toolfuns.regBuild
 
               runner.reg
@@ -60,7 +60,7 @@ module.exports = ->
                 data:
                   kind: "tlog"
                   src : fn
-                testData : td
+                testData : testData
                 after: buildPromiseName
                 promise: toolfuns.regLogRun
               (true)
