@@ -49,7 +49,7 @@ module.exports = ->
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
                 unless runner.argv["skip-build"]
-                  buildTestName="#{testData.projectName}/#{testData.programName}"
+                  buildTestName="b/#{testData.projectName}/#{testData.programName}"
                   if buildTestName of runner.tests
                     testReq.forEach (r)->
                       if runner.tests[buildTestName].after.indexOf(r)==-1
@@ -68,7 +68,7 @@ module.exports = ->
                   testReq.push(buildTestName)
 
                 runner.reg
-                  name: "#{testData.projectName}/#{testData.testName}"
+                  name: "t/#{testData.projectName}/#{testData.testName}"
                   data:
                     kind: "tlog"
                     src : fn
