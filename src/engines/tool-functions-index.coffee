@@ -481,6 +481,7 @@ module.exports = ->
     LoadHeaderData : (logFileName) ->
       testData =
         fileName: logFileName
+        testName: path.basename(logFileName, ".tlog")
         env : {}
 
       logStream = fs.createReadStream(logFileName, encoding: "utf8")
@@ -489,10 +490,13 @@ module.exports = ->
         break if line is "<<<"
 
         # environment variable search
-        if (matches=(line.match "^<< *testData *# *(.*?)=(.*?) *>>"))
+        if (matches=(line.match "^<< *testData *# *(.*?) *= *(.*?) *>>"))
           # inserting params into testData with path
           matches[1].split('.').reduce( (td,prop,i,ar)->
-            if i+1==ar.length then return (td[prop]=matches[2]) else return (td[prop]?={})
+            if i+1==ar.length
+              return (td[prop]=matches[2])
+            else
+              return (td[prop]?={})
           , testData)
 
         else

@@ -16,6 +16,9 @@
 
 process.maxTickDepth = Infinity
 
+splitByCommas = (str)->
+  str.replace("[","").replace("]","").replace('"',"").replace("'","").split(",")
+
 module.exports = ->
   {path,yp,toolfuns} = runner = @
 
@@ -35,33 +38,45 @@ module.exports = ->
           pattern: ["**/*.tlog"]
           parseFile: (fn) ->
             yp.frun ->
-              td = new runner.TestData(fn)
-              if !td.projectInfo or !td.projectInfo.path or !td.projectInfo.name
-                runner.info "#{fn}. Project info read failed!"
+              try
+                testData = toolfuns.LoadHeaderData(fn)
+                if typeof testData.platform is "string"
+                  if testData.platform.indexOf( runner.sysinfo.platform )==-1
+                    runner.info("#{fn}. Skipping on this platform")
+                    return true
+
+                testReq = []
+                if typeof testData.after is "string"
+                  testReq = testReq.concat( splitByCommas(testData.after) )
+                unless runner.argv["skip-build"]
+                  buildTestName="#{testData.projectName}/#{testData.programName}"
+                  if buildTestName of runner.tests
+                    testReq.forEach (r)->
+                      if runner.tests[buildTestName].after.indexOf(r)==-1
+                        runner.tests[buildTestName].after.push(r)
+                  else
+                    runner.reg
+                      name: buildTestName
+                      failOnly: true
+                      data:
+                        kind: "build"
+                        src : fn
+                      testData : testData
+                      after : testReq.slice()
+                      promise: toolfuns.regBuild
+
+                  testReq.push(buildTestName)
+
+                runner.reg
+                  name: "#{testData.projectName}/#{testData.testName}"
+                  data:
+                    kind: "tlog"
+                    src : fn
+                  testData : testData
+                  after: testReq
+                  promise: toolfuns.regLogRun
+                true
+              catch e
+                runner.info "#{fn}. registration failed! #{e}"
                 return true
-
-              buildPromiseName = []
-              testData = toolfuns.LoadHeaderData(fn)
-
-              unless runner.argv["skip-build"]
-                buildPromiseName="#{td.projectInfo.name}/#{td.tlogHeader.prog}"
-                unless buildPromiseName of runner.tests
-                  runner.reg
-                    name: buildPromiseName
-                    failOnly: true
-                    data:
-                      kind: "build"
-                      src : fn
-                    testData : testData
-                    promise: toolfuns.regBuild
-
-              runner.reg
-                name: "#{td.projectInfo.name}/#{td.testName}"
-                data:
-                  kind: "tlog"
-                  src : fn
-                testData : testData
-                after: buildPromiseName
-                promise: toolfuns.regLogRun
-              (true)
         (true)

@@ -35,6 +35,7 @@ module.exports = ->
               failOnly: true
               data:
                 kind: "compile"+testData.ext
+                src : @fileName
               testData:
                 fileName: testData.fileName+".per"
                 options: testData.options
@@ -64,6 +65,7 @@ module.exports = ->
           failOnly: true
           data:
             kind: "xpath"
+            src : @fileName
           testData: testData
           promise: runner.toolfuns.regXPath
         return ->
@@ -103,6 +105,7 @@ module.exports = ->
           name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
+            src : @fileName
           testData: testData
           promise: runner.toolfuns.regCompile
         return ->
@@ -140,18 +143,20 @@ module.exports = ->
           silent : (true)
           data:
             kind: "deploy"
+            src : @fileName
           testData: testData
           promise: runner.toolfuns.regDeploy
       # ------ end of deploy workaround
 
       testData.failOnly ?= testData.deploy
       testData.after ?= []
-      
+
       runner.reg
         name: testData.buildTestName
         after: testData.after
         data:
           kind: "build"
+          src : @fileName
         testData: testData
         failOnly : testData.failOnly
         promise: runner.toolfuns.regBuild
