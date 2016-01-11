@@ -44,19 +44,21 @@ module.exports = ->
                   if testData.platform.indexOf( runner.sysinfo.platform )==-1
                     runner.info("#{fn}. Skipping on this platform")
                     return true
+                # test names might be specified in tlog
+                testData.testName?="#{testData.projectName}/#{path.basename(fn, ".tlog")}"
+                testData.buildTestName?="#{testData.projectName}/#{testData.programName}"
 
                 testReq = []
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
                 unless runner.argv["skip-build"]
-                  buildTestName="b/#{testData.projectName}/#{testData.programName}"
-                  if buildTestName of runner.tests
+                  if testData.buildTestName of runner.tests
                     testReq.forEach (r)->
-                      if runner.tests[buildTestName].after.indexOf(r)==-1
-                        runner.tests[buildTestName].after.push(r)
+                      if runner.tests[testData.buildTestName].after.indexOf(r)==-1
+                        runner.tests[testData.buildTestName].after.push(r)
                   else
                     runner.reg
-                      name: buildTestName
+                      name: testData.buildTestName
                       failOnly: true
                       data:
                         kind: "build"
@@ -65,10 +67,10 @@ module.exports = ->
                       after : testReq.slice()
                       promise: toolfuns.regBuild
 
-                  testReq.push(buildTestName)
+                  testReq.push(testData.buildTestName)
 
                 runner.reg
-                  name: "t/#{testData.projectName}/#{testData.testName}"
+                  name: testData.testName
                   data:
                     kind: "tlog"
                     src : fn

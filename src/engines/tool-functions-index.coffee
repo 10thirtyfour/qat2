@@ -245,13 +245,13 @@ module.exports = ->
 
 
       runner.sysinfo =
-        host : rr.os.hostname()
+        host : runner.os.hostname()
         starttimeid : (new Date()).toISOString()
         platform : process.platform.substring(0,3)+'_'+process.arch
-        ver : rr.os.release()
+        ver : runner.os.release()
         user : process.env.USER ? process.env.USERNAME
         build : "unknown"
-        scenario : rr.opts.scenario
+        scenario : runner.opts.scenario
         database : @options.databaseProfile
       if rr.opts.notes? then rr.sysinfo.notes = rr.opts.notes
       if process.env.hasOwnProperty('ProgramFiles(x86)') then rr.sysinfo.platform="win_x64"
@@ -481,7 +481,6 @@ module.exports = ->
     LoadHeaderData : (logFileName) ->
       testData =
         fileName: logFileName
-        testName: path.basename(logFileName, ".tlog")
         env : {}
 
       logStream = fs.createReadStream(logFileName, encoding: "utf8")

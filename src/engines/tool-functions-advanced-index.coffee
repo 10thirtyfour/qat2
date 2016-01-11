@@ -120,19 +120,30 @@ module.exports = ->
       testData.testFileName = @fileName
       testData = runner.toolfuns.combTestData(testData)
 
-      unless testData.programName? then throw "Build. Can not read programName"
-      unless testData.projectPath? then throw "Build. Can not read projectPath"
+      unless testData.programName?
+        throw new Error("Build. Can not read programName")
+      unless testData.projectPath?
+        throw new Error("Build. Can not read projectPath")
 
-      testData.fileName = path.join(testData.projectPath,testData.projectSource,"."+testData.programName+".fgltarget")
-      progRelativeName = path.relative runner.tests.globLoader.root, path.join(testData.projectPath, testData.projectSource, testData.programName)
-      testData.buildTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$build$#{progRelativeName}")
+      testData.fileName = path.join(
+        testData.projectPath,
+        testData.projectSource,
+        "."+testData.programName+".fgltarget")
+      #progRelativeName = path.relative runner.tests.globLoader.root, path.join(
+      #testData.projectPath, testData.projectSource, testData.programName)
+      #testData.buildTestName = runner.toolfuns.uniformName(
+      #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
-      # storing test name and program name in test context for future use in WD test
+      testData.buildTestName = "#{testData.projectName}/#{testData.programName}"
+
+      # storing test name and program name in test context for future use in WD
       @lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
-        testData.deployTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$deploy$#{progRelativeName}")
+        testData.deployTestName = testData.buildTestName+"/deploy"
+        #runner.toolfuns.uniformName(
+        #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
         @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
@@ -196,7 +207,10 @@ module.exports = ->
       runner.runLean(opts)
 
     reg : (obj,other...) ->
+      obj.data?={}
+      obj.data.src?=@fileName
       obj.name?=@testName
+
       @runner.reg(obj,other...)
 
     form : genForm.form
