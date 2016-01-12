@@ -84,6 +84,9 @@ module.exports = ->
   filenameToTestname = (testName) ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
+  runner.relativeFn = (fn)->
+    (path.relative runner.tests.globLoader.root, path.resolve(fn)).replace( /\\/g, "/" )
+
   parseError = (raw) ->
     errorMessage = raw : raw
     errorMessage.xml = new dom().parseFromString(raw)
@@ -240,7 +243,6 @@ module.exports = ->
       return testData
 
     getEnviron: ->
-      rr = @runner
       _this=@
 
 
@@ -253,39 +255,39 @@ module.exports = ->
         build : "unknown"
         scenario : runner.opts.scenario
         database : @options.databaseProfile
-      if rr.opts.notes? then rr.sysinfo.notes = rr.opts.notes
-      if process.env.hasOwnProperty('ProgramFiles(x86)') then rr.sysinfo.platform="win_x64"
+      if runner.opts.notes? then runner.sysinfo.notes = runner.opts.notes
+      if process.env.hasOwnProperty('ProgramFiles(x86)') then runner.sysinfo.platform="win_x64"
 
-      rr.opts.environCommand?=rr.opts.environCommands[rr.sysinfo.platform]
-      rr.opts.deployPath?=rr.opts.defaultDeployPath[rr.sysinfo.platform]
+      runner.opts.environCommand?=runner.opts.environCommands[runner.sysinfo.platform]
+      runner.opts.deployPath?=runner.opts.defaultDeployPath[runner.sysinfo.platform]
 
-      @info rr.sysinfo.platform + " " + rr.sysinfo.ver
+      @info runner.sysinfo.platform + " " + runner.sysinfo.ver
 
-      [command,cc,args...] = _.compact rr.opts.environCommand.split(" ")
+      [command,cc,args...] = _.compact runner.opts.environCommand.split(" ")
 
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true)
       .then( (envtext)->
-        rr.environ = JSON.parse(envtext.toString('utf8'))
-        unless rr.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR"
-        exitPromise( spawn( path.join(rr.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : rr.environ ), returnOutput:true))
+        runner.environ = JSON.parse(envtext.toString('utf8'))
+        unless runner.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR"
+        exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout?
-          rr.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
-          rr.spammer "message", message: """
-            !! #{rr.sysinfo.starttimeid}
-            QAT started on #{rr.sysinfo.host}
-            Platform : #{rr.sysinfo.platform} (#{rr.sysinfo.database})
-            Lycia build : #{rr.sysinfo.build}
+          runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
+          runner.spammer "message", message: """
+            !! #{runner.sysinfo.starttimeid}
+            QAT started on #{runner.sysinfo.host}
+            Platform : #{runner.sysinfo.platform} (#{runner.sysinfo.database})
+            Lycia build : #{runner.sysinfo.build}
             """
-          rr.logger.pass "qatstart",rr.sysinfo
+          runner.logger.pass "qatstart",runner.sysinfo
         else
           throw new Error "Failed to get Lycia build form qfgl !!"
 
-        return rr.sysinfo)
+        return runner.sysinfo)
       .then( ->
         inetEnvSetDatabase())
       .catch( (err)->
-        rr.spammer "message", message:"!! #{rr.sysinfo.starttimeid}\nQAT failed to start on #{rr.sysinfo.host}\nFailed to read environment!"
+        runner.spammer "message", message:"!! #{runner.sysinfo.starttimeid}\nQAT failed to start on #{runner.sysinfo.host}\nFailed to read environment!"
         _this.fail "Unable to read environ : "+err.message
         throw "Unable to read environ : "+err.message
       )

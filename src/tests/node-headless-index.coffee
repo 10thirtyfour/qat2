@@ -1,26 +1,13 @@
-###
-# #%L
-# QUERIX
-# %%
-# Copyright (C) 2015 QUERIX
-# %%
-# ALL RIGTHS RESERVED.
-# 50 THE AVENUE
-# SOUTHAMPTON SO17 1XQ
-# UNITED KINGDOM
-# Tel : +(44)02380 385 180
-# Fax : +(44)02380 635 118
-# http://www.querix.com/
-# #L%
-###
-
 process.maxTickDepth = Infinity
 
 splitByCommas = (str)->
-  str.replace("[","").replace("]","").replace('"',"").replace("'","").split(",")
+  str.replace(/[\[\]\"\']/g,"").split(",")
 
 module.exports = ->
   {path,yp,toolfuns} = runner = @
+
+  #relfn = (fn)->
+  #  path.relative runner.tests.globLoader.root, path.resolve(fn)
 
   runner.tests.globLoader.disable.file.pattern?=[]
   for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile
@@ -62,7 +49,7 @@ module.exports = ->
                       failOnly: true
                       data:
                         kind: "build"
-                        src : fn
+                        src : runner.relativeFn(fn)
                       testData : testData
                       after : testReq.slice()
                       promise: toolfuns.regBuild
@@ -73,7 +60,7 @@ module.exports = ->
                   name: testData.testName
                   data:
                     kind: "tlog"
-                    src : fn
+                    src : runner.relativeFn(fn)
                   testData : testData
                   after: testReq
                   promise: toolfuns.regLogRun

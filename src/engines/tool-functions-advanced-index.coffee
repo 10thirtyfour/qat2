@@ -154,7 +154,7 @@ module.exports = ->
           silent : (true)
           data:
             kind: "deploy"
-            src : @fileName
+            src : runner.relativeFn(@fileName)
           testData: testData
           promise: runner.toolfuns.regDeploy
       # ------ end of deploy workaround
@@ -167,7 +167,7 @@ module.exports = ->
         after: testData.after
         data:
           kind: "build"
-          src : @fileName
+          src : runner.relativeFn(@fileName)
         testData: testData
         failOnly : testData.failOnly
         promise: runner.toolfuns.regBuild
@@ -208,7 +208,7 @@ module.exports = ->
 
     reg : (obj,other...) ->
       obj.data?={}
-      obj.data.src?=@fileName
+      obj.data.src?=runner.relativeFn(@fileName)
       obj.name?=@testName
 
       @runner.reg(obj,other...)
