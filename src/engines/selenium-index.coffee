@@ -347,15 +347,15 @@ module.exports = ->
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
             
             if attr in ["width","height","left","top"]
-              
               if typeof(params.precision) is "string" and params.precision.toString().indexOf("%") != -1
-                params.checkPrecision = parseFloat(params.precision.split("/[^0-9,.]/")[0])/100
+                checkPrecision = parseFloat(params.precision.split("/[^0-9,.]/")[0])/100
+                unless (res[attr]-res[attr]*checkPrecision <= expected <=res[attr]+res[attr]*checkPrecision)
+                  errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
+
               else
-                params.checkPrecision = 0 if res[attr] == 0
-                params.checkPrecision ?= params.precision / res[attr]
-              unless (res[attr]-res[attr]*params.checkPrecision <= expected <=res[attr]+res[attr]*params.checkPrecision)
-                errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-                
+                unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
+                  errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
+
             else    
               unless res[attr] is expected
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
