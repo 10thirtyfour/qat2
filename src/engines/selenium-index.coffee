@@ -334,7 +334,7 @@ module.exports = ->
           params.left = params.x if (params.x?)
           params.top = params.y if (params.y?)
           params.precision?=0
-          
+          precision = params.precision.toString()
           mess = [params.mess,el_type,itemSelector].join " "
           errmsg = ""
           for attr,expected of params
@@ -347,7 +347,13 @@ module.exports = ->
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
             
             if attr in ["width","height","left","top"]
-              unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
+              
+              if typeof(params.precision) is "string" and params.precision.toString().indexOf("%") != -1
+                params.checkPrecision = parseFloat(params.precision.split("/[^0-9,.]/")[0])/100
+              else
+                params.checkPrecision = 0 if res[attr] == 0
+                params.checkPrecision ?= params.precision / res[attr]
+              unless (res[attr]-res[attr]*params.checkPrecision <= expected <=res[attr]+res[attr]*params.checkPrecision)
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
                 
             else    
@@ -359,7 +365,7 @@ module.exports = ->
           
           mess+=" : #{errmsg}"
           
-          if params.precision > 0 then mess +="\n Precision = <#{params.precision}>" 
+          if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>" 
           
           params.deferred?=@aggregateError
           unless params.deferred
