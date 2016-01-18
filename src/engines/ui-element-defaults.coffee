@@ -1,4 +1,4 @@
-elements = 
+elements =
 
   "blob-viewer" :
     qxclass : "qx-aum-blob-viewer"
@@ -12,7 +12,7 @@ elements =
     qxclass : "qx-aum-browser"
     get :
       image : (el) -> "return $('.qx-identifier-#{el} iframe').prop('src')"
-    
+
   "button" :
     qxclass : "qx-aum-button"
     selector : (el)-> "return ($(':not(div.qx-ff-button) > .qx-identifier-#{el}.qx-aum-button').length > 0)"
@@ -23,18 +23,18 @@ elements =
       state : (el) -> "if ($('div.qx-aum-button.qx-active.qx-not-readonly.qx-identifier-#{el}
                        :not(.qx-disabled):not(.ui-state-disabled):not(.qx-inactive):not(.qx-readonly)').length > 0) { return 'enabled' }
                       if ($('div.qx-aum-button.qx-disabled.qx-inactive.qx-readonly.ui-state-disabled.qx-identifier-#{el}
-                        :not(.qx-enabled):not(.qx-active):not(.qx-not-readonly)').length > 0) { return 'disabled' }                               
+                        :not(.qx-enabled):not(.qx-active):not(.qx-not-readonly)').length > 0) { return 'disabled' }
                       return $('div.qx-aum-button.qx-identifier-#{el}').attr('class');"
-      defaults : 
+      defaults :
         height : 20
         chrome$l :
           height : 20
-    
+
   "calendar" :
     qxclass : "qx-aum-calendar"
     get :
       image : (el)-> "return $('.qx-identifier-#{el} img')[0].src"
-      text : (el)-> "return $('.qx-identifier-#{el} input').val()"   
+      text : (el)-> "return $('.qx-identifier-#{el} input').val()"
       defaults :
         width : 1
         chrome$w :
@@ -50,7 +50,7 @@ elements =
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
       value : (el) -> "var cb = $('.qx-identifier-#{el} input');
-                        if (cb.prop('indeterminate')) {return 'indeterminate';} 
+                        if (cb.prop('indeterminate')) {return 'indeterminate';}
                         if (cb.prop('checked')) {return 'checked';}
                         if (typeof cb.prop('checked') == 'undefined') {return false;}
                         return 'unchecked';"
@@ -60,7 +60,7 @@ elements =
           height : 22
         chrome$l:
           height : 22
-        
+
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
@@ -72,11 +72,11 @@ elements =
     qxclass : "qx-aum-coord-panel"
 
   "function-field-abs" :
-    qxclass : "qx-aum-function-field-abs" 
+    qxclass : "qx-aum-function-field-abs"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-function-field-abs').length > 0)"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} div .qx-text').text()"
-      defaults : 
+      defaults :
         height : 20
         chrome$l :
           height : 20
@@ -85,7 +85,7 @@ elements =
     qxclass : "qx-aum-grid-panel"
 
   "group-box" :
-    qxclass : "qx-aum-group-box"  
+    qxclass : "qx-aum-group-box"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} .qx-groupbox-header .qx-text').html()"
 
@@ -102,9 +102,9 @@ elements =
           height : 22
         chrome$l :
           height : 22
-        
+
   "list-box" :
-    qxclass : "qx-aum-list-box"                                
+    qxclass : "qx-aum-list-box"
     get :
       state : (el) -> "if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('div."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
@@ -144,7 +144,7 @@ elements =
       orientation : (el) -> """
                                 if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-orientation-vertical')) {
                                   return 'vertical';
-                                  } 
+                                  }
                                 return 'horizontal';
                             """
       value : (el) -> """
@@ -154,14 +154,14 @@ elements =
 
                       var logicVal = parseInt("0"+obj.children('div.ui-progressbar').attr('aria-valuenow'));
                       var physicVal = parseInt("0"+obj.find('div > div.ui-progressbar-value')[0].style[attr].slice(0,-1));
-                      
-                      
-                      if(Math.abs(logicVal-physicVal) < 5) { 
-                        return logicVal 
-                      } else { 
+
+
+                      if(Math.abs(logicVal-physicVal) < 5) {
+                        return logicVal
+                      } else {
                         return 'Logical (aria-valuenow): '+logicVal+', Visual (.ui-progressbar-value.'+attr+'): '+physicVal;
                       }
-                      
+
                       """
 
   "radio-button" :
@@ -177,7 +177,7 @@ elements =
           height : 23
         chrome$l :
           height : 22
- 
+
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
     get :
@@ -193,7 +193,7 @@ elements =
       value : (el) -> "var rb = $('.qx-identifier-#{el} input');
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
-      
+
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
@@ -212,12 +212,12 @@ elements =
                           return Math.round(100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
                         }
                       """
-      defaults : 
+      defaults :
         height : 20
 
     set :
-      value : (el,val) -> 
-        # step direction and count must be placed into val property, like 
+      value : (el,val) ->
+        # step direction and count must be placed into val property, like
         # setValue "scrollbar1", smallStep:3
         # setValue "scrollbar1", largeStep:-1
         # numeric value treated as % to drag
@@ -229,10 +229,10 @@ elements =
           while count>0
             count-=1
             @invoke selector
-            @waitIdle 
+            @waitIdle
 
         (true)
-        
+
    "scroll-viewer" :
     qxclass : "qx-aum-scroll-viewer"
 
@@ -242,22 +242,22 @@ elements =
     get :
       orientation : (el) -> "if($('div.qx-aum-slider.qx-identifier-#{el} > div.ui-slider-horizontal').length) {return 'horizontal';}
                              if($('div.qx-aum-slider.qx-identifier-#{el} > div.ui-slider-vertical').length) {return 'vertical';}"
-    
+
       value : (el) -> "if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-horizontal')) {
                           return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.left.slice(0,-1)); }
                         if ($('div.qx-aum-slider.qx-identifier-#{el} > div').hasClass('ui-slider-vertical')) {
                         return parseInt($('div.qx-aum-slider.qx-identifier-#{el} a')[0].style.bottom.slice(0,-1));}"
-      defaults : 
+      defaults :
         height : 20
         chrome$l :
           height : 20
-    
+
   "spinner" :
     qxclass  : "qx-aum-spinner"
     get :
       text : (el) -> "return $('div.qx-identifier-#{el} > input').val()"
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
-      defaults : 
+      defaults :
         height : 20
         chrome$l :
           height : 20
@@ -270,7 +270,7 @@ elements =
           while count>0
             count-=1
             @invoke selector
-            @waitIdle           
+            @waitIdle
           return
         # click on textfield, clear value and enver new one
         el = @elementByCss("div.qx-identifier-#{el}.qx-aum-spinner input.qx-text.ui-spinner-input")
@@ -286,9 +286,9 @@ elements =
     get :
       value : (el) -> "return $('div.qx-identifier-#{el}.qx-aum-tab li.ui-tabs-active')[0].className.match(/qx-h-identifier-(.*)/)[1]"
     set :
-      value : (el,val) -> 
+      value : (el,val) ->
         return @execute "return $('div.qx-identifier-#{el} li[aria-controls='+$('.qx-identifier-#{val}').prop('id') +'] a').click()"
-    
+
   "tab-page" :
     qxclass : "qx-aum-tab-page"
     get :
@@ -296,7 +296,9 @@ elements =
       state : (el) -> "var pageHeader = $('li.qx-h-identifier-#{el}.qx-h-aum-tab-page');
                        if (pageHeader.length == 0 ) { return 'page not found';}
                        if (pageHeader.hasClass('ui-tabs-active')) { return 'active';} else { return 'inactive';}"
-    
+    set :
+      ident : (el) -> yp @execute "return $('[aria-controls='+$('.qx-identifier-#{val}').prop('id') +']').addClass('qx-identifier-h_#{el}')"
+
   "tab-page-header" :
     qxclass : "qx-h-aum-tab-page"
     selector : (el) -> "return false;"
@@ -321,7 +323,7 @@ elements =
       defaults :
         height : 38
         firefox$w :
-          height : 55    
+          height : 55
         chrome$l :
           height : 34
      set :
@@ -337,13 +339,13 @@ elements =
     qxclass : "qx-aum-tree-table"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-tree-table.qx-aum-abstract-data-table').length > 0)"
 
-  "text-field" :   
+  "text-field" :
     qxclass : "qx-aum-text-field"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-text-field').length > 0)"
     get :
       text : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el}.qx-aum-text-field .qx-text').text()"
-      defaults : 
+      defaults :
         height : 20
         chrome$l :
           height : 20
@@ -355,12 +357,12 @@ elements =
          .sendKeys(['\uE009','a','\uE009','\uE017'])
          .sendKeys(val)
          @waitIdle()
-      
-   
+
+
   "time-edit-field" :
     qxclass :  "qx-aum-time-edit-field"
     set :
-      #Warning!!! not work 
+      #Warning!!! not work
       value : (el,h,m) -> "return(@execute($('.ui-timepicker-hours .ui-timepicker tbody tr td a')[#{h}].click()).execute($('.ui-timepicker-minutes .ui-timepicker tbody tr td a')[#{m}].click()))"
     get :
       text : (el) -> "return $('.qx-identifier-#{el} input').val()"
@@ -368,7 +370,7 @@ elements =
         height : 20
         chrome$l :
           height : 20
-      
+
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
     get :
@@ -380,7 +382,7 @@ elements =
 
   "toolbar-separator" :
     qxclass : "qx-aum-toolbar-separator"
-      
+
   "web-component" :
     qxclass : "qx-aum-web-component"
     get :
@@ -395,7 +397,7 @@ elements =
     qxclass : "qx-text"
     get :
       text : (el) -> "return $('.qx-identifier-#{el}.qx-text').text()"
-  
+
   "unknown" :
     qxclass : "unknown"
     get :
@@ -408,13 +410,13 @@ for name,item of elements
   item.qxclass   ?= "qx-aum-"+name
   item.selector  ?= (el)-> "return ($('.qx-identifier-#{el}."+@qxclass+"').length > 0)"
   item.get       ?= {}
-  item.get.qxclass = item.qxclass 
+  item.get.qxclass = item.qxclass
   item.get.text  ?= (el) -> "return $('.qx-identifier-#{el} .qx-text').html()"
   item.get.image ?= (el) -> "return $('.qx-identifier-#{el} .qx-image')[0].src"
   item.get.state ?= (el)-> "if ($('.qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('.qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('.qx-identifier-#{el}').attr('class');"
-  
+
   for method of elements.unknown.get
     do =>
       m = method
@@ -424,6 +426,6 @@ for name,item of elements
     if @defaults?
       if platform? and @defaults[platform]?
         def = @defaults[platform][attr]
-      def ?= @defaults[attr]  
+      def ?= @defaults[attr]
       return def
 module.exports = elements

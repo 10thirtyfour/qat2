@@ -31,9 +31,11 @@ module.exports = ->
                   if testData.platform.indexOf( runner.sysinfo.platform )==-1
                     runner.info("#{fn}. Skipping on this platform")
                     return true
-                # test names might be specified in tlog
-                testData.testName?="#{testData.projectName}/#{path.basename(fn, ".tlog")}"
-                testData.buildTestName?="#{testData.projectName}/#{testData.programName}"
+
+                testData.name ?= path.basename(fn, "-rest.tlog")
+                testData.testName ?= testData.name
+                testData.testName = "#{testData.projectName}/"+testData.testName+"/runlog"
+                testData.buildTestName?="#{testData.projectName}/#{testData.programName}/build"
 
                 testReq = []
                 if typeof testData.after is "string"

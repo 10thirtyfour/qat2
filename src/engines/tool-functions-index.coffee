@@ -228,7 +228,6 @@ module.exports = ->
             testData.projectPath = tempPath
             break
 
-
       if testData.projectPath?
         testData.projectName = path.basename testData.projectPath
         # here can be implemented XML parce of project file. Currently using default paths
