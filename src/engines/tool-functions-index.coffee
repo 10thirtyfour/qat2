@@ -211,6 +211,16 @@ module.exports = ->
 
     filenameToTestname : filenameToTestname
 
+    calcProjectName: (testFileName) ->
+      unless projectPath?
+        tempPath = testFileName
+        while (tempPath != ( tempPath = path.dirname tempPath ))
+          if fs.existsSync(path.join(tempPath,".fglproject"))
+            projectPath = tempPath
+            break
+
+      return path.basename projectPath
+
     combTestData: (testData) ->
       testData.programName ?= testData.program
       testData.projectPath ?= (testData.project or testData.prj)

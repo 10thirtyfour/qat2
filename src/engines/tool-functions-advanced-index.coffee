@@ -28,7 +28,9 @@ module.exports = ->
         suspectTestName = path.relative(path.dirname(@fileName), testData.fileName)
 
         if testData.ext is ".per"
-          compileTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}.per")
+          testData.projectName ?= runner.toolfuns.calcProjectName(testData.fileName)
+          compileTestName = "#{testData.projectName}/#{path.basename(suspectTestName,testData.ext)}/qform"
+
           unless compileTestName of runner.tests
             runner.reg
               name: compileTestName
@@ -43,7 +45,7 @@ module.exports = ->
           testData.ext = ".fm2"
 
         testData.fileName = testData.fileName+".fm2"
-        formTestName = runner.toolfuns.uniformName("advanced$#{@relativeName}$xpath$#{suspectTestName}")
+        formTestName = "#{testData.projectName}/#{path.basename(suspectTestName,testData.ext)}/xpath"
         n = 0
         loop
           testName = "#{formTestName}$#{n}"
@@ -101,8 +103,16 @@ module.exports = ->
 
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
 
+        testData.projectName ?= runner.toolfuns.calcProjectName(testData.testFileName)
+
+        testData.name = "#{testData.projectName}/#{path.basename(suspectTestName,testData.ext)}/"
+
+        testData.name = testData.name+"qfgl" if testData.ext is ".4gl"
+        testData.name = testData.name+"qform" if testData.ext is ".per"
+
         runner.reg
-          name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
+          name: testData.name
+          #  name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
             src : @fileName
@@ -182,15 +192,8 @@ module.exports = ->
       else
         params = obj
       params.testFileName = @fileName
-      unless params.projectPath?
-        tempPath = params.testFileName
-        while (tempPath != ( tempPath = path.dirname tempPath ))
-          if fs.existsSync(path.join(tempPath,".fglproject"))
-              params.projectPath = tempPath
-              break
 
-      if params.projectPath?
-        params.projectName = path.basename params.projectPath
+      params.projectName ?= runner.toolfuns.calcProjectName(params.testFileName)
 
       params.name ?= path.basename(@fileName, "-ld-test.coffee")
 
@@ -210,15 +213,7 @@ module.exports = ->
       params.after     ?= @lastBuiltTestName ? []
       params.testFileName = @fileName
 
-      unless params.projectPath?
-        tempPath = params.testFileName
-        while (tempPath != ( tempPath = path.dirname tempPath ))
-          if fs.existsSync(path.join(tempPath,".fglproject"))
-              params.projectPath = tempPath
-              break
-
-      if params.projectPath?
-        params.projectName = path.basename params.projectPath
+      params.projectName ?= runner.toolfuns.calcProjectName(params.testFileName)
 
       params.name ?= path.basename(@fileName, "-wd-test.coffee")
 
