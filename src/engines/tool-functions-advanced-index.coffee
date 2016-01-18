@@ -150,39 +150,42 @@ module.exports = ->
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
-        testData.deployTestName = testData.buildTestName+"/deploy"
+        testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
         #runner.toolfuns.uniformName(
         #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
         @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
-      if testData.deployTestName?
-        runner.reg
-          name: testData.deployTestName
-          after: [ testData.buildTestName ]
-          silent : (true)
-          data:
-            kind: "deploy"
-            src : runner.relativeFn(@fileName)
-          testData: testData
-          promise: runner.toolfuns.regDeploy
+      unless testData.buildTestName of runner.tests
+        if testData.deployTestName?
+          runner.reg
+            name: testData.deployTestName
+            after: [ testData.buildTestName ]
+            silent : (true)
+            data:
+              kind: "deploy"
+              src : runner.relativeFn(@fileName)
+            testData: testData
+            promise: runner.toolfuns.regDeploy
       # ------ end of deploy workaround
 
-      testData.failOnly ?= testData.deploy
-      testData.after ?= []
+        testData.failOnly ?= testData.deploy
+        testData.after ?= []
 
-      runner.reg
-        name: testData.buildTestName
-        after: testData.after
-        data:
-          kind: "build"
-          src : runner.relativeFn(@fileName)
-        testData: testData
-        failOnly : testData.failOnly
-        promise: runner.toolfuns.regBuild
 
+        runner.reg
+          name: testData.buildTestName
+          after: testData.after
+          data:
+            kind: "build"
+            src : runner.relativeFn(@fileName)
+          testData: testData
+          failOnly : testData.failOnly
+          promise: runner.toolfuns.regBuild
+
+        testData.buildTestName
       testData.buildTestName
-
+      
     RegLD : (obj, params) ->
       return if process.platform[0] isnt "w"
       runner = @runner
