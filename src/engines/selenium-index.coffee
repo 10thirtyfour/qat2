@@ -328,7 +328,7 @@ module.exports = ->
           res.left = Math.floor(res.left)
           res.top = Math.floor(res.top)
           res.type = el_type
-                 
+
           params.width = params.w if (params.w?)
           params.height = params.h if (params.h?)
           params.left = params.x if (params.x?)
@@ -345,7 +345,7 @@ module.exports = ->
 
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
-            
+
             if attr in ["width","height","left","top"]
               if typeof(params.precision) is "string" and params.precision.toString().indexOf("%") != -1
                 checkPrecision = parseFloat(params.precision.split("/[^0-9,.]/")[0])/100
@@ -356,17 +356,17 @@ module.exports = ->
                 unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
 
-            else    
+            else
               unless res[attr] is expected
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-                
-           
+
+
           if errmsg is "" then return ""
-          
+
           mess+=" : #{errmsg}"
-          
-          if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>" 
-          
+
+          if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>"
+
           params.deferred?=@aggregateError
           unless params.deferred
             throw mess
@@ -408,6 +408,12 @@ module.exports = ->
           (true)
       )
 
+      wd.addPromiseMethod(
+        "setTabId"
+        (el, v) ->
+          v ?= "h_"+el.toLowerCase()
+          return yp @execute "$('[aria-controls='+$('.qx-identifier-#{el}').prop('id') +']').addClass('qx-identifier-#{v}')"
+      )
       wd.addPromiseMethod(
         "toolbutton"
         (title) ->
@@ -521,8 +527,7 @@ module.exports = ->
             promise = binfo.promise
             unless promise?
               if binfo.syn?
-                binfo.name= "wd$#{i}$#{info.name}"
-
+                binfo.name = "#{info.name}/#{i}"
                 promise = (browser) ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
