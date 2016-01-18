@@ -89,7 +89,7 @@ module.exports = ->
           command += ".exe" if process.platform[0] is "w"
           programUrl = runner.opts.lyciaWebUrl + "run/" + params.instance + "/" + command
 
-          if params.args then programUrl+=params.args+"&skipunload" else programUrl+="?skipunload"
+          if params.args then programUrl+=params.args+"&unl=1&cache=check&timeout=0&skipunload" else programUrl+="?unl=1&cache=check&timeout=0&skipunload"
 
           if params.wait
             return @get(programUrl).waitIdle(30000).sleep(500)
