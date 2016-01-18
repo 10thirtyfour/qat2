@@ -103,7 +103,7 @@ module.exports = ->
 
         suspectTestName = path.relative path.dirname(@fileName), testData.fileName
 
-        testData.projectName ?= runner.toolfuns.calcProjectName(testData.testFileName)
+        testData.projectName ?= runner.toolfuns.calcProjectName(testData.fileName)
 
         testData.name = "#{testData.projectName}/#{path.basename(suspectTestName,testData.ext)}/"
 
@@ -185,7 +185,7 @@ module.exports = ->
 
         testData.buildTestName
       testData.buildTestName
-      
+
     RegLD : (obj, params) ->
       return if process.platform[0] isnt "w"
       runner = @runner
