@@ -181,7 +181,20 @@ module.exports = ->
         params.syn = obj
       else
         params = obj
+      params.testFileName = @fileName
+      unless params.projectPath?
+        tempPath = params.testFileName
+        while (tempPath != ( tempPath = path.dirname tempPath ))
+          if fs.existsSync(path.join(tempPath,".fglproject"))
+              params.projectPath = tempPath
+              break
 
+      if params.projectPath?
+        params.projectName = path.basename params.projectPath
+
+      params.name ?= path.basename(@fileName, "-ld-test.coffee")
+
+      params.name = params.projectName+"/"+params.name+"/desktop"
       params.after     ?= @lastBuiltTestName ? []
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
