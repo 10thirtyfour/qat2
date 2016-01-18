@@ -119,7 +119,6 @@ module.exports = ->
 
       testData.testFileName = @fileName
       testData = runner.toolfuns.combTestData(testData)
-
       unless testData.programName?
         throw new Error("Build. Can not read programName")
       unless testData.projectPath?
@@ -134,7 +133,7 @@ module.exports = ->
       #testData.buildTestName = runner.toolfuns.uniformName(
       #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
-      testData.buildTestName = "#{testData.projectName}/#{testData.programName}"
+      testData.buildTestName = "#{testData.projectName}/#{testData.programName}/build"
 
       # storing test name and program name in test context for future use in WD
       @lastBuiltTestName = testData.buildTestName
@@ -182,6 +181,7 @@ module.exports = ->
         params.syn = obj
       else
         params = obj
+
       params.after     ?= @lastBuiltTestName ? []
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
@@ -195,10 +195,24 @@ module.exports = ->
       else
         params = obj
       params.after     ?= @lastBuiltTestName ? []
-      params.name      ?= runner.toolfuns.uniformName(path.relative(runner.tests.globLoader.root,@fileName))
+      params.testFileName = @fileName
+
+      unless params.projectPath?
+        tempPath = params.testFileName
+        while (tempPath != ( tempPath = path.dirname tempPath ))
+          if fs.existsSync(path.join(tempPath,".fglproject"))
+              params.projectPath = tempPath
+              break
+
+      if params.projectPath?
+        params.projectName = path.basename params.projectPath
+
+      params.name ?= path.basename(@fileName, "-wd-test.coffee")
+
+      params.name = params.projectName+"/"+params.name
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt
-      if params.testId? then params.name+="$"+params.testId
+      #if params.testId? then params.name+="/"+params.testId
       runner.regWD params
 
     RunLean : (opts={})->
