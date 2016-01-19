@@ -600,7 +600,7 @@ module.exports = ->
 
           #build object cache
 
-          if @testData.aot
+          if @testData.aot or @testData.unl
             opt =
               cwd: path.resolve(@testData.projectPath)
               env: _.assign(
@@ -612,7 +612,10 @@ module.exports = ->
               )
             qrun = path.join(opt.env.LYCIA_DIR,"bin","qrun")
 
-            child = spawn( qrun , ["--aot",exeName] , opt)
+            if @testData.unl
+              child = spawn( qrun , ["--aot","--unl",exeName] , opt)
+            else
+              child = spawn( qrun , ["--aot",exeName] , opt)
             result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
             if result
               err=child.stderr.read()
