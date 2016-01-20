@@ -128,7 +128,11 @@ module.exports = ->
         testData = arg ? {}
 
       testData.testFileName = @fileName
+
       testData = runner.toolfuns.combTestData(testData)
+
+      testData.atomic_before ?= []
+
       unless testData.programName?
         throw new Error("Build. Can not read programName")
       unless testData.projectPath?
@@ -143,10 +147,12 @@ module.exports = ->
       #testData.buildTestName = runner.toolfuns.uniformName(
       #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
-      testData.buildTestName = "#{testData.projectName}/#{testData.programName}/build"
+      if testData.atomic then  testData.buildTestName ?= "atomic/#{testData.atomic}"
+
+      testData.buildTestName ?= "#{testData.projectName}/#{testData.programName}/build"
 
       # storing test name and program name in test context for future use in WD
-      @lastBuiltTestName = testData.buildTestName
+      _.lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
@@ -154,7 +160,7 @@ module.exports = ->
         #runner.toolfuns.uniformName(
         #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
-        @lastBuiltTestName = testData.deployTestName
+        _.lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
       unless testData.buildTestName of runner.tests
         if testData.deployTestName?
@@ -171,8 +177,8 @@ module.exports = ->
 
         testData.failOnly ?= testData.deploy
         testData.after ?= []
-
-
+        testData.atomic_before.forEach (e)->
+          testData.after.push("atomic/#{e}")
         runner.reg
           name: testData.buildTestName
           after: testData.after
@@ -213,7 +219,13 @@ module.exports = ->
         params.syn = obj
       else
         params = obj
-      params.after     ?= @lastBuiltTestName ? []
+      params.after ?= []
+
+      params.after.push(_.lastBuiltTestName)
+      params.atomic_before ?= []
+
+      params.atomic_before.forEach (e)->
+        params.after.push("atomic/#{e}")
       params.testFileName = @fileName
 
       params.projectName ?= runner.toolfuns.calcProjectName(params.testFileName)
@@ -221,6 +233,11 @@ module.exports = ->
       params.name ?= path.basename(@fileName, "-wd-test.coffee")
 
       params.name = params.projectName+"/"+params.name
+
+      if params.atomic then  params.name = "atomic/#{params.atomic}"
+
+
+
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt
       #if params.testId? then params.name+="/"+params.testId

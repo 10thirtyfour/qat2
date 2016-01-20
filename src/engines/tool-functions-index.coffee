@@ -457,6 +457,7 @@ module.exports = ->
 
           params = new cmdlineType( [ @testData.programExecutable, "-d", opt.env.LYCIA_DB_DRIVER ] )
           params.add @testData.programArgs
+
           child = spawn( exename, params.args, opt)
 
           @testData.ignoreHeadlessErrorlevel = true #????

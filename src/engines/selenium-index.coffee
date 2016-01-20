@@ -528,6 +528,12 @@ module.exports = ->
             unless promise?
               if binfo.syn?
                 binfo.name = "#{info.name}/#{i}"
+                if binfo.data.kind is "wd-chrome"
+                  if binfo.name.substring(0,7) is "atomic/"
+                    binfo.name = binfo.name.split("/")[0]+"/"+ binfo.name.split("/")[1]
+                  _.tempName = binfo.name
+                else
+                  unless binfo.after.indexOf(_.tempName)!=-1 then binfo.after = _.tempName
                 promise = (browser) ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
@@ -573,6 +579,8 @@ module.exports = ->
                 r = r.finally =>
                   browser.quit()
               return r.then(-> "Pass")
+
+
 
             @reg binfo
             binfo.data.browser = i
