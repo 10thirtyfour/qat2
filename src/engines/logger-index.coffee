@@ -61,6 +61,7 @@ module.exports = ->
 
     logger.setLevels levels
     winston.addColors colors
+
     obj.logger = logger
     extend obj
   #TODO: options are not inited here, do something better
@@ -77,6 +78,7 @@ module.exports = ->
         @info "starting"
         @started=(new Date()).getTime()
         context = this
+
         Q.fcall( ()-> basePromise.call(context) )
         .finally( -> context.data.duration=(new Date()).getTime() - context.started)
         .then(

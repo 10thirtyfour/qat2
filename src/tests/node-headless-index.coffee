@@ -29,17 +29,25 @@ module.exports = ->
                 testData = toolfuns.LoadHeaderData(fn)
                 if typeof testData.platform is "string"
                   if testData.platform.indexOf( runner.sysinfo.platform )==-1
-                    runner.info("#{fn}. Skipping on this platform")
+                    #runner.info("#{fn}. Skipping on this platform")
                     return true
-
+                testReq = []
                 testData.name ?= path.basename(fn, "-rest.tlog")
                 testData.testName ?= testData.name
                 testData.testName = "#{testData.projectName}/"+testData.testName+"/runlog"
                 testData.buildTestName?="#{testData.projectName}/#{testData.programName}/build"
 
-                testReq = []
+                if typeof testData.atomic_before is "string"
+                  temp = splitByCommas(testData.atomic_before)
+                  temp.forEach (r,i)-> temp[i]="atomic/#{r}"
+                  testReq = testReq.concat(temp)
+
+                if typeof testData.atomic is "string"
+                  testData.testName = "atomic/"+testData.atomic
+
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
+
                 unless runner.argv["skip-build"]
                   if testData.buildTestName of runner.tests
                     testReq.forEach (r)->
