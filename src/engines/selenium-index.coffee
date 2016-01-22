@@ -89,7 +89,7 @@ module.exports = ->
           command += ".exe" if process.platform[0] is "w"
           programUrl = runner.opts.lyciaWebUrl + "run/" + params.instance + "/" + command
 
-          if params.args then programUrl+=params.args+"&unl=1&cache=check&timeout=0&skipunload" else programUrl+="?unl=1&cache=check&timeout=0&skipunload"
+          if params.args then programUrl+=params.args+"&cache=check&timeout=0&skipunload" else programUrl+="?cache=check&timeout=0&skipunload"
 
           if params.wait
             return @get(programUrl).waitIdle(30000).sleep(500)
@@ -510,7 +510,6 @@ module.exports = ->
           _.assign t, synproto
           act.call t
 
-
       runner.regWD = (info) ->
         wdTimeout = @opts.common.timeouts.wd
         d = info.data ?= {}
@@ -556,7 +555,6 @@ module.exports = ->
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
                         throw e
-
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0
                       throw testContext.errorMessage
@@ -565,7 +563,6 @@ module.exports = ->
                 promise = ->
 
             binfo.promise = ->
-
               if plugin.links[i]?
                 browser = wd.promiseChainRemote plugin.links[i]
               else
@@ -579,9 +576,6 @@ module.exports = ->
                 r = r.finally =>
                   browser.quit()
               return r.then(-> "Pass")
-
-
-
             @reg binfo
             binfo.data.browser = i
       Q({})
