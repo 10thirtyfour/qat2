@@ -194,6 +194,9 @@ elements =
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
 
+  "separator" :
+    qxclass : "qx-aum-separator"
+
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
