@@ -71,10 +71,15 @@ class Runner
     # with the test case result
     # we need bind here!
     {tests} = @
+
     t = tests[node]
+    #console.log "node - "+node
     @trace "crawling #{node}"
     if t.started
-      throw new Error "trying to crawl already started node: #{node}"
+      @info "Trying to crawl already started node: #{node}"
+      t.started = false
+      return true
+
     t.error = false
     for i in @graph.predecessors(node)
       pt = tests[i]
@@ -86,6 +91,7 @@ class Runner
         @trace "not all dependencies satisfied #{i}"
         return Q({})
       t.error = t.error or pt.error is true
+    #console.log "t - "+t.started
     t.started = true
     r = @prePromise()
     if not t.disabled and t.promise? and (not t.error or t.runAnyway)

@@ -6,9 +6,6 @@ splitByCommas = (str)->
 module.exports = ->
   {path,yp,toolfuns} = runner = @
 
-  #relfn = (fn)->
-  #  path.relative runner.tests.globLoader.root, path.resolve(fn)
-
   runner.tests.globLoader.disable.file.pattern?=[]
   for dbp of @opts.dbprofiles when dbp isnt @opts.common.options.databaseProfile
     runner.tests.globLoader.disable.file.pattern.push "**/*-#{dbp}-db-rest.tlog"
@@ -29,7 +26,6 @@ module.exports = ->
                 testData = toolfuns.LoadHeaderData(fn)
                 if typeof testData.platform is "string"
                   if testData.platform.indexOf( runner.sysinfo.platform )==-1
-                    #runner.info("#{fn}. Skipping on this platform")
                     return true
                 testReq = []
                 testData.name ?= path.basename(fn, "-rest.tlog")
@@ -61,10 +57,10 @@ module.exports = ->
                         kind: "build"
                         src : runner.relativeFn(fn)
                       testData : testData
-                      after : testReq.slice()
+                      after : testReq
                       promise: toolfuns.regBuild
 
-                  testReq.push(testData.buildTestName)
+                  #testReq.push(testData.buildTestName)
 
                 runner.reg
                   name: testData.testName
@@ -72,7 +68,7 @@ module.exports = ->
                     kind: "tlog"
                     src : runner.relativeFn(fn)
                   testData : testData
-                  after: testReq
+                  after: [ testData.buildTestName ]
                   promise: toolfuns.regLogRun
                 true
               catch e

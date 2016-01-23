@@ -152,7 +152,7 @@ module.exports = ->
       testData.buildTestName ?= "#{testData.projectName}/#{testData.programName}/build"
 
       # storing test name and program name in test context for future use in WD
-      _.lastBuiltTestName = testData.buildTestName
+      @lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
@@ -160,7 +160,7 @@ module.exports = ->
         #runner.toolfuns.uniformName(
         #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
-        _.lastBuiltTestName = testData.deployTestName
+        @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
       unless testData.buildTestName of runner.tests
         if testData.deployTestName?
@@ -221,11 +221,11 @@ module.exports = ->
         params = obj
       params.after ?= []
 
-      params.after.push(_.lastBuiltTestName)
+      params.after.push(@lastBuiltTestName)
       params.atomic_before ?= []
 
       params.atomic_before.forEach (e)->
-        params.after.push("atomic/#{e}")
+        if params.after.indexOf("atomic/#{e}")==-1 then params.after.push("atomic/#{e}")
       params.testFileName = @fileName
 
       params.projectName ?= runner.toolfuns.calcProjectName(params.testFileName)
