@@ -535,6 +535,7 @@ module.exports = ->
                 unless binfo.data.kind is "wd-chrome"
                   if binfo.after.indexOf(_.tempName)==-1 then binfo.after = [ _.tempName ]
                 _.tempName = binfo.name
+                #console.log binfo.data
                 #console.log binfo.after
                 #console.log binfo.name
 

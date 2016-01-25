@@ -220,7 +220,8 @@ module.exports = ->
       else
         params = obj
       params.after ?= []
-
+      params.data ?= {}
+      params.data.src ?= runner.relativeFn(@fileName)
       params.after.push(@lastBuiltTestName)
       params.atomic_before ?= []
 
