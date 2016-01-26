@@ -446,7 +446,7 @@ module.exports = ->
           _.merge opt.env, @options.env
           _.merge opt.env, @runner.opts.dbprofiles[@options.databaseProfile]
           _.merge opt.env, @testData.env
-
+          _.merge opt.env, @testData.headless
           logLine = 0
           outLine = 0
 

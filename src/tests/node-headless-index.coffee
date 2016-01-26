@@ -44,7 +44,10 @@ module.exports = ->
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
-                unless runner.argv["skip-build"]
+
+                testData.skipBuild ?= 0
+                #unless runner.argv["skip-build"]
+                unless testData.skipBuild
                   if testData.buildTestName of runner.tests
                     testReq.forEach (r)->
                       if runner.tests[testData.buildTestName].after.indexOf(r)==-1
