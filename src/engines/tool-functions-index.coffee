@@ -568,7 +568,11 @@ module.exports = ->
           .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
           xml = new dom().parseFromString(rawxml)
           filesToCopy = [@testData.programName]
-          if process.platform[0] is "w" then filesToCopy[0]+='.exe'
+
+          if rawxml.indexOf('type="fgl-library"')!=-1
+            filesToCopy[0]+='.4a'
+          else
+            if process.platform[0] is "w" then filesToCopy[0]+='.exe'
 
           formExtCare = (fn) ->
             ext = path.extname(fn)
@@ -590,9 +594,9 @@ module.exports = ->
               targetFile = path.join(runner.opts.deployPath,fn)
               fse.ensureDirSync path.dirname(targetFile)
               fse.copySync(sourceFile,targetFile)
+              tr2file+='  <Resource path="'+fn+'"/>\n'
             catch e
               runner.info "Failed to copy file : "+fn
-            tr2file+='  <Resource path="'+fn+'"/>\n'
           tr2file+='</Resources>\n'
           fs.writeFileSync(path.join(runner.opts.deployPath,@testData.programName+".tr2"),tr2file)
           exeName=path.join(runner.opts.deployPath,filesToCopy[0])
