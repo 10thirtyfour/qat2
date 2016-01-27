@@ -45,7 +45,7 @@ module.exports = ->
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
 
-                testData.skipBuild ?= 0
+                testData.skipBuild ?= false
                 #unless runner.argv["skip-build"]
                 unless testData.skipBuild
                   if testData.buildTestName of runner.tests
@@ -62,8 +62,9 @@ module.exports = ->
                       testData : testData
                       after : testReq
                       promise: toolfuns.regBuild
+                    testReq = []
 
-                  #testReq.push(testData.buildTestName)
+                testReq.push(testData.buildTestName)
 
                 runner.reg
                   name: testData.testName
@@ -71,7 +72,7 @@ module.exports = ->
                     kind: "tlog"
                     src : runner.relativeFn(fn)
                   testData : testData
-                  after: [ testData.buildTestName ]
+                  after: testReq
                   promise: toolfuns.regLogRun
                 true
               catch e
