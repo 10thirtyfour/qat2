@@ -223,6 +223,7 @@ module.exports = ->
 
     combTestData: (testData) ->
       testData.programName ?= testData.program
+      testData.buildTimeout ?= testData.timeout
       testData.projectPath ?= (testData.project or testData.prj)
       testData.reverse ?= testData.fail
       testData.buildMode ?= if testData.deploy is true then "all" else "rebuild"
@@ -569,6 +570,9 @@ module.exports = ->
           xml = new dom().parseFromString(rawxml)
           filesToCopy = [@testData.programName]
 
+          if rawxml.indexOf('type="fgl-program"')!=-1
+            makeTr2file = true
+
           if rawxml.indexOf('type="fgl-library"')!=-1
             filesToCopy[0]+='.4a'
           else
@@ -582,23 +586,44 @@ module.exports = ->
               when ".msg" then return base + ".erm"
               else return fn
 
-          filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
-          filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
-          #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
-          filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
+          parseFilesToCopy = (xml,filesToCopy) ->
+            filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
+            filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
+            #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
+            filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
+            return filesToCopy
 
-          tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
-          for fn in filesToCopy
+          parseFilesToCopy(xml,filesToCopy)
+
+          fn_Name = (xml,testData) ->
+            libLocation = xpath.select('//fglBuildTarget/libraries/library/@location',xml)
+            for fn,i in xpath.select('//fglBuildTarget/libraries/library/@name',xml)
+              libLoc = libLocation[i].value.toString()+"\\"
+              fileName = testData.projectPath + "\\source\\" + libLoc + "\\."  + fn.value + ".fgltarget"
+              rawxml=fs.readFileSync(fileName,'utf8')
+              .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
+              xml = new dom().parseFromString(rawxml)
+              filesToCopy.push(libLoc + "\\"+fn.value+".4a")
+              parseFilesToCopy(xml,filesToCopy)
+              fn_Name(xml,testData)
+
+          fn_Name(xml,@testData)
+          if makeTr2file
+            tr2file = '<?xml version="1.0" encoding="UTF-8"?>\n<Resources>\n'
+          for fn,i in filesToCopy
             try
               sourceFile = path.join(@testData.projectPath,@testData.projectOutput,fn)
               targetFile = path.join(runner.opts.deployPath,fn)
               fse.ensureDirSync path.dirname(targetFile)
               fse.copySync(sourceFile,targetFile)
-              tr2file+='  <Resource path="'+fn+'"/>\n'
+              if i > 0 and fn.indexOf(".4a")==-1
+                if makeTr2file
+                  tr2file+='  <Resource path="'+fn+'"/>\n'
             catch e
               runner.info "Failed to copy file : "+fn
-          tr2file+='</Resources>\n'
-          fs.writeFileSync(path.join(runner.opts.deployPath,@testData.programName+".tr2"),tr2file)
+          if makeTr2file
+            tr2file+='</Resources>\n'
+            fs.writeFileSync(path.join(runner.opts.deployPath,@testData.programName+".tr2"),tr2file)
           exeName=path.join(runner.opts.deployPath,filesToCopy[0])
           if process.platform[0] is "l"
             fs.chmodSync( exeName , "755")
