@@ -576,7 +576,10 @@ module.exports = ->
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
-              r = browser.init(v).then(=> promise.call @, browser)
+              if v.browserName in ["chrome","firefox"]
+                r = browser.init(v).maximize().then(=> promise.call @, browser)
+              else
+                r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
