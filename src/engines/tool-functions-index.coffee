@@ -437,7 +437,6 @@ module.exports = ->
     regLogRun : ->
       yp.frun( =>
         try
-
           opt =
             env: {}
             cwd: path.resolve(@testData.projectPath,@testData.projectOutput)
@@ -481,15 +480,11 @@ module.exports = ->
               d.ElapsedTime = result.ElapsedTime
               d.PeakWorkingSetSize = result.PeakWorkingSetSize
             promises.push exitPromise(statChild).timeout(@testData.runTimeout)
-
           res = yp Q.all( promises )
-
           "Code : " + res.join ". "
         finally
           child.kill('SIGKILL')
       )
-
-
 
     LoadHeaderData : (logFileName) ->
       testData =
@@ -510,7 +505,6 @@ module.exports = ->
             else
               return (td[prop]?={})
           , testData)
-
         else
           # trying to find programName only if it is not yet defined
           unless testData.programName?
@@ -589,7 +583,6 @@ module.exports = ->
           parseFilesToCopy = (xml,filesToCopy) ->
             filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="form"]/*/@location',xml)
             filesToCopy.push formExtCare(fn.value) for fn in xpath.select('//fglBuildTarget/sources[@type="message"]/*/@location',xml)
-            #filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file[@client="true"]/@location',xml)
             filesToCopy.push fn.value for fn in xpath.select('//fglBuildTarget/mediaFiles/file/@location',xml)
             return filesToCopy
 
