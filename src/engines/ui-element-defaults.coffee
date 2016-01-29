@@ -374,6 +374,9 @@ elements =
         chrome$l :
           height : 20
 
+  "toolbar" :
+    qxclass : "qx-aum-toolbar"  
+
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
     get :
