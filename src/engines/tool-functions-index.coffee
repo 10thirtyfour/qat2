@@ -242,8 +242,8 @@ module.exports = ->
       if testData.projectPath?
         testData.projectName = path.basename testData.projectPath
         # here can be implemented XML parce of project file. Currently using default paths
-        testData.projectSource = 'source'
-        testData.projectOutput = 'output'
+        testData.projectSource ?= 'source'
+        testData.projectOutput ?= 'output'
 
         testData.programExecutable = path.join( testData.projectPath , testData.projectOutput , path.basename(testData.programName) )
 
@@ -537,8 +537,8 @@ module.exports = ->
 
       testData.projectName = path.basename testData.projectPath
       # here can be implemented XML parce of project file. Currently using default paths
-      testData.projectSource = 'source'
-      testData.projectOutput = 'output'
+      testData.projectSource ?= 'source'
+      testData.projectOutput ?= 'output'
 
       testData.programExecutable = path.join(testData.projectPath , testData.projectOutput , path.basename(testData.programName))
       #looks like on win32 shown also for x64 platform
