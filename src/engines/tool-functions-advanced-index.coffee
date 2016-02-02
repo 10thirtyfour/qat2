@@ -149,14 +149,20 @@ module.exports = ->
 
       if testData.atomic then  testData.buildTestName ?= "atomic/#{testData.atomic}"
 
-      testData.buildTestName ?= "#{testData.projectName}/#{testData.programName}/build"
+      if testData.name
+        testData.buildTestName ?= "#{testData.projectName}/#{testData.name}/build"
+      else
+        testData.buildTestName ?= "#{testData.projectName}/#{testData.programName}/build"
 
       # storing test name and program name in test context for future use in WD
       @lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
-        testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
+        if testData.name
+          testData.deployTestName = "#{testData.projectName}/#{testData.name}/deploy"
+        else
+          testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
         #runner.toolfuns.uniformName(
         #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
         testData.buildMode = "rebuild"
