@@ -242,6 +242,7 @@ module.exports = ->
       if testData.projectPath?
         testData.projectName = path.basename testData.projectPath
         # here can be implemented XML parce of project file. Currently using default paths
+
         testData.projectSource ?= 'source'
         testData.projectOutput ?= 'output'
 
@@ -562,7 +563,15 @@ module.exports = ->
           rawxml=fs.readFileSync(@testData.fileName,'utf8')
           .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
           xml = new dom().parseFromString(rawxml)
-          filesToCopy = [@testData.programName]
+
+          prefix = @testData.projectSource.split("\\")
+          prefix.splice(0, 1)
+          prefix = prefix.join("\\")
+          if prefix.length > 0
+             prefix += "\\"
+             filesToCopy = [prefix+@testData.programName]
+          else
+            filesToCopy = [@testData.programName]
 
           if rawxml.indexOf('type="fgl-program"')!=-1
             makeTr2file = true
@@ -616,7 +625,7 @@ module.exports = ->
               runner.info "Failed to copy file : "+fn
           if makeTr2file
             tr2file+='</Resources>\n'
-            fs.writeFileSync(path.join(runner.opts.deployPath,@testData.programName+".tr2"),tr2file)
+            fs.writeFileSync(path.join(runner.opts.deployPath,prefix+@testData.programName+".tr2"),tr2file)
           exeName=path.join(runner.opts.deployPath,filesToCopy[0])
           if process.platform[0] is "l"
             fs.chmodSync( exeName , "755")
