@@ -200,17 +200,17 @@ elements =
   "scroll-bar" :
     qxclass : "qx-aum-scroll-bar"
     get :
-      orientation : (el) -> "if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-prop-horizontal').length) {return 'horizontal';}
-                             if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-prop-vertical').length) {return 'vertical';}"
+      orientation : (el) -> "if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-horizontal').length) {return 'horizontal';}
+                             if($('div.qx-aum-scroll-bar.qx-identifier-#{el}.qx-vertical').length) {return 'vertical';}"
       value : (el)->  """
                         var elem = $('div.qx-aum-scroll-bar.qx-identifier-#{el}');
                         var scaleRect = elem.find('div.qx-scb-scell')[0].getBoundingClientRect();
                         var handleRect = elem.find('div.qx-scroll-handler')[0].getBoundingClientRect();
-                        if (elem.hasClass('qx-prop-horizontal')) {
+                        if (elem.hasClass('qx-horizontal')) {
                           if (scaleRect.width === handleRect.width) {return 0;}
                           return Math.round(100 * (handleRect.left - scaleRect.left) / (scaleRect.width - handleRect.width));
                         }
-                        if (elem.hasClass('qx-prop-vertical')) {
+                        if (elem.hasClass('qx-vertical')) {
                           if (scaleRect.height === handleRect.height) {return 0;}
                           return Math.round(100 * (handleRect.top - scaleRect.top) / (scaleRect.height - handleRect.height));
                         }
@@ -375,7 +375,7 @@ elements =
           height : 20
 
   "toolbar" :
-    qxclass : "qx-aum-toolbar"  
+    qxclass : "qx-aum-toolbar"
 
   "toolbar-button" :
     qxclass : "qx-aum-toolbar-button"
