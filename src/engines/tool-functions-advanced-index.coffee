@@ -57,6 +57,7 @@ module.exports = ->
             name : formTestName
             data :
               kind : "xpath"
+              src : runner.relativeFn(@fileName)
             promise : ->
               @runner.Q("OK")
 
@@ -67,7 +68,7 @@ module.exports = ->
           failOnly: true
           data:
             kind: "xpath"
-            src : @fileName
+            src : runner.relativeFn(@fileName)
           testData: testData
           promise: runner.toolfuns.regXPath
         return ->
@@ -115,7 +116,7 @@ module.exports = ->
           #  name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           data:
             kind: "compile"+testData.ext.toLowerCase()
-            src : @fileName
+            src : runner.relativeFn(@fileName)
           testData: testData
           promise: runner.toolfuns.regCompile
         return ->
@@ -168,6 +169,7 @@ module.exports = ->
         testData.buildMode = "rebuild"
         @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
+
       unless testData.buildTestName of runner.tests
         if testData.deployTestName?
           runner.reg
@@ -216,6 +218,10 @@ module.exports = ->
       params.after     ?= @lastBuiltTestName ? []
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
+
+      params.data ?= {}
+      params.data.src ?= runner.relativeFn(@fileName)
+
       runner.regLD params
 
     RegWD : (obj, params) ->
