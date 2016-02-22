@@ -312,6 +312,11 @@ module.exports = ->
       )
 
       wd.addPromiseMethod(
+        "getConsoleText"
+        () ->
+          return yp @execute "return $('.qx-text-console .ui-widget-content textarea').val()"
+      )
+      wd.addPromiseMethod(
         "check"
         (el, options) ->
           if _.isString el
