@@ -412,7 +412,6 @@ module.exports = ->
             @testData.env)
 
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
-
         @testData.buildMode ?= @options.buildMode
         @testData.buildTimeout ?= @timeouts.build
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
@@ -600,12 +599,12 @@ module.exports = ->
           fn_Name = (xml,testData) ->
             libLocation = xpath.select('//fglBuildTarget/libraries/library/@location',xml)
             for fn,i in xpath.select('//fglBuildTarget/libraries/library/@name',xml)
-              libLoc = libLocation[i].value.toString()+"\\"
-              fileName = testData.projectPath + "\\source\\" + libLoc + "\\."  + fn.value + ".fgltarget"
+              libLoc = libLocation[i].value.toString()+"\/"
+              fileName = testData.projectPath + "\/source\/" + libLoc + "\/."  + fn.value + ".fgltarget"
               rawxml=fs.readFileSync(fileName,'utf8')
               .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
               xml = new dom().parseFromString(rawxml)
-              filesToCopy.push(libLoc + "\\"+fn.value+".4a")
+              filesToCopy.push(libLoc + "\/"+fn.value+".4a")
               parseFilesToCopy(xml,filesToCopy)
               fn_Name(xml,testData)
 
