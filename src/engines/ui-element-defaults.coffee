@@ -142,7 +142,7 @@ elements =
         chrome$l :
           height : 20
       orientation : (el) -> """
-                                if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-orientation-vertical')) {
+                                if($('div.qx-aum-progress-bar.qx-identifier-#{el}').hasClass('qx-vertical')) {
                                   return 'vertical';
                                   }
                                 return 'horizontal';
@@ -150,7 +150,7 @@ elements =
       value : (el) -> """
                       var obj = $('div.qx-aum-progress-bar.qx-identifier-#{el}');
                       var attr = 'width';
-                      if (obj.hasClass('qx-orientation-vertical')) { attr = 'height'; };
+                      if (obj.hasClass('qx-vertical')) { attr = 'height'; };
 
                       var logicVal = parseInt("0"+obj.children('div.ui-progressbar').attr('aria-valuenow'));
                       var physicVal = parseInt("0"+obj.find('div > div.ui-progressbar-value')[0].style[attr].slice(0,-1));
