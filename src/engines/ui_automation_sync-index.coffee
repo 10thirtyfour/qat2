@@ -33,9 +33,10 @@ module.exports = ()->
     #console.log prog
     if typeof prog.child.kill is "function" then prog.child.kill('SIGKILL')
     n = path.basename(prog.name,",exe")+".exe"
+    runner.trace "taskkill /F /T /IM #{n}"
     exec "taskkill /F /T /IM #{n}"
+    runner.trace "taskkill /F /T /IM qrun.exe"
     exec "taskkill /F /T /IM qrun.exe"
-    #exec "taskkill /F /T /IM #{name}.exe"
 
   getWindowList = (obj)->
     addToCloseList = (w)->

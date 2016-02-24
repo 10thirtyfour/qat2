@@ -560,6 +560,7 @@ module.exports = ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
                     testContext.aggregateError=(false)
+                    #console.log testContext.browser
                     try
                       binfo.duration.startTime = new Date()
                       binfo.syn.call testContext
@@ -570,8 +571,7 @@ module.exports = ->
                         if process.platform[0] is "w"
                           runner.trace "taskkill /F /T /IM #{cmd}.exe"
                           exec "taskkill /F /T /IM #{cmd}.exe"
-                          #else
-                          #exec("pkill -9 #{cmd}")
+
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message

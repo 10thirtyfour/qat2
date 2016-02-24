@@ -125,8 +125,9 @@ allBelowIsDisabled = ()->
           for prog in @progs
             if typeof prog.kill is "function" then prog.kill('SIGKILL')
           for name in @progNames
-            #console.log "taskkill /F /T /IM #{name}"
+            runner.trace "taskkill /F /T /IM #{name}"
             exec "taskkill /F /T /IM #{name}"
+            runner.trace "taskkill /F /T /IM #{name}.exe"
             exec "taskkill /F /T /IM #{name}.exe"
 
           res
