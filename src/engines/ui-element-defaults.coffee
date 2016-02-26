@@ -134,6 +134,9 @@ elements =
     qxclass  : "qx-aum-menu-separator"
     selector : (el)-> "return ($('.qx-identifier-#{el}.qx-aum-menu-separator').length > 0)"
 
+  "place-holder" :
+    qxclass : "qx-aum-place-holder"
+
   "progress-bar" :
     qxclass : "qx-aum-progress-bar"
     get :
