@@ -28,7 +28,7 @@ module.exports = ->
       
     browserList :
       chrome: (true)
-      edge: (true)
+      #edge: (true)
       #ie: (true)
 
     dbprofiles:

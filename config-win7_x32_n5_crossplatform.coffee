@@ -28,5 +28,5 @@ module.exports = ->
 
     common:
       timeouts:
-        wd: 180000
+        wd: 18000
 
