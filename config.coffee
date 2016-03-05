@@ -22,24 +22,24 @@ module.exports = ->
     defaultAssemblyPath:
       win_ia32: "C:/Program Files/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.5/"
       win_x64:  "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.5/"
-    
+
     common:
       timeouts:
         line: 10000
         run: 60000
         compile: 30000
         build: 60000
-        wd: 100000
+        wd: 60000
 
       options:
         buildMode: "rebuild"
-        databaseProfile: "informix" 
+        databaseProfile: "informix"
         env:
           QX_QAT: 1
           DBDATE: "MDY4/"
 
     headless:
-      QX_HEADLESS_MODE: 1  
+      QX_HEADLESS_MODE: 1
       QX_REFRESH_LEVEL: 2
 
     logger:
@@ -52,7 +52,7 @@ module.exports = ->
     globLoader:
       root: "./tests"
       disable:
-        file: 
+        file:
           pattern: ["**/*-perf-rest.tlog","**/output/**"]
 
     browserList :
@@ -60,10 +60,10 @@ module.exports = ->
       firefox: (false)
       ie: (false)
       edge: (false)
-      
-      
+
+
     dbprofiles:
-      informix:         
+      informix:
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"
@@ -76,22 +76,20 @@ module.exports = ->
 
       "mssql-odbc":
         LYCIA_DB_DRIVER: "odbc"
-        SQLSERVER:"DSN=msodbc;Uid=informix;Pwd=default2375;" 
+        SQLSERVER:"DSN=msodbc;Uid=informix;Pwd=default2375;"
 
       "mysql-odbc":
         LYCIA_DB_DRIVER: "odbc"
         ODBC_DSN: "myodbc"
-      
+
       "pgsql-odbc":
         LYCIA_DB_DRIVER: "odbc"
 
     inetEnvironment:
       inet_var1: "var1_value"
       inet_var1_nested: "inherits_from_%inet_var1%"
-  
+
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @seleniumServerPort = 9515
   @qatDefaultInstance = "default-1889"
   @tempPath = "./tests"
-
-
