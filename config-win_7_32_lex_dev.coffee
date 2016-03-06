@@ -12,7 +12,7 @@ module.exports = ->
 
     logger:
       disable:
-        couchdb: false
+        couchdb: true
       transports:
         console:
           level: "info"

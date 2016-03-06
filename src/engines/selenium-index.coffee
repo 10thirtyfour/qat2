@@ -527,12 +527,12 @@ module.exports = ->
           act.call t
 
       runner.regWD = (info) ->
-        wdTimeout = @opts.common.timeouts.wd
+        info.timeout ?= @opts.common.timeouts.wd
         d = info.data ?= {}
         #_.merge d, kind: "wd"
         info.enable = _.merge {}, plugin.enable, info.enable
         for i,v of plugin.browsers when info.enable.browser[i]
-          #wdTimeout = @opts.common.timeouts.wd[i]
+          #info.timeout = @opts.common.timeouts.wd[i]
           do (i,v) =>
             binfo = _.clone info
             binfo.duration ?= {}
@@ -580,7 +580,7 @@ module.exports = ->
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0
                       throw testContext.errorMessage
-                    ).timeout(wdTimeout)
+                    ).timeout(info.timeout)
               else
                 promise = ->
 
