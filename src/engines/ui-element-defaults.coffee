@@ -265,8 +265,8 @@ elements =
       value: (el) -> "return parseInt($('div.qx-identifier-#{el} > input').val());"
       defaults :
         height : 20
-        chrome$l :
-          height : 20
+        firefox$w :
+          height : 24
     set :
       value : (el,val)->
         # setValue with mouse
