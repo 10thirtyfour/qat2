@@ -43,19 +43,19 @@ module.exports = ->
     enable:
       browser: runner.opts.browserList
     links:
-      chrome: "http://localhost:9515/"
-      ie: "http://localhost:5555/"
+      chrome: "http://localhost:9515/"  
       edge: "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
+      ie: "http://localhost:5555/"
     browsers:
       chrome:
         browserName: "chrome"
+      edge:
+        browserName: "edge"
       firefox:
         browserName: "firefox"
       ie:
         browserName: "ie"
-      edge:
-        browserName: "edge"
       safari:
         browserName: "safari"
       opera:
@@ -101,17 +101,13 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           timeout ?= 3000
-          if @qx$browserName != "edge"
-            @waitForElementByCssSelector("#qx-application-restart",timeout))
+          @waitForElementByCssSelector("#qx-application-restart",timeout))
 
 
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          if @qx$browserName == "edge"
-            if yp(@execute "return $('#{getSelector(el)}').length") > 0 then return (true) else return (false)
-          else
-            yp(@elementByCssSelectorIfExists(getSelector(el)))?
+          yp(@elementByCssSelectorIfExists(getSelector(el)))?
           )
 
       wd.addPromiseMethod(

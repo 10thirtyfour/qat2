@@ -2,19 +2,17 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-  
-    common:
-      options:
-        buildMode: "rebuild"
-        databaseProfile: "informix" 
-        env:
-          DBDATE: "MDY4/"
 
     common:
       options:
         databaseProfile: "informix"  
     
-    scenario: "dev"
+    scenario: "default"
+
+    browserList :
+      chrome: (true)
+      edge: (true)
+      ie: (true)
 
     logger:
       disable:
@@ -22,14 +20,12 @@ module.exports = ->
       transports:
         console:
           level: "info"
-          
     globLoader:
       root: "./tests"
-      
-    browserList :
-      chrome: (true)
-      #edge: (true)
-      #ie: (true)
+
+    defaultAssemblyPath:
+      win_ia32: "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6.1/"
+      win_x64:  "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6.1/"
 
     dbprofiles:
       informix:         
@@ -39,4 +35,3 @@ module.exports = ->
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
         DBDATE: "MDY4/"
-

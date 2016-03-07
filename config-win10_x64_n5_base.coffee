@@ -22,6 +22,10 @@ module.exports = ->
     globLoader:
       root: "./tests"
 
+    defaultAssemblyPath:
+      win_ia32: "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6.1/"
+      win_x64:  "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6.1/"
+
     dbprofiles:
       informix:         
         LYCIA_DB_DRIVER: "informix"
