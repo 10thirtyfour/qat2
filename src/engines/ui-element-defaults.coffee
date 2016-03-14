@@ -178,6 +178,8 @@ elements =
         height : 24
         ie$w :
           height : 23
+        firefox$w :
+          height : 20
         chrome$l :
           height : 22
 
@@ -329,7 +331,7 @@ elements =
       defaults :
         height : 38
         firefox$w :
-          height : 55
+          height : 48
         chrome$l :
           height : 34
      set :
