@@ -88,6 +88,7 @@ module.exports = ->
     inetEnvironment:
       inet_var1: "var1_value"
       inet_var1_nested: "inherits_from_%inet_var1%"
+      QXDEBUG: "zA"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @seleniumServerPort = 9515
