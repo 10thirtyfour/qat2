@@ -10,9 +10,9 @@ module.exports = ->
         databaseProfile: "informix"
 
     globLoader:
-      disable:
-        file:
-          pattern: ["**/*-perf-rest.tlog"]
+      only
+        file
+          pattern: "**/*+(-wd-test|-qbuild-test).+(tlog|coffee)"
 
     browserList :
       chrome: (false)

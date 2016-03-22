@@ -528,9 +528,10 @@ module.exports = ->
         d = info.data ?= {}
         #_.merge d, kind: "wd"
         info.enable = _.merge {}, plugin.enable, info.enable
+        b = {}
         for i,v of plugin.browsers when info.enable.browser[i]
-          #info.timeout = @opts.common.timeouts.wd[i]
-          do (i,v) =>
+          b.first?=i
+          do (i,v,b) =>
             binfo = _.clone info
             binfo.duration ?= {}
             binfo.data = _.clone info.data
@@ -541,11 +542,11 @@ module.exports = ->
               if binfo.syn?
                 binfo.name = "#{info.name}/#{i}"
                 if binfo.name.substring(0,7) is "atomic/"
-                  if binfo.data.kind is "wd-chrome"
+                  if binfo.data.kind is "wd-"+b.first
                     binfo.name = binfo.name.split("/")[0]+"/"+ binfo.name.split("/")[1]
                   else
                     return (true)
-                unless binfo.data.kind is "wd-chrome"
+                unless binfo.data.kind is "wd-"+b.first
                   if binfo.after.indexOf(_.tempName)==-1 then binfo.after = [ _.tempName ]
                 _.tempName = binfo.name
                 #console.log binfo.data
