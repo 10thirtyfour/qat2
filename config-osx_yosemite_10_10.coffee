@@ -19,7 +19,7 @@ module.exports = ->
       firefox: (false)
       ie: (false)
       safari: true
-      
+
     logger:
       disable:
         couchdb: false
