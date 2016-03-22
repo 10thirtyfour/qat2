@@ -285,7 +285,7 @@ module.exports = ->
           exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout? or runner.opts.skip_lycia
-          unless runner.sysinfo.skip_lycia then runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
+          unless runner.opts.skip_lycia then runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
           runner.spammer "message", message: """
             !! #{runner.sysinfo.starttimeid}
             QAT started on #{runner.sysinfo.host}
