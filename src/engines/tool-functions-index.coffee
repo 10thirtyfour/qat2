@@ -279,7 +279,7 @@ module.exports = ->
 
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true)
       .then( (envtext)->
-        runner.environ = JSON.parse(envtext.toString('utf8'))
+        runner.environ = JSON.parse(envtext.toString('utf8')) if runner.opts.skip_lycia?
         unless runner.opts.skip_lycia
           unless runner.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR"
           exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
