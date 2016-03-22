@@ -10,8 +10,8 @@ module.exports = ->
         databaseProfile: "informix"
 
     globLoader:
-      only
-        file
+      only:
+        file:
           pattern: "**/*+(-wd-test|-qbuild-test).+(tlog|coffee)"
 
     browserList :
