@@ -301,8 +301,8 @@ module.exports = ->
         inetEnvSetDatabase())
       .catch( (err)->
         runner.spammer "message", message:"!! #{runner.sysinfo.starttimeid}\nQAT failed to start on #{runner.sysinfo.host}\nFailed to read environment!"
-        _this.fail "Unable to read environ : "+err.message
         unless runner.opts.skip_lycia
+          _this.fail "Unable to read environ : "+err.message
           throw "Unable to read environ : "+err.message
       )
 
