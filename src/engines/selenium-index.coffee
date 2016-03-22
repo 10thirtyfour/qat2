@@ -43,10 +43,11 @@ module.exports = ->
     enable:
       browser: runner.opts.browserList
     links:
-      chrome: "http://localhost:9515/"  
+      chrome: "http://localhost:9515/"
       edge: "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
       ie: "http://localhost:5555/"
+      safari: "http://localhost:58435/wd/"
     browsers:
       chrome:
         browserName: "chrome"

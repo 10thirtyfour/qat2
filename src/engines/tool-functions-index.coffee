@@ -38,7 +38,8 @@ module.exports = ->
       fs.writeFileSync(inetEnvFn,inetEnv)
 
     catch e
-      runner.logger.info "Failed to read listener.xml/inet.env"
+      unless runner.opts.skip_lycia
+        runner.logger.info "Failed to read listener.xml/inet.env"
 
   lineFromStream = (stream) ->
     options =
@@ -263,7 +264,6 @@ module.exports = ->
         platform : process.platform.substring(0,3)+'_'+process.arch
         ver : runner.os.release()
         user : process.env.USER ? process.env.USERNAME
-        build : "unknown"
         scenario : runner.opts.scenario
         database : @options.databaseProfile
       if runner.opts.notes? then runner.sysinfo.notes = runner.opts.notes
@@ -271,6 +271,7 @@ module.exports = ->
 
       runner.opts.environCommand?=runner.opts.environCommands[runner.sysinfo.platform]
       runner.opts.deployPath?=runner.opts.defaultDeployPath[runner.sysinfo.platform]
+      runner.sysinfo.build = runner.opts.build if runner.opts.build?
 
       @info runner.sysinfo.platform + " " + runner.sysinfo.ver
 
@@ -279,11 +280,12 @@ module.exports = ->
       exitPromise( spawn(command,[cc,args.join(" ")]), returnOutput:true)
       .then( (envtext)->
         runner.environ = JSON.parse(envtext.toString('utf8'))
-        unless runner.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR"
-        exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
+        unless runner.opts.skip_lycia
+          unless runner.environ.LYCIA_DIR? then throw new Error "LYCIA_DIR"
+          exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
-        if qfglout?
-          runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
+        if qfglout? or runner.opts.skip_lycia
+          runner.sysinfo.build ?= qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
           runner.spammer "message", message: """
             !! #{runner.sysinfo.starttimeid}
             QAT started on #{runner.sysinfo.host}
@@ -300,7 +302,8 @@ module.exports = ->
       .catch( (err)->
         runner.spammer "message", message:"!! #{runner.sysinfo.starttimeid}\nQAT failed to start on #{runner.sysinfo.host}\nFailed to read environment!"
         _this.fail "Unable to read environ : "+err.message
-        throw "Unable to read environ : "+err.message
+        unless runner.opts.skip_lycia
+          throw "Unable to read environ : "+err.message
       )
 
     regExecPromise: ->
@@ -410,7 +413,8 @@ module.exports = ->
             @options.env,
             runner.opts.dbprofiles[@options.databaseProfile],
             @testData.env)
-
+        if runner.opts.skip_lycia
+          return "Build OK."
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
         @testData.buildMode ?= @options.buildMode
         @testData.buildTimeout ?= @timeouts.build
@@ -559,6 +563,8 @@ module.exports = ->
     regDeploy : ->
       yp.frun( =>
         try
+          if runner.opts.skip_lycia
+            return "Deploy OK."
           rawxml=fs.readFileSync(@testData.fileName,'utf8')
           .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
           xml = new dom().parseFromString(rawxml)

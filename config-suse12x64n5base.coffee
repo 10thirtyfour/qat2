@@ -4,11 +4,11 @@ module.exports = ->
   _.merge opts,
     common:
       options:
-        databaseProfile: "informix" 
+        databaseProfile: "informix"
 
     globLoader:
       disable:
-        file: 
+        file:
           pattern: ["**/*-perf-rest.tlog"]
 
     logger:
@@ -19,7 +19,7 @@ module.exports = ->
           host: "10.38.57.55"
 
     dbprofiles:
-      informix:         
+      informix:
           LYCIA_DB_DRIVER: "informix"
           INFORMIXSERVER: "querix_test"
           LOGNAME: "informix"
@@ -29,5 +29,3 @@ module.exports = ->
           LD_LIBRARY_PATH: "/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:/opt/Querix/Lycia/lib:/opt/Querix/Lycia/axis2/lib:/opt/Querix/Common/lib:/opt/Querix/lycia-desktop:/usr/lib64/jvm/jdk1.8.0_25/jre/lib/amd64/server:"
 
     scenario: "default"
-
-

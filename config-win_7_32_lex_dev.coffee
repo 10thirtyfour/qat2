@@ -2,7 +2,6 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-
     common:
       options:
         buildMode: "rebuild"
@@ -35,3 +34,8 @@ module.exports = ->
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+
+  @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
+  @seleniumServerPort = 9515
+  @qatDefaultInstance = "default-1889"
+  @tempPath = "./tests"
