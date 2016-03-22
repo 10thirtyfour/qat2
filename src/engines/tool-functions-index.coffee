@@ -285,7 +285,7 @@ module.exports = ->
           exitPromise( spawn( path.join(runner.environ.LYCIA_DIR,"bin","qfgl"),["-V"], env : runner.environ ), returnOutput:true))
       .then( (qfglout)->
         if qfglout? or runner.opts.skip_lycia
-          runner.sysinfo.build ?= qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
+          if runner.sysinfo.build? then runner.sysinfo.build = qfglout.toString('utf8').split("\n")[2].substring(7).split("\r")[0]
           runner.spammer "message", message: """
             !! #{runner.sysinfo.starttimeid}
             QAT started on #{runner.sysinfo.host}
@@ -301,9 +301,8 @@ module.exports = ->
         inetEnvSetDatabase())
       .catch( (err)->
         runner.spammer "message", message:"!! #{runner.sysinfo.starttimeid}\nQAT failed to start on #{runner.sysinfo.host}\nFailed to read environment!"
-        unless runner.opts.skip_lycia
-          _this.fail "Unable to read environ : "+err.message
-          throw "Unable to read environ : "+err.message
+        _this.fail "Unable to read environ : "+err.message
+        throw "Unable to read environ : "+err.message
       )
 
     regExecPromise: ->
