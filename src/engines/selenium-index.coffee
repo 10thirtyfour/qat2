@@ -63,7 +63,7 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: (true)
+        safari: (false)
       invoke:
         firefox: (false)
     promise: ->
@@ -75,6 +75,7 @@ module.exports = ->
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
+          @waitForElementByCssSelector('[data-qx-state="idle"]', timeout).sleep(1000) if @qx$browserName == "safari"
           )
 
       wd.addPromiseMethod(
@@ -93,8 +94,10 @@ module.exports = ->
           if params.args then programUrl+=params.args+"&cache=check&timeout=0&skipunload" else programUrl+="?cache=check&timeout=0&skipunload"
 
           if params.wait
+            return @get(programUrl).waitIdle(30000).sleep(5000) if @qx$browserName == "safari"
             return @get(programUrl).waitIdle(30000).sleep(500)
           else
+            return @get(programUrl).sleep(5000) if @qx$browserName == "safari"
             return @get(programUrl).sleep(500)
           )
 
