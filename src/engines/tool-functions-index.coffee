@@ -269,6 +269,9 @@ module.exports = ->
       if runner.opts.notes? then runner.sysinfo.notes = runner.opts.notes
       if process.env.hasOwnProperty('ProgramFiles(x86)') then runner.sysinfo.platform="win_x64"
 
+      for brName, brState of runner.opts.browserList
+        runner.opts.browserFirst ?= brName if brState
+
       runner.opts.environCommand?=runner.opts.environCommands[runner.sysinfo.platform]
       runner.opts.deployPath?=runner.opts.defaultDeployPath[runner.sysinfo.platform]
       runner.sysinfo.build = runner.opts.build if runner.opts.build?
