@@ -96,10 +96,9 @@ module.exports = ->
           if params.args then programUrl+=params.args+"&cache=check&timeout=0&skipunload" else programUrl+="?cache=check&timeout=0&skipunload"
 
           if params.wait
-            return @get(programUrl).waitIdle(30000).sleep(5000) if @qx$browserName == "safari"
-            return @get(programUrl).waitIdle(30000).sleep(500)
+            return @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
+            return @get(programUrl).waitIdle().sleep(500)
           else
-            return @get(programUrl).sleep(5000) if @qx$browserName == "safari"
             return @get(programUrl).sleep(500)
           )
 
