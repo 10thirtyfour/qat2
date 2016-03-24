@@ -74,8 +74,10 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
-          @waitForElementByCssSelector('[data-qx-state="idle"]', timeout).sleep(1000) if @qx$browserName == "safari"
+          #@waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
+          #@sleep(300)
+          @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(300)
+          #.sleep(1000) # if @qx$browserName == "safari"
           )
 
       wd.addPromiseMethod(

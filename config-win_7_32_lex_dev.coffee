@@ -19,6 +19,12 @@ module.exports = ->
     globLoader:
       root: "./tests"
 
+    tlogLoader:
+      disabled: false
+
+    advancedLoader:
+      disabled: false
+
     browserList :
       #chrome: (false)
       firefox: (true)
