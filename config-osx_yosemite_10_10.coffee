@@ -14,6 +14,11 @@ module.exports = ->
         file:
           pattern: "**/*+(-wd-test|-qbuild-test).+(tlog|coffee)"
 
+    common:
+      timeouts:
+        wd: 120000
+        wait: 30000
+        
     browserList :
       chrome: (false)
       firefox: (false)

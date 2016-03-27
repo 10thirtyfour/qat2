@@ -5,14 +5,19 @@ module.exports = ->
 
     common:
       options:
-        databaseProfile: "informix"  
-    
+        databaseProfile: "informix"
+
     scenario: "default"
 
     browserList :
       chrome: (true)
       edge: (true)
 
+    common:
+      timeouts:
+        wd: 120000
+        wait: 30000
+        
     logger:
       disable:
         couchdb: false
@@ -27,7 +32,7 @@ module.exports = ->
       win_x64:  "C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6.1/"
 
     dbprofiles:
-      informix:         
+      informix:
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"

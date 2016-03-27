@@ -31,6 +31,7 @@ module.exports = ->
         compile: 30000
         build: 60000
         wd: 60000
+        wait: 10000
 
       options:
         buildMode: "rebuild"

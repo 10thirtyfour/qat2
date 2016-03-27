@@ -2,25 +2,25 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-    
+
     scenario: "Crossbrowsers"
     common:
       options:
         buildMode: "rebuild"
-        databaseProfile: "informix" 
+        databaseProfile: "informix"
         env:
           DBDATE: "MDY4/"
-          
+
     logger:
       disable:
         couchdb: false
       transports:
         console:
           level: "info"
-          
+
     globLoader:
       root: "./tests"
-      
+
     browserList :
       chrome: (true)
       firefox: (true)
@@ -28,5 +28,5 @@ module.exports = ->
 
     common:
       timeouts:
-        wd: 60000
-
+        wd: 120000
+        wait: 30000

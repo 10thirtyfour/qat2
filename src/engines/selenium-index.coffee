@@ -37,7 +37,7 @@ module.exports = ->
   @reg
     name: "wd"
     # CFGOPT: default wait timeout
-    defaultWaitTimeout: 10000
+    defaultWaitTimeout: runner.opts.common.timeouts.wait
     setup: (true)
     before: "globLoader"
     enable:
