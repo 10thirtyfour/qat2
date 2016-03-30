@@ -26,8 +26,8 @@ module.exports = ->
       disabled: false
 
     browserList :
-      #chrome: (false)
-      firefox: (true)
+      chrome: (false)
+      #firefox: (true)
       ie: (true)
     common:
       timeouts:
@@ -40,6 +40,9 @@ module.exports = ->
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+
+    inetEnvironment:
+      QXDEBUG: "zA"
 
   @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
   @seleniumServerPort = 9515
