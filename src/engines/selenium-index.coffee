@@ -63,7 +63,7 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: (true)
+        safari: (false)
       invoke:
         firefox: (false)
     promise: ->
