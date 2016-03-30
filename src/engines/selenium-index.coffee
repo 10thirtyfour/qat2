@@ -195,8 +195,9 @@ module.exports = ->
         (val) ->
           if plugin.hacks.justType[@qx$browserName]
             el = yp  @elementByCss(".qx-focused .qx-text")
-            @remoteCall(el,"html",val)
-            @remoteCall(el,"val",val)
+            #@remoteCall(el,"html",val)
+            #@remoteCall(el,"val",val)
+            @elementByCss(".qx-focused .qx-text").type(val)
           else
             @elementByCss(".qx-focused .qx-text").type(val))
 
