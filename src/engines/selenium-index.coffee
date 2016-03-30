@@ -63,7 +63,7 @@ module.exports = ->
         browserName: "opera"
     hacks:
       justType:
-        safari: (false)
+        safari: (true)
       invoke:
         firefox: (false)
     promise: ->
@@ -193,9 +193,10 @@ module.exports = ->
       wd.addPromiseMethod(
         "justType",
         (val) ->
-          unless plugin.hacks.justType[@qx$browserName]
+          if plugin.hacks.justType[@qx$browserName]
             el = yp  @elementByCss(".qx-focused .qx-text")
             @remoteCall(el,"html",val)
+            @remoteCall(el,"val",val)
           else
             @elementByCss(".qx-focused .qx-text").type(val))
 
