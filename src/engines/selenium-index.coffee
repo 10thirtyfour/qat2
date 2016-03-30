@@ -192,11 +192,11 @@ module.exports = ->
         -> @then((e) -> e.elementByCss ".qx-text"))
       wd.addPromiseMethod(
         "justType",
-        if plugin.hacks.justType[@qx$browserName]
-          (val) -> @elementByCss(".qx-focused .qx-text").html(val)
-        else
-          (val) -> @elementByCss(".qx-focused .qx-text").type(val)
-        )
+        (val) ->
+          if plugin.hacks.justType[@qx$browserName]
+            @elementByCss(".qx-focused .qx-text").html(val)
+          else
+            @elementByCss(".qx-focused .qx-text").type(val))
 
       wd.addPromiseMethod(
         "invoke",
