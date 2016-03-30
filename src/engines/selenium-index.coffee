@@ -193,8 +193,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "justType",
         (val) ->
-          if plugin.hacks.justType[@qx$browserName]
-            @elementByCss(".qx-focused .qx-text").html(val)
+          unless plugin.hacks.justType[@qx$browserName]
+            el = yp  @elementByCss(".qx-focused .qx-text")
+            @remoteCall(el,"html",val)
           else
             @elementByCss(".qx-focused .qx-text").type(val))
 
