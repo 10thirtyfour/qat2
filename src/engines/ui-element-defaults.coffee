@@ -329,7 +329,7 @@ elements =
       text: (el) -> "return $('.qx-identifier-#{el} .qx-text').val()"
       value : (el) -> "return $('.qx-identifier-#{el} textarea').val()"
       defaults :
-        height : 38
+        height : 34
         firefox$w :
           height : 48
         chrome$l :
