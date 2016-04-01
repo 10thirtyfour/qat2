@@ -313,10 +313,10 @@ module.exports = ->
         "getFontSize"
         () ->
           s = {}
-          s_leng = yp @execute "return $('.qx-font-test span:nth-child(3)').text().length"
-          s.width = yp @execute "return $('.qx-font-test span:nth-child(3)')[0].getBoundingClientRect().width"
-          s.height = yp @execute "return $('.qx-font-test span:nth-child(3)')[0].getBoundingClientRect().height"
-          s.width = s.width/s_leng
+          s_leng = yp @execute "return $('.qx-font-test span:nth-child(4)').text().length"
+          s.width = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().width"
+          s.height = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().height"
+          s.width = (s.width)/s_leng
           return s
       )
 
