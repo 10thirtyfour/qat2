@@ -179,7 +179,7 @@ elements =
         ie$w :
           height : 23
         firefox$w :
-          height : 20
+          height : 24
         chrome$l :
           height : 22
 
@@ -329,11 +329,11 @@ elements =
       text: (el) -> "return $('.qx-identifier-#{el} .qx-text').val()"
       value : (el) -> "return $('.qx-identifier-#{el} textarea').val()"
       defaults :
-        height : 34
+        height : 38
         firefox$w :
-          height : 48
+          height : 52
         chrome$l :
-          height : 34
+          height : 38
      set :
        value : (el,val)->
          @elementByCss(".qx-identifier-#{el}.qx-aum-text-area").click()
