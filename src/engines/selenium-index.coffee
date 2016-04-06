@@ -65,12 +65,8 @@ module.exports = ->
       justType:
         safari: (true)
       invoke:
-        chrome: (true)
-        edge: (true)
-        firefox: (true)
-        ie: (true)
-        safari: (true)
-        opera: (true)
+        firefox: (false)
+
     promise: ->
 
       plugin = @
