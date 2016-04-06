@@ -317,6 +317,19 @@ module.exports = ->
           s.width = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().width"
           s.height = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().height"
           s.width = (s.width)/s_leng
+          s.w = s.width
+          s.h = s.height
+          return s
+      )
+
+      wd.addPromiseMethod(
+        "getCellSize"
+        () ->
+          s = {}
+          s.width = yp @execute "return querix.rjqui.getCellWidth()"
+          s.height = yp @execute "return querix.rjqui.getCellHeight()"
+          s.w = s.width
+          s.h = s.height
           return s
       )
 
