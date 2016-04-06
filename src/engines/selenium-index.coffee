@@ -75,10 +75,7 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          #@waitForElementByCssSelector('.body:not(.qx-app-busy)', timeout).sleep(300)
-          #@sleep(300)
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(300)
-          #.sleep(1000) # if @qx$browserName == "safari"
           )
 
       wd.addPromiseMethod(
@@ -94,7 +91,7 @@ module.exports = ->
           command += ".exe" if process.platform[0] is "w"
           programUrl = runner.opts.lyciaWebUrl + "run/" + params.instance + "/" + command
 
-          if params.args then programUrl+=params.args+"&cache=check&timeout=0&skipunload" else programUrl+="?cache=check&timeout=0&skipunload"
+          if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
 
           if params.wait
             return @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
