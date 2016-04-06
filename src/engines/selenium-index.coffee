@@ -64,6 +64,8 @@ module.exports = ->
     hacks:
       justType:
         safari: (true)
+      resize:
+        safari: (true)
       invoke:
         firefox: (false)
 
@@ -140,6 +142,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
+          if plugin.hacks.resize[@qx$browserName] then return true
           h?="se"
           yp @setDialogID(wnd,"win_qat")
           r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-#{h}")
@@ -156,6 +159,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "moveWindow"
         (wnd,dx,dy) ->
+          if plugin.hacks.resize[@qx$browserName] then return true
           yp @setDialogID(wnd,"win_qat")
           r = yp @execute "return $('.qx-identifier-win_qat > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
@@ -170,6 +174,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "resizeElement"
         (el,dx,dy,h) ->
+          if plugin.hacks.resize[@qx$browserName] then return true
           h?="e"
           r = yp @execute "return $('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
