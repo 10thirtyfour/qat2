@@ -65,6 +65,7 @@ module.exports = ->
       justType:
         safari: (true)
       resize:
+        chrome: (false)
         safari: (true)
       invoke:
         firefox: (false)
@@ -142,7 +143,14 @@ module.exports = ->
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
-          if plugin.hacks.resize[@qx$browserName] then return true
+          if plugin.hacks.resize[@qx$browserName]
+            yp @setDialogID(wnd,"win_qat")
+            dlSize = yp @getRect("win_qat")
+            wbSize = yp @getRect("win_qat .qx-window-border")
+            yp @remoteCall("win_qat","css",{"width":"#{dlSize.width+dx}px";"height":"#{dlSize.height+dy}px";})
+            yp @remoteCall("win_qat .qx-window-border","css",{"width":"#{wbSize.width+dx}px";"height":"#{wbSize.height+dy}px";})
+            yp @waitIdle()
+            return (true)
           h?="se"
           yp @setDialogID(wnd,"win_qat")
           r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-#{h}")
