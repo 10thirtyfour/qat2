@@ -77,7 +77,7 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "waitIdle",
-        (timeout) ->
+        (timeout,idleTimeout) ->
           timeout ?= plugin.defaultWaitTimeout
           idleTimeout ?= plugin.defaultIdleTimeout
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
