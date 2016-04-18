@@ -38,6 +38,7 @@ module.exports = ->
     name: "wd"
     # CFGOPT: default wait timeout
     defaultWaitTimeout: runner.opts.common.timeouts.wait
+    defaultIdleTimeout: runner.opts.common.timeouts.idle
     setup: (true)
     before: "globLoader"
     enable:
@@ -78,7 +79,8 @@ module.exports = ->
         "waitIdle",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(300)
+          idleTimeout ?= plugin.defaultIdleTimeout
+          @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
           )
 
       wd.addPromiseMethod(
@@ -100,7 +102,7 @@ module.exports = ->
             return @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
             return @get(programUrl).waitIdle().sleep(500)
           else
-            return @get(programUrl).sleep(500)
+            return @get(programUrl).sleep(1000)
           )
 
       wd.addPromiseMethod(

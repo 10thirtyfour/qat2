@@ -16,9 +16,10 @@ module.exports = ->
 
     common:
       timeouts:
-        wd: 120000
+        wd: 180000
         wait: 30000
-        
+        idle: 1500
+
     browserList :
       chrome: (false)
       firefox: (false)
