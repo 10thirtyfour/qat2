@@ -3,6 +3,8 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     common:
+      timeouts:
+        wd: 100000
       options:
         buildMode: "rebuild"
         databaseProfile: "informix"
@@ -26,12 +28,10 @@ module.exports = ->
       disabled: false
 
     browserList :
-      chrome: (false)
+      chrome: (true)
       #firefox: (true)
-      ie: (true)
-    common:
-      timeouts:
-        wd: 1000000
+      #ie: (true)
+
 
     dbprofiles:
       informix:
