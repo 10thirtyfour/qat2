@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     version : 2.51
-    lyciaWebUrl : "http://localhost:9090/LyciaWeb/"
+    appHost: "localhost"
     qatDefaultInstance : "default-1889"
     tempPath : "./tests"
 
@@ -91,8 +91,3 @@ module.exports = ->
     inetEnvironment:
       inet_var1: "var1_value"
       inet_var1_nested: "inherits_from_%inet_var1%"
-
-  @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
-  @seleniumServerPort = 9515
-  @qatDefaultInstance = "default-1889"
-  @tempPath = "./tests"

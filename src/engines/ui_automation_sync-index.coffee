@@ -192,7 +192,8 @@ module.exports = ()->
       name?=@testName
 
       LDcmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
-      webUrl = url.parse(opts.lyciaWebUrl).host
+      lyciaWebUrl = "http://"+opts.appHost+":9090/LyciaWeb/"
+      webUrl = url.parse(lyciaWebUrl).host
       params = [
         "--server=#{webUrl}",
         "--instance=#{opts.qatDefaultInstance}",

@@ -143,7 +143,8 @@ allBelowIsDisabled = ()->
       @progNames.push(prog)
       @promise = Q( @promise ).then( (->
         cmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
-        wurl = url.parse(opts.lyciaWebUrl).host
+        lyciaWebUrl = "http://"+opts.appHost+":9090/LyciaWeb/"
+        wurl = url.parse(lyciaWebUrl).host
         params = [
           "--server=#{wurl}",
           "--instance=#{opts.qatDefaultInstance}",

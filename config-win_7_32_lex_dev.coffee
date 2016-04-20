@@ -43,8 +43,3 @@ module.exports = ->
 
     inetEnvironment:
       QXDEBUG: "zA"
-
-  @lyciaWebUrl = "http://localhost:9090/LyciaWeb/"
-  @seleniumServerPort = 9515
-  @qatDefaultInstance = "default-1889"
-  @tempPath = "./tests"

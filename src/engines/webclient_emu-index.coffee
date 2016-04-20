@@ -6,7 +6,7 @@ module.exports = ()->
     fs : require "q-io/fs"
 
   urlRunApp = (appName)->
-    "#{runner.opts.lyciaWebUrl}run/#{runner.opts.qatDefaultInstance}/#{appName}"
+    "http://#{runner.opts.appHost}:9090/LyciaWeb/run/#{runner.opts.qatDefaultInstance}/#{appName}"
 
   class WebSession
     constructor: (params={})->
@@ -47,7 +47,7 @@ module.exports = ()->
       @queue ->
         r =
           method : "POST"
-          url : "#{runner.opts.lyciaWebUrl}update?cid=#{@cid}&pid=#{@pid}"
+          url : "http://#{runner.opts.appHost}:9090/LyciaWeb/update?cid=#{@cid}&pid=#{@pid}"
           headers :
             'Content-Length' : Buffer.byteLength( body, 'utf8')
             'Content-Type' :'text/plain'

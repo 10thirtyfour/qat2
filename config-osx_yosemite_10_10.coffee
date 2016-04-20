@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
 
-    lyciaWebUrl : "http://10.38.57.167:9090/LyciaWeb/"
+    appHost: "10.38.57.167"
 
     common:
       options:

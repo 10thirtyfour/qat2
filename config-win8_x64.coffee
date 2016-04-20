@@ -13,13 +13,13 @@ module.exports = ->
         install: 600000
       options:
         buildMode: "rebuild"
-        databaseProfile: "informix" 
+        databaseProfile: "informix"
         env:
           QX_QAT: 1
           QX_REFRESH_LEVEL: 2
 
     headless:
-      QX_HEADLESS_MODE: 1  
+      QX_HEADLESS_MODE: 1
 
     logger:
       disable:
@@ -30,10 +30,8 @@ module.exports = ->
     globLoader:
       root: "./tests"
 
-
-
     dbprofiles:
-      informix:         
+      informix:
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"
@@ -46,11 +44,8 @@ module.exports = ->
 
       "mssql-odbc":
         LYCIA_DB_DRIVER: "odbc"
-        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;" 
+        SQLSERVER:"DSN=msodbc;Uid=ak2;Pwd=ak2;"
 
       "mysql-odbc":
         LYCIA_DB_DRIVER: "odbc"
         ODBC_DSN: "myodbc"
-
-
-

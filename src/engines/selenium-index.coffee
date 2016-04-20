@@ -39,6 +39,7 @@ module.exports = ->
     # CFGOPT: default wait timeout
     defaultWaitTimeout: runner.opts.common.timeouts.wait
     defaultIdleTimeout: runner.opts.common.timeouts.idle
+    lyciaWebUrl : "http://"+runner.opts.appHost+":9090/LyciaWeb/"
     setup: (true)
     before: "globLoader"
     enable:
@@ -94,7 +95,7 @@ module.exports = ->
           params.instance ?= runner.opts.qatDefaultInstance
 
           command += ".exe" if process.platform[0] is "w"
-          programUrl = runner.opts.lyciaWebUrl + "run/" + params.instance + "/" + command
+          programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
 
           if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
 
@@ -129,12 +130,19 @@ module.exports = ->
       wd.addPromiseMethod(
         "waitAppReady"
         () ->
-          @get(runner.lyciaWebUrl)
+          @get(plugin.lyciaWebUrl)
             .waitIdle())
 
       wd.addPromiseMethod(
         "getElement"
         (el) -> @elementByCss "#{getSelector(el)}")
+
+      wd.addPromiseMethod(
+        "getContextMenu"
+        (el) ->
+          yp @execute("return $('#{getSelector(el)}').mousedown()").waitIdle(3000,3000)
+          return yp @elementByCss("#{getSelector("contextmenu")}")
+          )
 
       wd.addPromiseMethod(
         "getWindow"
@@ -489,29 +497,6 @@ module.exports = ->
           @execute "$('#{@getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
       )
 
-      #wd.addPromiseMethod(
-      #  "startDrag",
-      #  (el,button=0)->
-      #    b=el.button ? button
-      #    r = yp @getRect el
-      #    x = Math.round(r.left + r.width / 2)
-      #    y = Math.round(r.top + r.height / 2)
-      #    console.log x,y
-      #    e = yp @elementByCss('#qx-home-form')
-      #      #.moveTo( x, y )
-      #      #.dragNDrop(b)
-      #      #.moveTo( x + 30 , y + 30 )
-      #      #.buttonDown(b)
-      #      #.moveTo( x + 60 , y + 60 )
-      #      #.buttonUp(b)
-      #      #.buttonDown(b)
-      #      #.moveTo( x + 10 , y + 3 )
-      #      #.moveTo( x + 20 , y + 23 )
-      #      #.buttonUp(b)
-      #
-      #    @draggable = { button : b }
-      #)
-
       wd.addPromiseMethod(
         "dropAt",
         (el)->
@@ -587,9 +572,6 @@ module.exports = ->
                 unless binfo.data.kind is "wd-"+b.first
                   if binfo.after.indexOf(_.tempName)==-1 then binfo.after = [ _.tempName ]
                 _.tempName = binfo.name
-                #console.log binfo.data
-                #console.log binfo.after
-                #console.log binfo.name
 
                 promise = (browser) ->
                   yp.frun( ->

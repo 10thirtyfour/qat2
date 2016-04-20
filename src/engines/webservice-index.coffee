@@ -24,7 +24,7 @@ class WStools
     @timeout=opts.timeout
     @promise = runner.Q({}).delay( opts.delay )
     @quitSent = false
-    @webUrl = "#{runner.opts.lyciaWebUrl}sapi/"
+    @webUrl = "http://#{runner.opts.appHost}:9090/LyciaWeb/sapi/"
     @headers = {}
     if opts.program?
       @program = opts.program
