@@ -190,6 +190,7 @@ elements =
       state : (el)-> "if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-disabled):not(.qx-readonly):not(.qx-inactive).qx-active.qx-not-readonly').length > 0) { return 'enabled' }
                    if ($('ul."+@qxclass+".qx-identifier-#{el}:not(.qx-enabled):not(.qx-not-readonly):not(.qx-active).qx-disabled.qx-inactive.qx-readonly').length > 0) { return 'disabled' }
                    return $('ul."+@qxclass+".qx-identifier-#{el}').attr('class');"
+      value : (el) -> "return $('.qx-identifier-#{el} input:checked').parent().find('.qx-text').text()"
 
   "radio-button-list-item" :
     qxclass : "qx-aum-radio-button-list-item"
