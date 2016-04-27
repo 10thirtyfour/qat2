@@ -3,7 +3,7 @@ elements =
   "blob-viewer" :
     qxclass : "qx-aum-blob-viewer"
     get :
-      image : (el)-> "return $('.qx-identifier-#{el} .qx-blob-content>img')[0].src"
+      image : (el)-> "return $('.qx-identifier-#{el} .qx-blob-content').css('background-image')"
 
   "border-panel" :
     qxclass : "qx-aum-border-panel"
