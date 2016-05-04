@@ -14,6 +14,9 @@ module.exports = ->
       disable:
         file:
           pattern: ["**/*-perf-rest.tlog"]
+    browserList :
+      chrome: (false)
+      firefox: (true)
 
     logger:
       disable:
