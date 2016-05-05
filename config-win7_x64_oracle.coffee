@@ -2,20 +2,20 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-  
+
     common:
       options:
-        databaseProfile: "oracle" 
+        databaseProfile: "oracle"
 
     logger:
       disable:
-        couchdb: true
-          
+        couchdb: false
+
     globLoader:
       disable:
-        file: 
+        file:
           pattern: ["**/*-wd-test.coffee"]
-      
+
     browserList :
       chrome: (false)
       firefox: (false)

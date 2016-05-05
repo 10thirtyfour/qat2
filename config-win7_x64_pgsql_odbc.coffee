@@ -2,20 +2,20 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-  
+
     common:
       options:
-        databaseProfile: "pgsql-odbc" 
+        databaseProfile: "pgsql-odbc"
 
     logger:
       disable:
-        couchdb: true
-          
+        couchdb: false
+
     globLoader:
       disable:
-        file: 
+        file:
           pattern: ["**/*-wd-test.coffee"]
-      
+
     browserList :
       chrome: (false)
       firefox: (false)
