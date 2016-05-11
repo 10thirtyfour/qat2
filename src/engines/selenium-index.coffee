@@ -84,6 +84,7 @@ module.exports = ->
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
           )
 
+
       wd.addPromiseMethod(
         "startApplication"
         (command, params) ->
@@ -117,6 +118,19 @@ module.exports = ->
         "elementExists"
         (el) ->
           yp(@elementByCssSelectorIfExists(getSelector(el)))?
+          )
+
+      wd.addPromiseMethod(
+        "waitElement"
+        (el,timeout) ->
+          timeout ?= plugin.defaultWaitTimeout
+          for i in [1..10]
+            if ((yp(@execute("return $('"+el+":visible').length")))<1)
+              @sleep (timeout/10)
+            else
+              yp(@sleep (timeout)) if @qx$browserName == "firefox"
+              return (true)
+          return throw "Element #{el} not exists"
           )
 
       wd.addPromiseMethod(
