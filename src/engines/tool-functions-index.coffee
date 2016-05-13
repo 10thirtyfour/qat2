@@ -571,7 +571,7 @@ module.exports = ->
           .replace(' xmlns="http://namespaces.querix.com/lyciaide/target"',"")
           xml = new dom().parseFromString(rawxml)
 
-          prefix = @testData.projectSource.split("\\")
+          prefix = @testData.projectSource.split("\/")
           prefix.splice(0, 1)
           prefix = prefix.join("\\")
           if prefix.length > 0
