@@ -354,7 +354,7 @@ module.exports =
             var el = AutomationElement.RootElement
               .FindFirst( TreeScope.Children,
                 new PropertyCondition( AutomationElement.NameProperty,
-                "Lycia Console"))
+                "LyciaConsole"))
               .FindFirst( TreeScope.Children,
                 new PropertyCondition( AutomationElement.ClassNameProperty,
                 "Edit"));
@@ -396,7 +396,7 @@ module.exports =
             Condition.TrueCondition);
 
           foreach (AutomationElement el in els) {
-            if (el.Current.Name=="Lycia Console") {
+            if (el.Current.Name=="LyciaConsole") {
               closedWindowsCount+=closeWindowHelper(el);
               continue;
             }

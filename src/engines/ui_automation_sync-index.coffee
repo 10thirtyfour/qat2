@@ -205,7 +205,7 @@ module.exports = ()->
 
     getConsoleText : (timeout)->
       if timeout?
-        @waitWindow( name:"Lycia Console", timeout:timeout, requiredMessage:"Console not found!" )
+        @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
 
       yp EdgeCall(method:"getConsoleText")
 
@@ -214,7 +214,7 @@ module.exports = ()->
 
     getLine : (timeout)->
       if timeout?
-        @waitWindow( name:"Lycia Console", timeout:timeout, requiredMessage:"Console not found!" )
+        @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
 
       conLines = (yp(EdgeCall(method:"getConsoleText"))).split("\r\n")
       if(conLines).length is 1
