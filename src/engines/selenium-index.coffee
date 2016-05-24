@@ -388,7 +388,7 @@ module.exports = ->
 
           params.mess?=""
 
-          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(".qx-identifier-#{el}"))?
+          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(yp(@getSelector(el))))?
 
           res = {}
           if @qx$browserName in ["ie","edge"]
