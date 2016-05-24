@@ -55,11 +55,11 @@ elements =
                         if (typeof cb.prop('checked') == 'undefined') {return false;}
                         return 'unchecked';"
       defaults :
-        height : 24
+        height : 19
         firefox$w:
-          height : 22
+          height : 20
         chrome$l:
-          height : 22
+          height : 20
 
   "combo-box" :
     qxclass : "qx-aum-combo-box"
@@ -97,11 +97,11 @@ elements =
       text  : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       value : (el) -> "return $('.qx-identifier-#{el} .qx-text').text()"
       defaults :
-        height : 24
+        height : 19
         firefox$w :
-          height : 22
+          height : 20
         chrome$l :
-          height : 22
+          height : 20
 
   "list-box" :
     qxclass : "qx-aum-list-box"
@@ -175,13 +175,13 @@ elements =
                         if (rb.prop('checked') == true) {return 'checked';}
                         else if (rb.prop('checked') == false) {return 'unchecked';}"
       defaults :
-        height : 24
+        height : 19
         ie$w :
-          height : 23
+          height : 20
         firefox$w :
-          height : 24
+          height : 20
         chrome$l :
-          height : 22
+          height : 20
 
   "radio-button-list" :
     qxclass : "qx-aum-radio-button-list"
