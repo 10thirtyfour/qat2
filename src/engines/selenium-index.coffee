@@ -29,7 +29,10 @@ module.exports = ->
     # exact selector was provided
     if el.selector? then return el.selector
     # string as id
-    if _.isString(el) then return ".qx-identifier-#{el.toLowerCase()}"
+    if _.isString(el)
+      if el[0] is "."
+        return el
+      return ".qx-identifier-#{el.toLowerCase()}"
     # table row selector
     if el.table? and el.row?
       return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
@@ -113,11 +116,12 @@ module.exports = ->
           timeout ?= 3000
           @waitForElementByCssSelector("#qx-application-restart",timeout))
 
-
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          yp(@elementByCssSelectorIfExists(getSelector(el)))?
+          if yp(@execute("return $('#{getSelector(el)}').length")) > 0
+            return (true)
+          return (false)
           )
 
       wd.addPromiseMethod(
@@ -139,18 +143,28 @@ module.exports = ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(
             ".qx-message-box"
-            timeout))
+            timeout)
+          )
 
       wd.addPromiseMethod(
         "waitAppReady"
         () ->
           @get(plugin.lyciaWebUrl)
-            .waitIdle())
+            .waitIdle()
+          )
 
       wd.addPromiseMethod(
         "getElement"
         (el) -> @elementByCss "#{getSelector(el)}")
 
+      wd.addPromiseMethod(
+        "getElementInrernal"
+        (el) ->
+          if yp @elementExists(el)
+            elenent = yp @execute("return $('#{yp(getSelector(el))}')")
+            return elenent
+          return throw "Element #{getSelector(el)} not exists!"
+          )
       wd.addPromiseMethod(
         "getContextMenu"
         (el) ->
@@ -162,7 +176,8 @@ module.exports = ->
         "getWindow"
         (wnd) ->
           yp @setDialogID(wnd,"win_qat")
-          @elementByCss ".qx-identifier-win_qat")
+          @elementByCss ".qx-identifier-win_qat"
+          )
 
       wd.addPromiseMethod(
         "resizeWindow"
@@ -230,8 +245,6 @@ module.exports = ->
         (val) ->
           if plugin.hacks.justType[@qx$browserName]
             el = yp  @elementByCss(".qx-focused .qx-text")
-            #@remoteCall(el,"html",val)
-            #@remoteCall(el,"val",val)
             @elementByCss(".qx-focused .qx-text").type(val)
           else
             @elementByCss(".qx-focused .qx-text").type(val))
@@ -240,19 +253,20 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click?
-            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss("#{el.toLowerCase()}"))
-          if plugin.hacks.invoke[@qx$browserName]
-            @remoteCall el, "click"
-          else
-            el.click())
+            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
+          el.click()
+          )
 
       wd.addPromiseMethod(
         "getClasses",
         (el) ->
-          element = yp(@elementByCssSelectorIfExists("#{getSelector(el)}")) ? yp(@elementByCssIfExists("#{getSelector(el)}")) ? (null)
+          element = yp(@getElementInrernal(el))
           if element is (null)
             return ""
-          yp(element.getAttribute("class")).split(" ")
+          attr = yp(@remoteCall(element,"attr","class"))
+          if attr?
+            return yp(@remoteCall(element,"attr","class")).split(" ")
+          return []
       )
 
       wd.addPromiseMethod(
@@ -289,26 +303,19 @@ module.exports = ->
       wd.addPromiseMethod(
         "invokeElement",
         (el) ->
-          unless el.click? then el = @elementByCss ".qx-identifier-#{el.toLowerCase()}"
-          if plugin.hacks.invoke[@qx$browserName]
-            @remoteCall(el, "click")
-              .waitIdle()
-          else
-            el
-              .click()
-              .waitIdle())
+          unless el.click?
+            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
+          el.click()
+            .waitIdle()
+          )
 
       wd.addPromiseMethod(
         "remoteCall"
         (el, nm, args...) ->
           if _.isString el
-            @execute(
-              "return $().#{nm}.apply($('.qx-identifier-#{el.toLowerCase()}'),arguments)"
-              args)
+            yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
-            @execute(
-              "return $().#{nm}.apply($(arguments[0]),arguments[1])"
-              [el,args])
+            yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
             )
 
 
@@ -329,7 +336,7 @@ module.exports = ->
         (el) ->
           if @qx$browserName == "ie"
             s = {}
-            sel = @getSelector(el)
+            sel = getSelector(el)
             s.width = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
             s.height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
             s.left = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
@@ -379,16 +386,15 @@ module.exports = ->
           if _.isString el
             params = options
             el_type = yp @getType el
-            itemSelector = ".qx-identifier-#{el}"
           else
             params = el
             el_type = params.type
             el_type?= "unknown"
-            itemSelector = params.selector
+          itemSelector = yp getSelector(el)
 
           params.mess?=""
 
-          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementByCssSelectorIfExists(yp(@getSelector(el))))?
+          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementExists(el))?
 
           res = {}
           if @qx$browserName in ["ie","edge"]
@@ -414,7 +420,7 @@ module.exports = ->
             continue if attr in ["mess","precision","selector","w","h","x","y","deferred"]
 
             if attr of UI_elements[el_type].get
-              res[attr] = yp @execute UI_elements[el_type].get[attr](el)
+              res[attr] = yp @execute UI_elements[el_type].get[attr](itemSelector)
 
             if expected is "default"
               expected = UI_elements[el_type].get.default(attr, @qx$browserName+"$"+process.platform[0])
@@ -457,7 +463,7 @@ module.exports = ->
             name
             (el,el_type) ->
               el_type ?= yp @getType(el)
-              return yp @execute UI_elements[el_type].get[attr](el)
+              return yp @execute UI_elements[el_type].get[attr](getSelector(el))
           )
 
       wd.addPromiseMethod(
@@ -508,14 +514,14 @@ module.exports = ->
       wd.addPromiseMethod(
         "dragNDrop",
         (el,button=0)->
-          @execute "$('#{@getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
+          @execute "$('#{getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
       )
 
       wd.addPromiseMethod(
         "dropAt",
         (el)->
           return unless @draggable.button?
-          selector = @getSelector(el)
+          selector = getSelector(el)
           @elementByCss("#{selector}").moveTo().buttonUp(@draggable.button)
           @draggable={}
       )
@@ -536,12 +542,13 @@ module.exports = ->
         "setDialogID", (el,id)->
           if _.isString(el) then id?="d_"+el
           if el.selector? then id?="d_"+el.id
-          return yp @execute("$('#{@getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
+          return yp @execute("$('#{getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
       )
 
       wd.addPromiseMethod(
         "getSelector", (el)->
           if el.selector? then return el.selector
+
           if _.isString(el) then return ".qx-identifier-#{el.toLowerCase()}"
           if el.table? and el.row?
             return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
@@ -592,7 +599,6 @@ module.exports = ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
                     testContext.aggregateError=(false)
-                    #console.log testContext.browser
                     try
                       binfo.duration.startTime = new Date()
                       binfo.syn.call testContext
