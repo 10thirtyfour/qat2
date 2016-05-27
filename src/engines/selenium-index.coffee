@@ -163,7 +163,7 @@ module.exports = ->
           if yp @elementExists(el)
             elenent = yp @execute("return $('#{yp(getSelector(el))}')")
             return elenent
-          return throw "Element #{getSelector(el)} not exists!"
+          return null
           )
       wd.addPromiseMethod(
         "getContextMenu"
