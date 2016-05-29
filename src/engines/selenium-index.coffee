@@ -260,12 +260,10 @@ module.exports = ->
       wd.addPromiseMethod(
         "getClasses",
         (el) ->
-          element = yp(@getElementInrernal(el))
-          if element is (null)
-            return ""
-          attr = yp(@remoteCall(element,"attr","class"))
+          if yp(@elementExists(el))
+            attr = yp(@remoteCall(getSelector(el),"attr","class"))
           if attr?
-            return yp(@remoteCall(element,"attr","class")).split(" ")
+            return attr.split(" ")
           return []
       )
 
