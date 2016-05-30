@@ -296,23 +296,23 @@ elements =
       value : (el) -> "return $('div#{el}.qx-aum-tab li.ui-tabs-active')[0].className.match(/qx-h-identifier-(.*)/)[1]"
     set :
       value : (el,val) ->
-        return @execute "return $('div#{el} li[aria-controls='+$('#{val}').prop('id') +'] a').click()"
+        return @execute "return $('div#{el} li[aria-controls='+$('.qx-identifier-#{val}').prop('id') +'] a').click()"
 
   "tab-page" :
     qxclass : "qx-aum-tab-page"
     get :
       text : (el) -> "return $('ul.qx-tab-header li[aria-controls='+$('#{el}').prop('id') +'] a').text()"
-      state : (el) -> "var pageHeader = $('li.qx-h-identifier-#{el}.qx-h-aum-tab-page');
+      state : (el,idd) -> "var pageHeader = $('li.qx-h-identifier-#{idd}.qx-h-aum-tab-page');
                        if (pageHeader.length == 0 ) { return 'page not found';}
                        if (pageHeader.hasClass('ui-tabs-active')) { return 'active';} else { return 'inactive';}"
     set :
-      ident : (el) -> yp @execute "return $('[aria-controls='+$('#{val}').prop('id') +']').addClass('qx-identifier-h_#{el}')"
+      ident : (el, val,id) -> yp @execute "return $('[aria-controls='+$('.qx-identifier-#{val}').prop('id') +']').addClass('qx-identifier-h_#{id}')"
 
   "tab-page-header" :
     qxclass : "qx-h-aum-tab-page"
     selector : (el) -> "return false;"
     get :
-      image : (el) -> "return $('.qx-h-identifier-#{el} .qx-image')[0].src"
+      image : (el,idd) -> "return $('.qx-h-identifier-#{idd} .qx-image')[0].src"
 
   "table" :
     qxclass : "qx-aum-table"

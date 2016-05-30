@@ -461,7 +461,7 @@ module.exports = ->
             name
             (el,el_type) ->
               el_type ?= yp @getType(el)
-              return yp @execute UI_elements[el_type].get[attr](getSelector(el))
+              return yp @execute UI_elements[el_type].get[attr](getSelector(el),el)
           )
 
       wd.addPromiseMethod(
@@ -478,7 +478,7 @@ module.exports = ->
         "setValue"
         (el, value) ->
           try
-            yp UI_elements[ yp @getType(el) ].set.value.apply(@,[el,value])
+            yp UI_elements[ yp @getType(el) ].set.value.apply(@,[getSelector(el),value,el])
           catch e
             plugin.info "#{el} setValue failed"
             return (false)
