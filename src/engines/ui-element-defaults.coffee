@@ -234,7 +234,7 @@ elements =
         count=0
         if val.smallStep
           count=Math.abs(val.smallStep)
-          selector = 'div.qx-aum-scroll-bar'+el+' a.qx-scb-'+ if val.smallStep<0 then 'up' else 'down'
+          selector = {selector:'div.qx-aum-scroll-bar'+el+' a.qx-scb-'+ if val.smallStep<0 then 'up' else 'down'}
           while count>0
             count-=1
             @invoke selector
@@ -275,7 +275,7 @@ elements =
         # setValue with mouse
         if val.smallStep?
           count=Math.abs(val.smallStep)
-          selector = "div#{el}.qx-aum-spinner a.ui-spinner-"+ if val.smallStep>0 then "up" else "down"
+          selector = {selector:"div#{el}.qx-aum-spinner a.ui-spinner-"+ if val.smallStep>0 then "up" else "down"}
           while count>0
             count-=1
             @invoke selector
