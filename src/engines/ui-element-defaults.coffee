@@ -331,7 +331,7 @@ elements =
       value : (el) -> "return $('#{el} textarea').val()"
       defaults :
         height : 38
-        firefox$w :
+        firefox :
           height : 52
         chrome$l :
           height : 38
