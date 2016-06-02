@@ -129,8 +129,8 @@ module.exports = ->
         (el,timeout) ->
           timeout ?= plugin.defaultWaitTimeout
           for i in [1..10]
-            if ((yp(@execute("return $('"+el+":visible').length")))<1)
-              @sleep (timeout/10)
+            if ((yp(@execute("return $('"+getSelector(el)+":visible').length")))<1)
+              yp @sleep (timeout/10)
             else
               yp(@sleep (timeout)) if @qx$browserName == "firefox"
               return (true)
