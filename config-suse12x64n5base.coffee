@@ -3,6 +3,9 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     common:
+      timeouts:
+        wd: 100000
+        wait: 20000
       options:
         databaseProfile: "informix"
 
