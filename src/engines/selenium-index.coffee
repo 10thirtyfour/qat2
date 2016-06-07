@@ -341,12 +341,14 @@ module.exports = ->
             s.right = yp @execute "return $('#{sel}')[0].getBoundingClientRect().right"
             s.top = yp @execute "return $('#{sel}')[0].getBoundingClientRect().top"
             s.bottom = yp @execute "return $('#{sel}')[0].getBoundingClientRect().bottom"
-            s.width = Math.round(s.width)
-            s.height = Math.round(s.height)
-            s.left = Math.round(s.left)
-            s.top = Math.round(s.top)
-            return s
-          return yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
+          s ?= yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
+          s.w = s.width = Math.round(s.width)
+          s.h = s.height = Math.round(s.height)
+          s.l = s.left = Math.round(s.left)
+          s.r = s.right = Math.round(s.right)
+          s.t = s.top = Math.round(s.top)
+          s.b = s.bottom = Math.round(s.bottom)
+          return s
       )
 
       wd.addPromiseMethod(
