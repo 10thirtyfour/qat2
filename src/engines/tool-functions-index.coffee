@@ -420,6 +420,7 @@ module.exports = ->
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
         @testData.buildMode ?= @options.buildMode
         @testData.buildTimeout ?= @timeouts.build
+
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
         #@data.commandLine = "qbuild " + params.join(" ")
         try

@@ -114,6 +114,7 @@ module.exports = ->
         runner.reg
           name: testData.name
           #  name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
+          after: testData.after
           data:
             kind: "compile"+testData.ext.toLowerCase()
             src : runner.relativeFn(@fileName)
