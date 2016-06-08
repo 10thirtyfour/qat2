@@ -12,7 +12,8 @@ module.exports = ->
 
   @reg
     name: "node-modules-search"
-    after: ["globLoader"]
+    after: ["advancedLoader","tlogLoader"]
+    before: "globLoader"
     setup: true
     disabled: true
     promise: ->
