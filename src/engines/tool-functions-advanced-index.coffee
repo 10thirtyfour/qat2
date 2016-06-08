@@ -235,7 +235,7 @@ module.exports = ->
       params.after ?= []
       params.data ?= {}
       params.data.src ?= runner.relativeFn(@fileName)
-      params.after.push(@lastBuiltTestName)
+      params.after.push(@lastBuiltTestName) if @lastBuiltTestName?
       params.atomic_before ?= []
 
       params.atomic_before.forEach (e)->
