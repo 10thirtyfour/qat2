@@ -3,6 +3,7 @@ archy = require "archy"
 module.exports = ->
   {Q,_,prettyjson,utils,winston} = runner = @
   util = require "util"
+  {exec} = require 'child_process'
   sum = (vals) ->
     vals.reduce(
       (l,r) -> l + r
@@ -114,5 +115,9 @@ module.exports = ->
 
     context=@
     runner.logger.trace "done.promise Return promise"
+    runner.logger.trace runner.opts.powerOff
+    if runner.opts.powerOff
+      runner.logger.trace "shutdown  /S"
+      exec "shutdown  /S"
     return p.timeout(20000).then( ()-> donePromise.call context)
   @reg plugin

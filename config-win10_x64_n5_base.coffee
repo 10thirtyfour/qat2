@@ -2,7 +2,8 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-
+    powerOff: true
+    
     common:
       options:
         databaseProfile: "informix"
@@ -17,7 +18,7 @@ module.exports = ->
       timeouts:
         wd: 120000
         wait: 30000
-        
+
     logger:
       disable:
         couchdb: false

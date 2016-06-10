@@ -2,10 +2,12 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
+    powerOff: true
+
     common:
       options:
-        databaseProfile: "informix"  
-    
+        databaseProfile: "informix"
+
     scenario: "default"
 
     logger:
@@ -18,13 +20,10 @@ module.exports = ->
       root: "./tests"
 
     dbprofiles:
-      informix:         
+      informix:
         LYCIA_DB_DRIVER: "informix"
         INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
         DBDATE: "MDY4/"
-
-
-

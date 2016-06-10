@@ -6,6 +6,7 @@ module.exports = ->
     appHost: "localhost"
     qatDefaultInstance : "default-1889"
     tempPath : "./tests"
+    powerOff: false
 
     environCommands:
       win_ia32: "cmd /c C:\\PROGRA~1\\Querix\\LYCIA3~1.1\\Lycia\\bin\\environ.bat >nul & node -e console.log(JSON.stringify(process.env))"

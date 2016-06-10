@@ -2,7 +2,8 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-
+    powerOff: true
+    
     common:
       options:
         databaseProfile: "pgsql-odbc"

@@ -2,20 +2,21 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-  
+    powerOff: true
+    
     common:
       options:
-        databaseProfile: "mssql-odbc" 
+        databaseProfile: "mssql-odbc"
 
     logger:
       disable:
         couchdb: false
-          
+
     globLoader:
       disable:
-        file: 
+        file:
           pattern: ["**/*-wd-test.coffee"]
-      
+
     browserList :
       chrome: (false)
       firefox: (false)

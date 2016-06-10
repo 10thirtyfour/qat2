@@ -2,6 +2,8 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
+    powerOff: true
+    
     common:
       timeouts:
         line: 12000
