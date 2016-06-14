@@ -168,7 +168,7 @@ module.exports = ->
                 passMessage=" WARNING : .exe removed!"
                 fail = (false)
 
-          if fail then throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual   :#{actualLine}\nExpected :#{expectedLine}"
+          if fail then throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
 
     if (logBlock = readBlock(nextOutLine,"<<<")).length>1
       throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
