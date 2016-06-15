@@ -8,7 +8,7 @@ module.exports = ->
       timeouts:
         wd: 100000
       options:
-        buildMode: "rebuild"
+        buildMode: "build"
         databaseProfile: "informix"
         env:
           DBDATE: "MDY4/"

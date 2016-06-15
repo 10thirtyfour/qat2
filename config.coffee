@@ -36,7 +36,7 @@ module.exports = ->
         idle: 300
 
       options:
-        buildMode: "rebuild"
+        buildMode: "build"
         databaseProfile: "informix"
         env:
           QX_QAT: 1

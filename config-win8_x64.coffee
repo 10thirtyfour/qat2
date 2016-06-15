@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     powerOff: true
-    
+
     common:
       timeouts:
         line: 12000
@@ -14,7 +14,6 @@ module.exports = ->
         unzip: 180000
         install: 600000
       options:
-        buildMode: "rebuild"
         databaseProfile: "informix"
         env:
           QX_QAT: 1

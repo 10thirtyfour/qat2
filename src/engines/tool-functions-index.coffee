@@ -227,7 +227,7 @@ module.exports = ->
       testData.buildTimeout ?= testData.timeout
       testData.projectPath ?= (testData.project or testData.prj)
       testData.reverse ?= testData.fail
-      testData.buildMode ?= if testData.deploy is true then "all" else "rebuild"
+      testData.buildMode ?= if testData.deploy is true then "all" else "build"
 
       unless testData.programName?
         # cutting filename by 12 chars ("-test.coffee")

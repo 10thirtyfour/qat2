@@ -3,11 +3,10 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     powerOff: true
-    
+
     scenario: "Crossbrowsers"
     common:
       options:
-        buildMode: "rebuild"
         databaseProfile: "informix"
         env:
           DBDATE: "MDY4/"

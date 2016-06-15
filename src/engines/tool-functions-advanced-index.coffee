@@ -167,7 +167,7 @@ module.exports = ->
           testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
         #runner.toolfuns.uniformName(
         #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
-        testData.buildMode = "rebuild"
+        testData.buildMode = "build"
         @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
 
