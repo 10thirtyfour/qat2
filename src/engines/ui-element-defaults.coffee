@@ -64,7 +64,7 @@ elements =
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('#{el} div.qx-text').text()"
+      text : (el) -> "return $('#{el} .qx-text').html()"
       defaults :
         height : 18
 
@@ -354,7 +354,7 @@ elements =
     qxclass : "qx-aum-text-field"
     selector : (el)-> "return ($('#{el}.qx-aum-text-field').length > 0)"
     get :
-      text : (el) -> "return $('#{el}.qx-aum-text-field .qx-text').text()"
+      text : (el) -> "return $('#{el}.qx-aum-text-field .qx-text').html()"
       value : (el) -> "return $('#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
         height : 20
