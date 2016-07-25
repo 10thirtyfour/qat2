@@ -53,6 +53,7 @@ module.exports = ->
       firefox: "http://localhost:4444/wd/hub/"
       ie: "http://localhost:5555/"
       safari: "http://localhost:4444/wd/hub/"
+      opera: "http://localhost:9516/"
     browsers:
       chrome:
         browserName: "chrome"
