@@ -631,7 +631,7 @@ module.exports = ->
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
-              if v.browserName in ["chrome","firefox"]
+              if v.browserName in ["chrome","firefox","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
                 r = browser.init(v).then(=> promise.call @, browser)
