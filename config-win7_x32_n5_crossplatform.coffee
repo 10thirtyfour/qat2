@@ -24,7 +24,9 @@ module.exports = ->
     browserList :
       chrome: (true)
       firefox: (true)
-      ie: (true)
+      opera: (true)
+      ie: (false)
+      edge: (false)
 
     common:
       timeouts:
