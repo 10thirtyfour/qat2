@@ -358,6 +358,10 @@ module.exports =
               .FindFirst( TreeScope.Children,
                 new PropertyCondition( AutomationElement.ClassNameProperty,
                 "Edit"));
+            //var el = AutomationElement.RootElement
+            //  .FindFirst( TreeScope.Children,
+            //    new PropertyCondition( AutomationElement.ClassNameProperty,
+            //    "Chrome_RenderWidgetHostHWND"));
               object pObj;
               if (el.TryGetCurrentPattern(TextPattern.Pattern, out pObj)) {
                 var textPattern = (TextPattern)pObj;
