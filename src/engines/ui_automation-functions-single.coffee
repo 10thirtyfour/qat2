@@ -164,7 +164,7 @@ module.exports =
             case "transformWindow" : return transformWindow(input);
             case "waitWindow" : return waitWindow(input);
             case "getWindows" : return getWindows(input);
-            case "getConsoleText" : return getConsoleText(input);
+            //case "getConsoleText" : return getConsoleText(input);
             case "cleanUp" : return cleanUp(input);
             case "getMenu" : return getMenu(input);
           }
@@ -346,34 +346,34 @@ module.exports =
 
 
         // ====================================================================
-
-
-        private object getConsoleText(dynamic input) {
-          string text="";
-          try {
-            var el = AutomationElement.RootElement
-              .FindFirst( TreeScope.Children,
-                new PropertyCondition( AutomationElement.NameProperty,
-                "LyciaConsole"))
-              .FindFirst( TreeScope.Children,
-                new PropertyCondition( AutomationElement.ClassNameProperty,
-                "Edit"));
-            //var el = AutomationElement.RootElement
-            //  .FindFirst( TreeScope.Children,
-            //    new PropertyCondition( AutomationElement.ClassNameProperty,
-            //    "Chrome_RenderWidgetHostHWND"));
-              object pObj;
-              if (el.TryGetCurrentPattern(TextPattern.Pattern, out pObj)) {
-                var textPattern = (TextPattern)pObj;
-                text = textPattern.DocumentRange.GetText(-1);
-              }
-            } catch {
-              //Console.WriteLine("No Lycia Console window found!");
-              text = "";
-            }
-          return(text);
-        }
-
+        //
+        //
+        //private object getConsoleText(dynamic input) {
+        //  string text="";
+        //  try {
+        //    var el = AutomationElement.RootElement
+        //      .FindFirst( TreeScope.Children,
+        //        new PropertyCondition( AutomationElement.NameProperty,
+        //        "LyciaConsole"))
+        //      .FindFirst( TreeScope.Children,
+        //        new PropertyCondition( AutomationElement.ClassNameProperty,
+        //        "Edit"));
+        //    //var el = AutomationElement.RootElement
+        //    //  .FindFirst( TreeScope.Children,
+        //    //    new PropertyCondition( AutomationElement.ClassNameProperty,
+        //    //    "Chrome_RenderWidgetHostHWND"));
+        //      object pObj;
+        //      if (el.TryGetCurrentPattern(TextPattern.Pattern, out pObj)) {
+        //        var textPattern = (TextPattern)pObj;
+        //        text = textPattern.DocumentRange.GetText(-1);
+        //      }
+        //    } catch {
+        //      //Console.WriteLine("No Lycia Console window found!");
+        //      text = "";
+        //    }
+        //  return(text);
+        //}
+        //
         // ==========================
 
         private int closeWindowHelper( AutomationElement el ) {

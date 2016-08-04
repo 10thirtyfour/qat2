@@ -77,12 +77,12 @@ allBelowIsDisabled = ()->
           },obj )
         EdgeCall( param )
 
-    getConsoleText : (obj)->
-      @then (p={})->
-        param = Object.assign({
-          method : "getConsoleText"
-        })
-        EdgeCall( param)
+    #getConsoleText : (obj)->
+    #  @then (p={})->
+    #    param = Object.assign({
+    #      method : "getConsoleText"
+    #    })
+    #    EdgeCall( param)
 
     getWindows : (obj)->
       @then (p={})->

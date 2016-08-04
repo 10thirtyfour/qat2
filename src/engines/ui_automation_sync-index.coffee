@@ -203,24 +203,28 @@ module.exports = ()->
 
       @progs.push( name : name, child : child )
 
-    getConsoleText : (timeout)->
-      if timeout?
-        @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
+    waitConsole : (timeout)->
+      timeout?= 5000
+      @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
 
-      yp EdgeCall(method:"getConsoleText")
-
-    getConsole : (timeout)->
-      @getConsoleText(timeout)
-
-    getLine : (timeout)->
-      if timeout?
-        @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
-
-      conLines = (yp(EdgeCall(method:"getConsoleText"))).split("\r\n")
-      if(conLines).length is 1
-        return ""
-      else
-        return conLines[conLines.length-2]
+    #getConsoleText : (timeout)->
+    #  if timeout?
+    #    @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
+    #
+    #  yp EdgeCall(method:"getConsoleText")
+    #
+    #getConsole : (timeout)->
+    #  @getConsoleText(timeout)
+    #
+    #getLine : (timeout)->
+    #  if timeout?
+    #    @waitWindow( name:"LyciaConsole", timeout:timeout, requiredMessage:"Console not found!" )
+    #
+    #  conLines = (yp(EdgeCall(method:"getConsoleText"))).split("\r\n")
+    #  if(conLines).length is 1
+    #    return ""
+    #  else
+    #    return conLines[conLines.length-2]
 
     # close all LD windows and console
     cleanUp : ()->
