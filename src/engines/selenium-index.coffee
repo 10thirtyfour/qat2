@@ -5,14 +5,16 @@ dnd_helper = require "./drag_and_drop_helper"
 
 
 module.exports = ->
-  {fs,Q,_,EventEmitter,yp} = runner = @
+  {opts,fs,Q,path,_,EventEmitter,yp} = runner = @
   # TODO: Safari doesn't support typeing into content editable fields
   # http://code.google.com/p/selenium/issues/detail?id=5353
   # so we need to simulate it from within the page
   wd = @wd = require "wd"
   @chai = chai = require "chai"
   chaiAsPromised = require "chai-as-promised"
+  spawn = require("child_process").spawn
   {exec} = require 'child_process'
+  url = require "url"
   chaiAsPromised.transferPromiseness = wd.transferPromiseness
   chai.use chaiAsPromised
   chai.should()
@@ -86,6 +88,25 @@ module.exports = ->
           timeout ?= plugin.defaultWaitTimeout
           idleTimeout ?= plugin.defaultIdleTimeout
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
+          )
+
+
+      wd.addPromiseMethod(
+        "runProgram"
+        (prog) ->
+          cmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
+          wurl = opts.appHost.toString()+":9090"
+
+          params = [
+            " --remote-debugging-port=8888",
+            "--server=#{wurl}",
+            "--instance=#{opts.qatDefaultInstance}",
+            "-c",
+            "--command=\"#{prog}\" -d #{opts.common.options.databaseProfile}"]
+
+          yp spawn(cmd,params)
+          yp @sleep(6000)
+          return yp @get("localhost:8888")
           )
 
 
