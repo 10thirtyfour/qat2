@@ -15,7 +15,7 @@ module.exports = ->
     qatFooter="### QAT SECTION END\n"
     try
       listenerXml = new dom().parseFromString(fs.readFileSync(runner.environ.LISTENERXML).toString())
-      inetEnvFn = xpath.select("/xml/service[name[text() = 'default-1889']]/envfile/text()",listenerXml).toString()
+      inetEnvFn = xpath.select("/xml/service[name[text() = 'default']]/envfile/text()",listenerXml).toString()
       inetEnv= fs.readFileSync(inetEnvFn).toString()
       inetEnvironments={}
       if inetEnv.indexOf(qatHeader)>-1

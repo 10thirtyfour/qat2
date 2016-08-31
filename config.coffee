@@ -4,7 +4,7 @@ module.exports = ->
   _.merge opts,
     version : 2.51
     appHost: "localhost"
-    qatDefaultInstance : "default-1889"
+    qatDefaultInstance : "default"
     tempPath : "./tests"
     powerOff: false
 
