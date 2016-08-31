@@ -31,7 +31,7 @@ module.exports = ->
 
     browserList :
       chrome: (true)
-      #firefox: (true)
+      firefox: (true)
       ie: (true)
 
 

@@ -16,7 +16,7 @@ module.exports = ->
 
     logger:
       disable:
-        couchdb: true
+        couchdb: false
       transports:
         console:
           level: "info"
