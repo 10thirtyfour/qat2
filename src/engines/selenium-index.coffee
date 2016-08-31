@@ -332,6 +332,8 @@ module.exports = ->
       wd.addPromiseMethod(
         "remoteCall"
         (el, nm, args...) ->
+          if @qx$browserName == "firefox"
+            return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
           if _.isString el
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
@@ -652,14 +654,16 @@ module.exports = ->
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
-              if v.browserName in ["chrome","firefox","opera"]
+              if v.browserName in ["chrome","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
                 r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
-                  browser.quit()
+                  browser.quit() unless v.browserName in ["firefox"]
+                  if v.browserName in ["firefox"]
+                    exec("taskkill /F /T /IM firefox.exe") 
               return r.then(-> "Pass")
             @reg binfo
             binfo.data.browser = i
