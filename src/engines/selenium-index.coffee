@@ -333,7 +333,9 @@ module.exports = ->
         "remoteCall"
         (el, nm, args...) ->
           if @qx$browserName == "firefox"
-            return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
+            if args.length > 0
+              return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
+            return yp @execute("return $('#{getSelector(el)}').#{nm}()")
           if _.isString el
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
