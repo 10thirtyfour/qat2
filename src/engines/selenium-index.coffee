@@ -668,7 +668,9 @@ module.exports = ->
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                   else
-                    browser.quit()
+                    browser.quit() unless v.browserName in ["firefox"]
+                    if v.browserName in ["firefox"]
+                      exec("killall -s KILL firefox")
               return r.then(-> "Pass")
             @reg binfo
             binfo.data.browser = i
