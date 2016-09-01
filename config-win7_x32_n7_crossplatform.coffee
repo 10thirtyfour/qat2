@@ -4,7 +4,7 @@ module.exports = ->
   _.merge opts,
     powerOff: true
 
-    scenario: "Crossbrowsers"
+    scenario: "crossbrowsers"
     common:
       options:
         databaseProfile: "informix"

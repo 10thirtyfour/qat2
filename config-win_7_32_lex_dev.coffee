@@ -31,8 +31,8 @@ module.exports = ->
 
     browserList :
       chrome: (true)
-      firefox: (true)
-      ie: (true)
+      #firefox: (true)
+      #ie: (true)
 
 
     dbprofiles:
