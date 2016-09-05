@@ -335,7 +335,7 @@ module.exports = ->
           if @qx$browserName == "firefox"
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
-            return yp @execute("return $('#{getSelector(el)}').#{nm}()")
+            return yp @execute("$('#{getSelector(el)}').#{nm}()")
           if _.isString el
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
