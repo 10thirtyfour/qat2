@@ -72,9 +72,11 @@ module.exports = ->
     hacks:
       justType:
         safari: (true)
+        firefox: (true)
       resize:
         chrome: (false)
         safari: (true)
+        firefox: (true)
       invoke:
         firefox: (false)
 
