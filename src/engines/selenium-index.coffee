@@ -210,6 +210,19 @@ module.exports = ->
             yp @setDialogID(wnd,"win_qat")
             dlSize = yp @getRect("win_qat")
             wbSize = yp @getRect("win_qat .qx-window-border")
+            if @qx$browserName == "firefox"
+              dx1 = dlSize.width+dx
+              dy1 = dlSize.height+dy
+              obj = '"width":"'+dx1+'px","height":"'+dy1+'px"'
+              str1 = '$(".qx-identifier-win_qat").css({'+obj+'})'
+              dx2 = wbSize.width+dx
+              dy2 = wbSize.height+dy
+              obj = '"width":"'+dx2+'px","height":"'+dy2+'px"'
+              str2 = '$(".qx-identifier-win_qat .qx-window-border").css({'+obj+'})'
+              @execute(str1)
+              @execute(str2)
+              yp @waitIdle()
+              return (true)
             yp @remoteCall("win_qat","css",{"width":"#{dlSize.width+dx}px";"height":"#{dlSize.height+dy}px";})
             yp @remoteCall("win_qat .qx-window-border","css",{"width":"#{wbSize.width+dx}px";"height":"#{wbSize.height+dy}px";})
             yp @waitIdle()
