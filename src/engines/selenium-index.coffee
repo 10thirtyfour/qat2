@@ -350,13 +350,14 @@ module.exports = ->
           if @qx$browserName == "firefox"
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
-            return yp @execute("$('#{getSelector(el)}').#{nm}()")
+            if nm is "click"
+              return yp @execute("$('#{getSelector(el)}').#{nm}()")
+            return yp @execute("return $('#{getSelector(el)}').#{nm}()")
           if _.isString el
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
             yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
             )
-
 
       wd.addPromiseMethod(
         "hasScroll"
