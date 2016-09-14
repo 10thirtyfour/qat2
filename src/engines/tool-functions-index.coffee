@@ -424,6 +424,7 @@ module.exports = ->
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
         #@data.commandLine = "qbuild " + params.join(" ")
         try
+          #console .log opt
           child = spawn( qrun , params , opt)
           result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
           if result

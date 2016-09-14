@@ -40,6 +40,7 @@ module.exports = ->
         databaseProfile: "informix"
         env:
           QX_QAT: 1
+          QX_WRAPPER: 1
           DBDATE: "MDY4/"
 
     headless:
