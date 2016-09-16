@@ -382,12 +382,22 @@ module.exports = ->
         try
           {stderr} = child = spawn( command , args , opt )
           result = (yp exitPromise(child, ignoreError:true ).timeout(@testData.compileTimeout))
+
+          #unless -10000 < result < 100000
+          #  result = 0
           if result
             txt = stderr.read()
+
             if txt?
               errorMessage = parseError(txt.toString('utf8'))
+              errorMessage.text ?= parseError(txt.toString('utf8')).raw
 
-            errorMessage?= { text:txt, code:-1, line:-1 }
+            errorMessage ?= {}
+            errorMessage.text ?= "unknown error"
+            errorMessage.code ?= result
+            errorMessage.line ?= -1
+
+            #errorMessage ?= { text:txt.raw, code:parseInt(result), line:-1 }
             if @testData.reverse
               if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
                 return "Code matched:#{errorMessage.code}. Line:#{errorMessage.line}."
@@ -395,15 +405,15 @@ module.exports = ->
                 throw "ErrorCode mismatch! Expected: #{@testData.errorCode}, Actual :#{errorMessage.code} at Line:#{errorMessage.line}."
 
             # construction error message
-            @data.failMessage=errorMessage.message
-            throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}. Commandline : #{cmdLine.toString()}"
+            @data.failMessage=errorMessage.text
+            throw "Compilation failed. Code: #{errorMessage.code}, Line: #{errorMessage.line}. Error: #{errorMessage.text} Commandline : #{cmdLine.toString()}"
 
         finally
           child.kill('SIGKILL')
+
         if @testData.reverse then throw "Successful compilation, but fail expected!"
+
         return "Successful compilation."
-
-
       )
 
     regBuild: ->
