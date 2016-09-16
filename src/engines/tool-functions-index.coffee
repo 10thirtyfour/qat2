@@ -362,7 +362,7 @@ module.exports = ->
         switch (path.extname(@testData.fileName)).toLowerCase()
           #when ".4gl" then cmdLine.add("qfgl #{@testData.fileName} --xml-errors -d #{opt.env.LYCIA_DB_DRIVER} -o #{path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl'))}.4o")
           when ".4gl"
-            cmdLine.add("qfgl --xml-errors -d #{opt.env.LYCIA_DB_DRIVER}")
+            cmdLine.add("qfgl --no-warnings --xml-errors -d #{opt.env.LYCIA_DB_DRIVER}")
           #  cmdLine.add(['-o','"'+path.join( path.dirname(@testData.fileName), path.basename(@testData.fileName,'.4gl')+'.4o')+'"'])
             cmdLine.add(['-e','Cp1252',@testData.fileName])
           when ".per" then cmdLine.add("qform #{@testData.fileName} -xmlout -xml --db #{opt.env.LYCIA_DB_DRIVER} -p #{path.dirname(@testData.fileName)}")
@@ -383,8 +383,8 @@ module.exports = ->
           {stderr} = child = spawn( command , args , opt )
           result = (yp exitPromise(child, ignoreError:true ).timeout(@testData.compileTimeout))
 
-          #unless -10000 < result < 100000
-          #  result = 0
+          unless result in [-9999..9999]
+            return "Code : #{result}. Successful compilation."
           if result
             txt = stderr.read()
 
@@ -411,9 +411,9 @@ module.exports = ->
         finally
           child.kill('SIGKILL')
 
-        if @testData.reverse then throw "Successful compilation, but fail expected!"
+        if @testData.reverse then throw "Successful compilation, but fail expected! Expected error: #{@testData.errorCode}"
 
-        return "Successful compilation."
+        return "Code : #{result}. Successful compilation."
       )
 
     regBuild: ->
@@ -437,7 +437,7 @@ module.exports = ->
           #console .log opt
           child = spawn( qrun , params , opt)
           result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))
-          if result
+          if (result in [-9999..-1])||(result in [1..9999])
             if @testData.reverse
               return "Build has been failed as expected."
             message = ""
@@ -449,7 +449,7 @@ module.exports = ->
         finally
           child.kill('SIGKILL')
         if @testData.reverse then throw "Build OK but fail expected!"
-        return "Build OK."
+        return "Code : #{result}. Build OK."
       )
 
     regLogRun : ->
