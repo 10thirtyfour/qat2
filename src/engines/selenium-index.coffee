@@ -677,6 +677,7 @@ module.exports = ->
               else
                 if v.browserName in ["edge"]
                   exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                  #@sleep(500)
                 if v.browserName in ["ie"]
                   exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                   #exec("start /MIN c:/qat/IEDriverServer.exe")
@@ -687,17 +688,21 @@ module.exports = ->
                   if process.platform[0] is "w"
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["edge"]
-                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE')
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
+                      #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE')
+                      #@sleep(500)
+                      
                     if v.browserName in ["ie"]
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
                       #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer.exe" DELETE')
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="iexplore.exe" DELETE')
+                      exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                   else
                     browser.quit() unless v.browserName in ["firefox"]
+                    exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="qrun.exe" DELETE')
                     if v.browserName in ["firefox"]
                       exec("killall -s KILL firefox")
               return r.then(-> "Pass")
