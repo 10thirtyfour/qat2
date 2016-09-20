@@ -10,13 +10,13 @@ module.exports = ->
     scenario: "default"
 
     browserList :
-      chrome: (true)
+      chrome: (false)
       edge: (true)
       ie: (true)
 
     logger:
       disable:
-        couchdb: false
+        couchdb: true
       transports:
         console:
           level: "info"

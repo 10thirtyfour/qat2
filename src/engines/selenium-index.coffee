@@ -675,12 +675,25 @@ module.exports = ->
               if v.browserName in ["chrome","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
+                if v.browserName in ["edge"]
+                  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                if v.browserName in ["ie"]
+                  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+                  #exec("start /MIN c:/qat/IEDriverServer.exe")
                 r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   if process.platform[0] is "w"
                     browser.quit() unless v.browserName in ["firefox"]
+                    if v.browserName in ["edge"]
+                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE')
+                      exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
+                      exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
+                    if v.browserName in ["ie"]
+                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
+                      #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer.exe" DELETE')
+                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="iexplore.exe" DELETE')
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                   else
