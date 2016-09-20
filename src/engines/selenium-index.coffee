@@ -14,6 +14,7 @@ module.exports = ->
   chaiAsPromised = require "chai-as-promised"
   spawn = require("child_process").spawn
   {exec} = require 'child_process'
+  ex = require('child_process').exec;
   url = require "url"
   chaiAsPromised.transferPromiseness = wd.transferPromiseness
   chai.use chaiAsPromised
@@ -676,10 +677,11 @@ module.exports = ->
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
                 if v.browserName in ["edge"]
-                  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                  #exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                  ex("start /MIN c:/qat/MicrosoftWebDriver.exe", ()=> return(browser.init("edge").then(=> promise.call @, browser)))
                 if v.browserName in ["ie"]
-                  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
-                  #exec("start /MIN c:/qat/IEDriverServer.exe")
+                  #exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+                  ex("start /MIN c:/qat/IEDriverServer_x64.exe", ()=> return(browser.init("ie").then(=> promise.call @, browser)))
                 r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
@@ -689,13 +691,15 @@ module.exports = ->
                     if v.browserName in ["edge"]
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
-                      #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE')
-                      exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                      ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE', ()=> return(exec('start /MIN c:/qat/MicrosoftWebDriver.exe')))
+                      
+                      #exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
                     if v.browserName in ["ie"]
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
-                      #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer.exe" DELETE')
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="iexplore.exe" DELETE')
-                      exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+                      ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE', ()=> return(exec('start /MIN c:/qat/IEDriverServer_x64.exe')))
+                      #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer.exe" DELETE')
+                      #exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                   else
