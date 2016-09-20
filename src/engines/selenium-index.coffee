@@ -677,7 +677,6 @@ module.exports = ->
               else
                 if v.browserName in ["edge"]
                   exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-                  #@sleep(500)
                 if v.browserName in ["ie"]
                   exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                   #exec("start /MIN c:/qat/IEDriverServer.exe")
@@ -691,8 +690,7 @@ module.exports = ->
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
                       #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE')
-                      #@sleep(500)
-                      
+                      exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
                     if v.browserName in ["ie"]
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
                       #exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer.exe" DELETE')
