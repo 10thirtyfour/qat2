@@ -15,6 +15,7 @@
     "chai-as-promised": "^4.2.0",
     "coffee-script": "^1.9.0",
     "colors": "^1.0.3",
+    "exec": "*",
     "fibers": "^1.0.7",
     "fs-extra": "^0.16.3",
     "glob": "^4.4.0",
