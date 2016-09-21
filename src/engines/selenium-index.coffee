@@ -692,10 +692,12 @@ module.exports = ->
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
                       exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
                       ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE', ()=> return(exec('start /MIN c:/qat/MicrosoftWebDriver.exe')))
+                      exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
                     if v.browserName in ["ie"]
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
                       exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="iexplore.exe" DELETE')
                       ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE', ()=> return(exec('start /MIN c:/qat/IEDriverServer_x64.exe')))
+                      exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                   else
