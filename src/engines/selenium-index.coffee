@@ -689,20 +689,20 @@ module.exports = ->
                   if process.platform[0] is "w"
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["edge"]
-                      exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdge.exe" DELETE')
-                      exec('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftEdgeCP.exe" DELETE')
-                      ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="MicrosoftWebDriver.exe" DELETE', ()=> return(exec('start /MIN c:/qat/MicrosoftWebDriver.exe')))
+                      exec("taskkill /F /T /IM MicrosoftEdge.exe")
+                      exec("taskkill /F /T /IM MicrosoftEdgeCP.exe")
+                      ex("taskkill /F /T /IM MicrosoftWebDriver.exe", ()=> return(exec("start /MIN c:/qat/MicrosoftWebDriver.exe")))
                       exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
                     if v.browserName in ["ie"]
-                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE')
-                      exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="iexplore.exe" DELETE')
-                      ex('c:/Windows/System32\wbem/WMIC.exe PROCESS WHERE NAME="IEDriverServer_x64.exe" DELETE', ()=> return(exec('start /MIN c:/qat/IEDriverServer_x64.exe')))
+                      exec("taskkill /F /T /IM IEDriverServer_x64.exe")
+                      exec("taskkill /F /T /IM iexplore.exe")
+                      ex("taskkill /F /T /IM IEDriverServer_x64.exe", ()=> return(exec("start /MIN c:/qat/IEDriverServer_x64.exe")))
                       exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
+                    exec("taskkill /F /T /IM qrun.exe")
                   else
                     browser.quit() unless v.browserName in ["firefox"]
-                    exec('c:/Windows/System32/wbem/WMIC.exe PROCESS WHERE NAME="qrun.exe" DELETE')
                     if v.browserName in ["firefox"]
                       exec("killall -s KILL firefox")
               return r.then(-> "Pass")
