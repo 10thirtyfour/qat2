@@ -676,31 +676,31 @@ module.exports = ->
               if v.browserName in ["chrome","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
-                if v.browserName in ["edge"]
-                  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-                  ex("start /MIN c:/qat/MicrosoftWebDriver.exe", ()=> return(browser.init("edge").then(=> promise.call @, browser)))
-                if v.browserName in ["ie"]
-                  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
-                  ex("start /MIN c:/qat/IEDriverServer_x64.exe", ()=> return(browser.init("ie").then(=> promise.call @, browser)))
+                #if v.browserName in ["edge"]
+                #  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                #  ex("start /MIN c:/qat/MicrosoftWebDriver.exe", ()=> return(browser.init("edge").then(=> promise.call @, browser)))
+                #if v.browserName in ["ie"]
+                #  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+                #  ex("start /MIN c:/qat/IEDriverServer_x64.exe", ()=> return(browser.init("ie").then(=> promise.call @, browser)))
                 r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   if process.platform[0] is "w"
                     browser.quit() unless v.browserName in ["firefox"]
-                    if v.browserName in ["edge"]
-                      exec("taskkill /F /T /IM MicrosoftEdge.exe")
-                      exec("taskkill /F /T /IM MicrosoftEdgeCP.exe")
-                      ex("taskkill /F /T /IM MicrosoftWebDriver.exe", ()=> return(exec("start /MIN c:/qat/MicrosoftWebDriver.exe")))
-                      exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-                    if v.browserName in ["ie"]
-                      exec("taskkill /F /T /IM IEDriverServer_x64.exe")
-                      exec("taskkill /F /T /IM iexplore.exe")
-                      ex("taskkill /F /T /IM IEDriverServer_x64.exe", ()=> return(exec("start /MIN c:/qat/IEDriverServer_x64.exe")))
-                      exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+                    #if v.browserName in ["edge"]
+                    #  exec("taskkill /F /T /IM MicrosoftEdge.exe")
+                    #  exec("taskkill /F /T /IM MicrosoftEdgeCP.exe")
+                    #  ex("taskkill /F /T /IM MicrosoftWebDriver.exe", ()=> return(exec("start /MIN c:/qat/MicrosoftWebDriver.exe")))
+                    #  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+                    #if v.browserName in ["ie"]
+                    #  exec("taskkill /F /T /IM IEDriverServer_x64.exe")
+                    #  exec("taskkill /F /T /IM iexplore.exe")
+                    #  ex("taskkill /F /T /IM IEDriverServer_x64.exe", ()=> return(exec("start /MIN c:/qat/IEDriverServer_x64.exe")))
+                    #  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
-                    exec("taskkill /F /T /IM qrun.exe")
+                    #exec("taskkill /F /T /IM qrun.exe")
                   else
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["firefox"]
