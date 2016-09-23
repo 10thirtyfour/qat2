@@ -4,7 +4,7 @@ module.exports = ->
   _.merge opts,
     powerOff: true
 
-    scenario: "crossbrowsers"
+    scenario: "firefox_opera"
     common:
       options:
         databaseProfile: "informix"
@@ -22,11 +22,13 @@ module.exports = ->
       root: "./tests"
 
     browserList :
-      chrome: (true)
-      firefox: (true)
+      chrome: (false)
       opera: (true)
-      ie: (false)
+      firefox: (true)
       edge: (false)
+      ie: (false)
+      safari : (false)
+
 
     common:
       timeouts:
