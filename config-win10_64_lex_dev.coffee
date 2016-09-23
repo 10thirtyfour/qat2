@@ -36,5 +36,5 @@ module.exports = ->
         INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
         DBDATE: "MDY4/"
 
-    inetEnvironment:
-      QXDEBUG: "zA"
+    #inetEnvironment:
+    #  QXDEBUG: "zA"
