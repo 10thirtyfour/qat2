@@ -354,7 +354,8 @@ elements =
     qxclass : "qx-aum-text-field"
     selector : (el)-> "return ($('#{el}.qx-aum-text-field').length > 0)"
     get :
-      text : (el) -> "return $('#{el}.qx-aum-text-field .qx-text').html()"
+      text : (el) -> "var t = $('#{el}.qx-aum-text-field .qx-text').html();
+                  if (t.length > 0 ) { return t;} else { return $('#{el}.qx-aum-text-field .qx-text').val();}"
       value : (el) -> "return $('#{el}.qx-aum-text-field .qx-text').text()"
       defaults :
         height : 20
