@@ -641,7 +641,8 @@ module.exports = ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
-                    testContext.aggregateError=(false)
+                    #testContext.aggregateError=(false)
+                    testContext.aggregateError=(true)
                     try
                       binfo.duration.startTime = new Date()
                       binfo.syn.call testContext
