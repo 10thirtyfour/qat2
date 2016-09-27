@@ -411,7 +411,8 @@ elements =
   "text-element" :
     qxclass : "qx-text"
     get :
-      text : (el) -> "return $('#{el}.qx-text').text()"
+      text : (el) -> "var t = $('#{el} .qx-text').html();
+                  if (t.length > 0 ) { return t;} else { return $('#{el} .qx-text').val();}"
 
   "unknown" :
     qxclass : "unknown"
