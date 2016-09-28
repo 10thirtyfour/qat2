@@ -78,6 +78,7 @@ module.exports = ->
         chrome: (false)
         safari: (true)
         firefox: (true)
+        ie:(false)
       invoke:
         firefox: (false)
 
@@ -144,8 +145,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          if yp(@execute("return $('#{getSelector(el)}').length")) > 0
-            return (true)
+          unless @qx$browserName == "ie"
+            if yp(@execute("return $('#{getSelector(el)}').length")) > 0
+              return (true)
           return (false)
           )
 
@@ -211,7 +213,7 @@ module.exports = ->
             yp @setDialogID(wnd,"win_qat")
             dlSize = yp @getRect("win_qat")
             wbSize = yp @getRect("win_qat .qx-window-border")
-            if @qx$browserName == "firefox"
+            if @qx$browserName in ["firefox"]
               dx1 = dlSize.width+dx
               dy1 = dlSize.height+dy
               obj = '"width":"'+dx1+'px","height":"'+dy1+'px"'
@@ -233,12 +235,16 @@ module.exports = ->
           r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)-1
           y = Math.round(r.top + r.height / 2)-1
+          if @qx$browserName in ["edge"]
+            dlSize = yp @getRect("win_qat")
           yp @elementByCss(".qx-identifier-win_qat")
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
             .buttonUp(0)
             .waitIdle()
+          if @qx$browserName in ["edge"]
+            yp @remoteCall("win_qat","css",{"top":"#{dlSize.top+2}px";"left":"#{dlSize.left+2}px";})
         )
 
       wd.addPromiseMethod(
@@ -437,7 +443,8 @@ module.exports = ->
 
           params.mess?=""
 
-          throw "Item #{itemSelector} not found! "+params.mess unless yp(@elementExists(el))?
+          unless @qx$browserName in ["ie"]
+            unless yp(@elementExists(el))? then throw "Item #{itemSelector} not found! "+params.mess 
 
           res = {}
           if @qx$browserName in ["ie","edge"]
@@ -641,7 +648,6 @@ module.exports = ->
                   yp.frun( ->
                     testContext = _.create binfo,_.assign {browser:browser}, synproto, {errorMessage:""}
                     testContext.browser.errorMessage=""
-                    #testContext.aggregateError=(false)
                     testContext.aggregateError=(true)
                     try
                       binfo.duration.startTime = new Date()
@@ -677,31 +683,14 @@ module.exports = ->
               if v.browserName in ["chrome","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
-                #if v.browserName in ["edge"]
-                #  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-                #  ex("start /MIN c:/qat/MicrosoftWebDriver.exe", ()=> return(browser.init("edge").then(=> promise.call @, browser)))
-                #if v.browserName in ["ie"]
-                #  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
-                #  ex("start /MIN c:/qat/IEDriverServer_x64.exe", ()=> return(browser.init("ie").then(=> promise.call @, browser)))
                 r = browser.init(v).then(=> promise.call @, browser)
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   if process.platform[0] is "w"
                     browser.quit() unless v.browserName in ["firefox"]
-                    #if v.browserName in ["edge"]
-                    #  exec("taskkill /F /T /IM MicrosoftEdge.exe")
-                    #  exec("taskkill /F /T /IM MicrosoftEdgeCP.exe")
-                    #  ex("taskkill /F /T /IM MicrosoftWebDriver.exe", ()=> return(exec("start /MIN c:/qat/MicrosoftWebDriver.exe")))
-                    #  exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-                    #if v.browserName in ["ie"]
-                    #  exec("taskkill /F /T /IM IEDriverServer_x64.exe")
-                    #  exec("taskkill /F /T /IM iexplore.exe")
-                    #  ex("taskkill /F /T /IM IEDriverServer_x64.exe", ()=> return(exec("start /MIN c:/qat/IEDriverServer_x64.exe")))
-                    #  exec("start /MIN c:/qat/IEDriverServer_x64.exe")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
-                    #exec("taskkill /F /T /IM qrun.exe")
                   else
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["firefox"]

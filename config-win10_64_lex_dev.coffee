@@ -6,12 +6,16 @@ module.exports = ->
     common:
       options:
         databaseProfile: "informix"
+      timeouts:
+        wd: 120000
+        wait: 30000
 
     scenario: "default"
 
     browserList :
       chrome: (false)
-      edge: (true)
+      #firefox: (true)
+      #edge: (true)
       ie: (true)
 
     logger:
