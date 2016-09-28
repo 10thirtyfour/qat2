@@ -75,7 +75,8 @@ elements =
     qxclass : "qx-aum-function-field-abs"
     selector : (el)-> "return ($('#{el}.qx-aum-function-field-abs').length > 0)"
     get :
-      text : (el) -> "return $('#{el} div .qx-text').text()"
+      text : (el) -> "var t = $('#{el} div .qx-text').html();
+                  if (t.length > 0 ) { return t;} else { return $('#{el} div .qx-text').val();}"
       defaults :
         height : 20
         chrome$l :
