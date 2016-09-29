@@ -78,7 +78,8 @@ module.exports = ->
         chrome: (false)
         safari: (true)
         firefox: (true)
-        ie:(false)
+        ie:(true)
+        edge:(true)
       invoke:
         firefox: (false)
 
@@ -209,7 +210,9 @@ module.exports = ->
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
-          if plugin.hacks.resize[@qx$browserName]
+          if plugin.hacks.resize[@qx$browserName] 
+            if @qx$browserName in ["ie"]
+              throw "resizeWindow does not support on current version IE browser"
             yp @setDialogID(wnd,"win_qat")
             dlSize = yp @getRect("win_qat")
             wbSize = yp @getRect("win_qat .qx-window-border")
@@ -226,6 +229,9 @@ module.exports = ->
               @execute(str2)
               yp @waitIdle()
               return (true)
+            if @qx$browserName in ["edge"]
+              if dx>0 then dx=dx-9 else dx=dx-9
+              #if dy>0 then dy=dy-9 else dx=dy+9
             yp @remoteCall("win_qat","css",{"width":"#{dlSize.width+dx}px";"height":"#{dlSize.height+dy}px";})
             yp @remoteCall("win_qat .qx-window-border","css",{"width":"#{wbSize.width+dx}px";"height":"#{wbSize.height+dy}px";})
             yp @waitIdle()
@@ -235,16 +241,25 @@ module.exports = ->
           r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-#{h}")
           x = Math.round(r.left + r.width / 2)-1
           y = Math.round(r.top + r.height / 2)-1
-          if @qx$browserName in ["edge"]
-            dlSize = yp @getRect("win_qat")
           yp @elementByCss(".qx-identifier-win_qat")
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
             .buttonUp(0)
+            .buttonUp(0)
             .waitIdle()
+          return (true)
           if @qx$browserName in ["edge"]
-            yp @remoteCall("win_qat","css",{"top":"#{dlSize.top+2}px";"left":"#{dlSize.left+2}px";})
+            r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-nw")
+            x = Math.round(r.left + r.width / 2)-1
+            y = Math.round(r.top + r.height / 2)-1
+            yp @elementByCss(".qx-identifier-win_qat")
+              .moveTo( x, y )
+              .buttonDown(0)
+              .moveTo( x + Math.floor(5) , y + Math.floor(5) )
+              .buttonUp(0)
+              .waitIdle()
+          return (true)
         )
 
       wd.addPromiseMethod(
@@ -260,6 +275,8 @@ module.exports = ->
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
             .buttonUp(0)
+            .waitIdle()
+          return (true)
         )
 
       wd.addPromiseMethod(
@@ -385,7 +402,7 @@ module.exports = ->
             s = {}
             sel = getSelector(el)
             s.width = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
-            s.height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
+            .height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
             s.left = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
             s.right = yp @execute "return $('#{sel}')[0].getBoundingClientRect().right"
             s.top = yp @execute "return $('#{sel}')[0].getBoundingClientRect().top"

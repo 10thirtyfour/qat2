@@ -15,7 +15,7 @@ module.exports = ->
     browserList :
       chrome: (false)
       #firefox: (true)
-      #edge: (true)
+      edge: (true)
       ie: (true)
 
     logger:
