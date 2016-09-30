@@ -114,34 +114,38 @@ module.exports = ->
           return yp @get("localhost:8888")
           )
 
-
       wd.addPromiseMethod(
         "startApplication"
         (command, params) ->
-          @executedPrograms?=[]
-          @executedPrograms.push(command)
-
-          params ?= {}
-          params.wait ?= (true)
-          params.instance ?= runner.opts.qatDefaultInstance
-
-          command += ".exe" if process.platform[0] is "w"
-          programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
-
-          if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
-
-          if params.wait
-            return @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
-            return @get(programUrl).waitIdle().sleep(500)
-          else
-            return @get(programUrl).sleep(1000)
+          try
+            @executedPrograms?=[]
+            @executedPrograms.push(command)
+            params ?= {}
+            params.wait ?= (true)
+            params.instance ?= runner.opts.qatDefaultInstance
+            command += ".exe" if process.platform[0] is "w"
+            programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
+            if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
+            if params.wait
+              yp @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
+              yp @get(programUrl).waitIdle().sleep(500)
+            else
+              yp @get(programUrl).sleep(1000)
+          catch e
+            throw "StartApplication <#{command}> failed. Error:"+e
+          (true)
           )
 
       wd.addPromiseMethod(
         "waitExit"
         (timeout) ->
-          timeout ?= 3000
-          @waitForElementByCssSelector("#qx-application-restart",timeout))
+          try
+            timeout ?= 3000
+            yp @waitForElementByCssSelector("#qx-application-restart",timeout)
+          catch e
+            throw "Exit application failed. Error: "+e
+          (true)
+          )
 
       wd.addPromiseMethod(
         "elementExists"
@@ -210,7 +214,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
-          if plugin.hacks.resize[@qx$browserName] 
+          if plugin.hacks.resize[@qx$browserName]
             if @qx$browserName in ["ie"]
               throw "resizeWindow does not support on current version IE browser"
             yp @setDialogID(wnd,"win_qat")
@@ -461,7 +465,7 @@ module.exports = ->
           params.mess?=""
 
           unless @qx$browserName in ["ie"]
-            unless yp(@elementExists(el))? then throw "Item #{itemSelector} not found! "+params.mess 
+            unless yp(@elementExists(el))? then throw "Item #{itemSelector} not found! "+params.mess
 
           res = {}
           if @qx$browserName in ["ie","edge"]
