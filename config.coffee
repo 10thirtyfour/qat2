@@ -75,6 +75,14 @@ module.exports = ->
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
 
+      "informix-odbc":
+        LYCIA_DB_DRIVER: "odbc"
+        ODBC_DSN: "infodbc"
+        INFORMIXSERVER: "querix_test"
+        LOGNAME: "informix"
+        INFORMIXPASS: "default2375"
+        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+
       oracle:
         LYCIA_DB_DRIVER: "oracle"
         TNS_ADMIN: "c:\\Oracle"
