@@ -153,7 +153,8 @@ module.exports = ->
           unless @qx$browserName == "ie"
             if yp(@execute("return $('#{getSelector(el)}').length")) > 0
               return (true)
-          return (false)
+            return (false)
+          return (true)
           )
 
       wd.addPromiseMethod(
@@ -336,6 +337,7 @@ module.exports = ->
         "checkClasses",
         (el, params) ->
           classes = yp @getClasses el
+          #console.log classes
           params.good?=params.required
           params.bad?=params.forbidden
 
