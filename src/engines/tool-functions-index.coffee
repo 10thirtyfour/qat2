@@ -384,7 +384,11 @@ module.exports = ->
           result = (yp exitPromise(child, ignoreError:true ).timeout(@testData.compileTimeout))
 
           unless result in [-9999..9999]
-            return "Code : #{result}. Successful compilation."
+            if (path.extname(@testData.fileName)).toLowerCase() in [".4gl"]
+              return "Code : #{result}. Successful compilation."
+            else
+              if result !=0
+                throw "Compilation failed. Code: #{result}"
           if result
             txt = stderr.read()
 
