@@ -6,7 +6,7 @@ module.exports = ->
 
     common:
       options:
-        databaseProfile: "informix-odbc"
+        databaseProfile: "informix"
 
     logger:
       disable:
@@ -15,7 +15,7 @@ module.exports = ->
     globLoader:
       disable:
         file:
-          pattern: ["**/*-wd-test.coffee","**/*-mssql-odbc-db-rest.tlog","**/*-mysql-odbc-db-rest.tlog","**/*-pgsql-odbc-db-rest.tlog","**/*-oracle-db-rest.tlog"]
+          pattern: ["**/*-wd-test.coffee"]
 
     browserList :
       chrome: (false)
