@@ -150,8 +150,6 @@ module.exports = ->
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          if @qx$browserName in ["ie"]
-            if @elementByCss('#{getSelector(el)}')? then return (true) else return (false)
           if yp(@execute("return $('#{getSelector(el)}').length")) > 0
             return (true)
           return (false)
