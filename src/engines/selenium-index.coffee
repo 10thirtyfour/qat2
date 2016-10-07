@@ -234,7 +234,7 @@ module.exports = ->
               return (true)
             if @qx$browserName in ["edge"]
               if dx>0 then dx=dx-9 else dx=dx-9
-              #if dy>0 then dy=dy-9 else dx=dy+9
+              runner.edgeResize=true
             yp @remoteCall("win_qat","css",{"width":"#{dlSize.width+dx}px";"height":"#{dlSize.height+dy}px";})
             yp @remoteCall("win_qat .qx-window-border","css",{"width":"#{wbSize.width+dx}px";"height":"#{wbSize.height+dy}px";})
             yp @waitIdle()
@@ -251,17 +251,6 @@ module.exports = ->
             .buttonUp(0)
             .buttonUp(0)
             .waitIdle()
-          return (true)
-          if @qx$browserName in ["edge"]
-            r = yp @getRect(selector:".qx-identifier-win_qat > .ui-resizable-nw")
-            x = Math.round(r.left + r.width / 2)-1
-            y = Math.round(r.top + r.height / 2)-1
-            yp @elementByCss(".qx-identifier-win_qat")
-              .moveTo( x, y )
-              .buttonDown(0)
-              .moveTo( x + Math.floor(5) , y + Math.floor(5) )
-              .buttonUp(0)
-              .waitIdle()
           return (true)
         )
 
@@ -335,7 +324,6 @@ module.exports = ->
         "checkClasses",
         (el, params) ->
           classes = yp @getClasses el
-          #console.log classes
           params.good?=params.required
           params.bad?=params.forbidden
 
@@ -501,11 +489,11 @@ module.exports = ->
                 checkPrecision = parseFloat(params.precision.split("/[^0-9,.]/")[0])/100
                 unless (res[attr]-res[attr]*checkPrecision <= expected <=res[attr]+res[attr]*checkPrecision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-
               else
+                if runner.edgeResize? then params.precision += 10
                 unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-
+                if runner.edgeResize? then params.precision = params.precision-10
             else
               unless res[attr] is expected
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
