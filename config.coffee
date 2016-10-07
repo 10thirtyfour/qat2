@@ -66,7 +66,6 @@ module.exports = ->
       ie: (false)
       edge: (false)
 
-
     dbprofiles:
       informix:
         LYCIA_DB_DRIVER: "odbc"
