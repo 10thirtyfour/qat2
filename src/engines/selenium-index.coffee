@@ -674,6 +674,7 @@ module.exports = ->
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
+                        #console.log e
                         throw e
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0

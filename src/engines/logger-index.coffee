@@ -89,6 +89,10 @@ module.exports = ->
               @pass t
             t
           (f) =>
-            @fail f
+            f = f.toString()
+            if f.indexOf("ECONNREFUSED")==-1
+              @fail f
+            else
+              @info f
             throw f)
   @reg plugin
