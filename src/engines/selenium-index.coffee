@@ -33,7 +33,7 @@ module.exports = ->
     if el.selector? then return el.selector
     # string as id
     if _.isString(el)
-      if el[0] is "."
+      if el[0] in [".","#"]
         return el
       return ".qx-identifier-#{el.toLowerCase()}"
     # table row selector
@@ -95,7 +95,6 @@ module.exports = ->
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
           )
 
-
       wd.addPromiseMethod(
         "runProgram"
         (prog) ->
@@ -111,7 +110,9 @@ module.exports = ->
 
           yp spawn(cmd,params)
           yp @sleep(6000)
-          return yp @get("localhost:8888")
+          yp @get("localhost:8888")
+          yp @sleep(2000)
+          return (true)
           )
 
       wd.addPromiseMethod(
@@ -673,6 +674,7 @@ module.exports = ->
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
+                        #console.log e
                         throw e
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0
