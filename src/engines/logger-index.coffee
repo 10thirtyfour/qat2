@@ -1,5 +1,7 @@
 module.exports = ->
   {Q,_,winston} = runner = @
+  {exec} = require 'child_process'
+  ex = require('child_process').exec;
   extend = (obj) ->
     _.assign(obj,
       logPrefix: -> @name.cyan + ":"
@@ -89,10 +91,13 @@ module.exports = ->
               @pass t
             t
           (f) =>
-            f = f.toString()
-            if f.indexOf("ECONNREFUSED")==-1
+            f1 = f.toString()
+            if f1.indexOf("ECONNREFUSED")==-1
               @fail f
             else
-              @info f
+              @info f1
+              if f1.indexOf("edge")!=-1 then exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
+              if f1.indexOf("ie")!=-1  then exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+              if f1.indexOf("chrome")!=-1  then exec("start /MIN c:/qat/chromedriver.exe")
             throw f)
   @reg plugin

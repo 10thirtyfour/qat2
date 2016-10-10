@@ -338,7 +338,7 @@ module.exports = ->
           for goodClass in goodClasses
             mess+="#{el} does not have class #{goodClass}\n" unless goodClass in classes
 
-          params.deferred?=@aggregateError
+          params.deferred?=(true)
 
           return "" unless mess.length>0
 
@@ -506,7 +506,7 @@ module.exports = ->
 
           if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>"
 
-          params.deferred?=@aggregateError
+          params.deferred?=(true)
           unless params.deferred
             throw mess
           @errorMessage?=""
