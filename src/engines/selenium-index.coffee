@@ -220,6 +220,9 @@ module.exports = ->
             yp @setDialogID(wnd,"win_qat")
             dlSize = yp @getRect("win_qat")
             wbSize = yp @getRect("win_qat .qx-window-border")
+            #hack for edge,firefox,safari
+            dx=dx-9
+            #----------------------------
             if @qx$browserName in ["firefox"]
               dx1 = dlSize.width+dx
               dy1 = dlSize.height+dy
@@ -233,8 +236,6 @@ module.exports = ->
               @execute(str2)
               yp @waitIdle()
               return (true)
-            if @qx$browserName in ["edge"]
-              if dx>0 then dx=dx-9 else dx=dx-9
               runner.edgeResize=true
             yp @remoteCall("win_qat","css",{"width":"#{dlSize.width+dx}px";"height":"#{dlSize.height+dy}px";})
             yp @remoteCall("win_qat .qx-window-border","css",{"width":"#{wbSize.width+dx}px";"height":"#{wbSize.height+dy}px";})
