@@ -308,10 +308,13 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click?
-            if plugin.hacks.invoke[@qx$browserName]
-              yp @execute("$('#{getSelector(el)}').click()")
-              return (true)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
+          if plugin.hacks.invoke[@qx$browserName]
+            try 
+              yp el.click()
+              return (true)
+            catch e
+              return (true)
           el.click()
           )
 
@@ -360,11 +363,15 @@ module.exports = ->
         "invokeElement",
         (el) ->
           unless el.click?
-            if plugin.hacks.invoke[@qx$browserName]
-              yp @execute("$('#{getSelector(el)}').click()")
+            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
+          if plugin.hacks.invoke[@qx$browserName]
+            try 
+              yp el.click()
               yp @waitIdle()
               return (true)
-            el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
+            catch e
+              yp @waitIdle()
+              return (true)
           el.click()
             .waitIdle()
           )
