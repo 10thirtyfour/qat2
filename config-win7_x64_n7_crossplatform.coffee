@@ -4,7 +4,7 @@ module.exports = ->
   _.merge opts,
     powerOff: true
 
-    scenario: "firefox_opera"
+    scenario: "firefox"
     common:
       options:
         databaseProfile: "informix"
@@ -23,7 +23,7 @@ module.exports = ->
 
     browserList :
       chrome: (false)
-      opera: (true)
+      opera: (false)
       firefox: (true)
       edge: (false)
       ie: (false)
