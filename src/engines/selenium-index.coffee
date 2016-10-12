@@ -368,7 +368,7 @@ module.exports = ->
           if @qx$browserName == "firefox"
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
-            if nm is "click"
+            if nm in ["click","dblclick"]
               return yp @execute("$('#{getSelector(el)}').#{nm}()")
             return yp @execute("return $('#{getSelector(el)}').#{nm}()")
           if _.isString el
