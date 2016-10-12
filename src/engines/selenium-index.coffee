@@ -81,7 +81,7 @@ module.exports = ->
         ie:(true)
         edge:(true)
       invoke:
-        firefox: (false)
+        firefox: (true)
 
     promise: ->
 
@@ -308,6 +308,9 @@ module.exports = ->
         "invoke",
         (el) ->
           unless el.click?
+            if plugin.hacks.invoke[@qx$browserName]
+              yp @execute("$('#{getSelector(el)}').click()")
+              return (true)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
           el.click()
           )
@@ -357,6 +360,10 @@ module.exports = ->
         "invokeElement",
         (el) ->
           unless el.click?
+            if plugin.hacks.invoke[@qx$browserName]
+              yp @execute("$('#{getSelector(el)}').click()")
+              yp @waitIdle()
+              return (true)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
           el.click()
             .waitIdle()
