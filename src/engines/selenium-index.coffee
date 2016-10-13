@@ -382,7 +382,7 @@ module.exports = ->
           if @qx$browserName == "firefox"
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
-            if nm in ["click","dblclick"]
+            if nm in ["click","dblclick","mouseup","mousedown"]
               return yp @execute("$('#{getSelector(el)}').#{nm}()")
             return yp @execute("return $('#{getSelector(el)}').#{nm}()")
           if _.isString el
@@ -684,12 +684,10 @@ module.exports = ->
                         if process.platform[0] is "w"
                           runner.trace "taskkill /F /T /IM #{cmd}.exe"
                           exec "taskkill /F /T /IM #{cmd}.exe"
-
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
-                        #console.log e
                         throw e
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0
