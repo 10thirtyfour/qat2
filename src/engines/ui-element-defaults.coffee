@@ -331,13 +331,7 @@ elements =
       text: (el) -> "return $('#{el} .qx-text').val()"
       value : (el) -> "return $('#{el} textarea').val()"
       defaults :
-        height : 38
-        firefox$l :
-          height : 52
-        firefox$w :
-          height : 55
-        chrome$l :
-          height : 38
+        height : 53
      set :
        value : (el,val)->
          @elementByCss("#{el}.qx-aum-text-area").click()
