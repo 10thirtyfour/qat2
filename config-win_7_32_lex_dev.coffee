@@ -15,7 +15,7 @@ module.exports = ->
 
     logger:
       disable:
-        couchdb: false
+        couchdb: true
       transports:
         console:
           level: "info"
@@ -33,7 +33,6 @@ module.exports = ->
       chrome: (true)
       #firefox: (true)
       #ie: (true)
-
 
     dbprofiles:
       informix:
