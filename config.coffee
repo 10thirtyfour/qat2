@@ -16,8 +16,8 @@ module.exports = ->
       dar_x64: 'sh -c source /opt/Querix/Lycia/environ ; sleep 1; export LD_LIBRARY_PATH=/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:$LD_LIBRARY_PATH ; node -e "console.log(JSON.stringify(process.env))"'
 
     defaultDeployPath:
-      win_ia32: 'C:/ProgramData/Querix/Lycia 7/progs'
-      win_x64: 'C:/ProgramData/Querix/Lycia 7/progs'
+      win_ia32: 'C:/ProgramData/Querix/Lycia/progs'
+      win_x64: 'C:/ProgramData/Querix/Lycia/progs'
       lin_ia32: '/opt/Querix/Lycia/progs'
       lin_x64: '/opt/Querix/Lycia/progs'
 
