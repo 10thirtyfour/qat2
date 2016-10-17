@@ -387,7 +387,7 @@ module.exports = ->
             if (path.extname(@testData.fileName)).toLowerCase() in [".4gl"]
               return "Code : #{result}. Successful compilation."
             else
-              if result !=0
+              if result !=0 and @testData.reverse != true
                 throw "Compilation failed. Code: #{result}"
           if result
             txt = stderr.read()
