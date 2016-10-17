@@ -43,13 +43,14 @@
   "devDependencies": {
     "grunt": "*",
     "grunt-cli": "*",
-    "grunt-contrib-coffee": "*",
-    "grunt-contrib-watch": "*",
     "grunt-contrib-clean": "*",
+    "grunt-contrib-coffee": "*",
     "grunt-contrib-copy": "*",
-    "grunt-mkdir": "*",
+    "grunt-contrib-watch": "*",
     "grunt-markdown": "*",
-    "matchdep": "*"
+    "grunt-mkdir": "*",
+    "matchdep": "*",
+    "selenium-server-standalone-jar": "^3.0.0"
   },
   "bin": {
     "qat": "./bin/qat"
