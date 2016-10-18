@@ -378,7 +378,7 @@ module.exports = ->
                 try
                   yp @execute("$("+sel+").click()")
                 catch e3
-                  console.log "el.click() failed!"
+                  console.log "#{sel}.click() failed!"
                   yp @waitIdle()
               yp @waitIdle()
               return (true)
