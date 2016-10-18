@@ -33,7 +33,7 @@ module.exports = ->
     if el.selector? then return el.selector
     # string as id
     if _.isString(el)
-      if el[0] in [".","#"]
+      if el[0] in [".","#","["]
         return el
       return ".qx-identifier-#{el.toLowerCase()}"
     # table row selector
@@ -133,7 +133,8 @@ module.exports = ->
             else
               yp @get(programUrl).sleep(1000)
           catch e
-            throw "StartApplication <#{command}> failed. Error:"+e
+            throw "StartApplication <#{command}> failed."
+           
           (true)
           )
 
@@ -144,7 +145,7 @@ module.exports = ->
             timeout ?= 3000
             yp @waitForElementByCssSelector("#qx-application-restart",timeout)
           catch e
-            throw "Exit application failed. Error: "+e
+            throw "Exit application failed. Error: "
           (true)
           )
 
@@ -363,13 +364,22 @@ module.exports = ->
         "invokeElement",
         (el) ->
           unless el.click?
+            sel = yp @getSelector(el)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
           if plugin.hacks.invoke[@qx$browserName]
             try 
               yp el.click()
               yp @waitIdle()
               return (true)
-            catch e
+            catch e1
+              try
+                el.click().perform()
+              catch e2
+                try
+                  yp @execute("$("+sel+").click()")
+                catch e3
+                  console.log "el.click() failed!"
+                  yp @waitIdle()
               yp @waitIdle()
               return (true)
           el.click()
