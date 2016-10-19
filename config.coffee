@@ -2,7 +2,7 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
-    version : 2.51
+    version : 3.0
     appHost: "localhost"
     qatDefaultInstance : "default"
     tempPath : "./tests"

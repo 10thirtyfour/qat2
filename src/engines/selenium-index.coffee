@@ -1,8 +1,6 @@
 log = console.log
-
 UI_elements = require "./ui-element-defaults"
 dnd_helper = require "./drag_and_drop_helper"
-
 
 module.exports = ->
   {opts,fs,Q,path,_,EventEmitter,yp} = runner = @
@@ -26,19 +24,13 @@ module.exports = ->
       not fname.match("^newElement$|^toJSON$|^toString$|^_") and
         not EventEmitter.prototype[fname]
       ).value()
-
   # transform input element to css selector for most methods
   getSelector = (el)->
-    # exact selector was provided
     if el.selector? then return el.selector
-    # string as id
     if _.isString(el)
       if el[0] in [".","#","["]
         return el
       return ".qx-identifier-#{el.toLowerCase()}"
-    # table row selector
-    if el.table? and el.row?
-      return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
 
   @reg
     name: "wd"
@@ -52,24 +44,18 @@ module.exports = ->
       browser: runner.opts.browserList
     links:
       chrome: "http://localhost:9515/"
-      edge: "http://localhost:17556/"
-      firefox: "http://localhost:4444/wd/hub/"
-      ie: "http://localhost:5555/"
-      safari: "http://localhost:4444/wd/hub/"
       opera: "http://localhost:9515/"
+      edge: "http://localhost:17556/"
+      ie: "http://localhost:5555/"
+      firefox: "http://localhost:4444/wd/hub/"
+      safari: "http://localhost:4444/wd/hub/"
     browsers:
-      chrome:
-        browserName: "chrome"
-      edge:
-        browserName: "edge"
-      firefox:
-        browserName: "firefox"
-      ie:
-        browserName: "ie"
-      safari:
-        browserName: "safari"
-      opera:
-        browserName: "opera"
+      chrome:{browserName: "chrome"}
+      opera:{browserName: "opera"}
+      edge:{browserName: "edge"}
+      ie:{browserName: "ie"}
+      firefox:{browserName: "firefox"}
+      safari:{browserName: "safari"}
     hacks:
       justType:
         safari: (true)
@@ -84,9 +70,7 @@ module.exports = ->
         firefox: (true)
 
     promise: ->
-
       plugin = @
-
       wd.addPromiseMethod(
         "waitIdle",
         (timeout,idleTimeout) ->
@@ -134,7 +118,6 @@ module.exports = ->
               yp @get(programUrl).sleep(1000)
           catch e
             throw "StartApplication <#{command}> failed."
-           
           (true)
           )
 
@@ -145,7 +128,7 @@ module.exports = ->
             timeout ?= 3000
             yp @waitForElementByCssSelector("#qx-application-restart",timeout)
           catch e
-            throw "Exit application failed. Error: "
+            throw "Exit application failed."
           (true)
           )
 
@@ -174,16 +157,7 @@ module.exports = ->
         "waitMessageBox",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
-          @waitForElementByCssSelector(
-            ".qx-message-box"
-            timeout)
-          )
-
-      wd.addPromiseMethod(
-        "waitAppReady"
-        () ->
-          @get(plugin.lyciaWebUrl)
-            .waitIdle()
+          @waitForElementByCssSelector(".qx-message-box",timeout)
           )
 
       wd.addPromiseMethod(
@@ -198,6 +172,7 @@ module.exports = ->
             return elenent
           return null
           )
+
       wd.addPromiseMethod(
         "getContextMenu"
         (el) ->
@@ -223,7 +198,7 @@ module.exports = ->
             wbSize = yp @getRect("win_qat .qx-window-border")
             #hack for edge,firefox,safari
             dx=dx-9
-            runner.edgeResize=true
+            runner.hackResize=true
             #----------------------------
             if @qx$browserName in ["firefox"]
               dx1 = dlSize.width+dx
@@ -282,20 +257,15 @@ module.exports = ->
           r = yp @execute "return $('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
-
           yp @elementByCss('#qx-home-form')
             .moveTo( x, y )
             .buttonDown(0)
             .moveTo( x + Math.floor(dx) , y + Math.floor(dy) )
             .buttonUp(0)
+            .waitIdle()
+          return (true)
         )
 
-      wd.addPromiseMethod(
-        "fglFocused",
-        -> @elementByCss(".qx-focused"))
-      wd.addPromiseMethod(
-        "toTextEl",
-        -> @then((e) -> e.elementByCss ".qx-text"))
       wd.addPromiseMethod(
         "justType",
         (val) ->
@@ -303,7 +273,8 @@ module.exports = ->
             el = yp  @elementByCss(".qx-focused .qx-text")
             @elementByCss(".qx-focused .qx-text").type(val)
           else
-            @elementByCss(".qx-focused .qx-text").type(val))
+            @elementByCss(".qx-focused .qx-text").type(val)
+        )
 
       wd.addPromiseMethod(
         "invoke",
@@ -311,13 +282,13 @@ module.exports = ->
           unless el.click?
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
           if plugin.hacks.invoke[@qx$browserName]
-            try 
+            try
               yp el.click()
               return (true)
             catch e
               return (true)
           el.click()
-          )
+        )
 
       wd.addPromiseMethod(
         "getClasses",
@@ -327,7 +298,7 @@ module.exports = ->
           if attr?
             return attr.split(" ")
           return []
-      )
+        )
 
       wd.addPromiseMethod(
         "checkClasses",
@@ -335,30 +306,22 @@ module.exports = ->
           classes = yp @getClasses el
           params.good?=params.required
           params.bad?=params.forbidden
-
           goodClasses = if _.isString(params.good) then params.good.split(' ') else params.good ? []
           badClasses = if _.isString(params.bad ) then params.bad.split(' ') else params.bad ? []
-
           mess=""
           for badClass in badClasses
             mess+="#{el} has class #{badClass}\n" if badClass in classes
-
           for goodClass in goodClasses
             mess+="#{el} does not have class #{goodClass}\n" unless goodClass in classes
-
           params.deferred?=(true)
-
           return "" unless mess.length>0
-
           if params.mess?
             mess=params.mess+' '+mess
-
           throw mess unless params.deferred
-
           @errorMessage?=""
           @errorMessage+=mess
           return mess
-      )
+        )
 
       wd.addPromiseMethod(
         "invokeElement",
@@ -367,7 +330,7 @@ module.exports = ->
             sel = yp @getSelector(el)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
           if plugin.hacks.invoke[@qx$browserName]
-            try 
+            try
               yp el.click()
               yp @waitIdle()
               return (true)
@@ -384,7 +347,7 @@ module.exports = ->
               return (true)
           el.click()
             .waitIdle()
-          )
+        )
 
       wd.addPromiseMethod(
         "remoteCall"
@@ -399,7 +362,7 @@ module.exports = ->
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
             yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
-            )
+        )
 
       wd.addPromiseMethod(
         "hasScroll"
@@ -411,7 +374,7 @@ module.exports = ->
                         (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
                      return false;
                    """)
-      )
+        )
 
       wd.addPromiseMethod(
         "getRect"
@@ -433,7 +396,7 @@ module.exports = ->
           s.t = s.top = Math.round(s.top)
           s.b = s.bottom = Math.round(s.bottom)
           return s
-      )
+        )
 
       wd.addPromiseMethod(
         "getFontSize"
@@ -446,7 +409,7 @@ module.exports = ->
           s.w = s.width
           s.h = s.height
           return s
-      )
+        )
 
       wd.addPromiseMethod(
         "getCellSize"
@@ -457,13 +420,14 @@ module.exports = ->
           s.w = s.width
           s.h = s.height
           return s
-      )
+        )
 
       wd.addPromiseMethod(
         "getConsoleText"
         () ->
           return yp @execute "return $('.qx-text-console .ui-widget-content textarea').val()"
-      )
+        )
+
       wd.addPromiseMethod(
         "check"
         (el, options) ->
@@ -475,24 +439,19 @@ module.exports = ->
             el_type = params.type
             el_type?= "unknown"
           itemSelector = yp getSelector(el)
-
           params.mess?=""
-
           unless @qx$browserName in ["ie"]
             unless yp(@elementExists(el))? then throw "Item #{itemSelector} not found! "+params.mess
-
           res = {}
           if @qx$browserName in ["ie","edge"]
             res = yp @getRect(el)
           else
             res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
-
           res.width = Math.floor(res.width)
           res.height = Math.floor(res.height)
           res.left = Math.floor(res.left)
           res.top = Math.floor(res.top)
           res.type = el_type
-
           params.width = params.w if (params.w?)
           params.height = params.h if (params.h?)
           params.left = params.x if (params.x?)
@@ -516,28 +475,23 @@ module.exports = ->
                 unless (res[attr]-res[attr]*checkPrecision <= expected <=res[attr]+res[attr]*checkPrecision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
               else
-                if runner.edgeResize? then params.precision += 10
+                if runner.hackResize? then params.precision += 10
                 unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-                if runner.edgeResize? then params.precision = params.precision-10
+                if runner.hackResize? then params.precision = params.precision-10
             else
               unless res[attr] is expected
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-
-
           if errmsg is "" then return ""
-
           mess+=" : #{errmsg}"
-
           if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>"
-
           params.deferred?=(true)
           unless params.deferred
             throw mess
           @errorMessage?=""
           @errorMessage+=mess+"\n"
           return mess
-      )
+        )
 
       # adding getSomething methods
       for method of UI_elements.unknown.get
@@ -549,7 +503,7 @@ module.exports = ->
             (el,el_type) ->
               el_type ?= yp @getType(el)
               return yp @execute UI_elements[el_type].get[attr](getSelector(el),el)
-          )
+        )
 
       wd.addPromiseMethod(
         "getType"
@@ -558,8 +512,8 @@ module.exports = ->
           for name of UI_elements
             if (classList.indexOf("qx-aum-#{name}") != -1)
               return name
-          "unknown"
-      )
+          return "unknown"
+        )
 
       wd.addPromiseMethod(
         "setValue"
@@ -569,38 +523,34 @@ module.exports = ->
           catch e
             plugin.info "#{el} setValue failed"
             return (false)
-          (true)
-      )
+          return (true)
+        )
 
       wd.addPromiseMethod(
         "setTabId"
         (el, v) ->
           v ?= "h_"+el.toLowerCase()
           return yp @execute "$('[aria-controls='+$('.qx-identifier-#{el}').prop('id') +']').addClass('qx-identifier-#{v}')"
-      )
-      wd.addPromiseMethod(
-        "toolbutton"
-        (title) ->
-          @elementByCss(""".qx-aum-toolbar-button[title="#{title}"]"""))
+        )
 
       wd.addPromiseMethod(
         "statusBarText"
         (mType) ->
           mType ?= "message"
           yp (@execute("return $('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
-      )
+        )
 
       wd.addPromiseMethod(
         "dndInit",
         (el,button=0)->
           @execute dnd_helper
-      )
+        )
 
       wd.addPromiseMethod(
         "dragNDrop",
         (el,button=0)->
           @execute "$('#{getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
-      )
+        )
 
       wd.addPromiseMethod(
         "dropAt",
@@ -609,35 +559,25 @@ module.exports = ->
           selector = getSelector(el)
           @elementByCss("#{selector}").moveTo().buttonUp(@draggable.button)
           @draggable={}
-      )
+        )
 
       wd.addPromiseMethod(
-        "messageBox"
-        (action,params) ->
-          switch action
-            when "getText" then yp(@execute("return $('.qx-message-box:visible pre').text()"))
-            when "getValue" then yp(@execute("return $('.qx-message-box:visible input').val()"))
-            when "wait" then yp(@waitMessageBox().sleep(300))
-            when "click" then yp(@execute ("$('.qx-button-#{params}').click()"))
-            else
-              throw "Isn't implemented for this messageBox element yet"
-      )
-
-      wd.addPromiseMethod(
-        "setDialogID", (el,id)->
+        "setDialogID",
+        (el,id)->
           if _.isString(el) then id?="d_"+el
           if el.selector? then id?="d_"+el.id
           return yp @execute("$('#{getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
-      )
+        )
 
       wd.addPromiseMethod(
-        "getSelector", (el)->
+        "getSelector",
+        (el)->
           if el.selector? then return el.selector
-
-          if _.isString(el) then return ".qx-identifier-#{el.toLowerCase()}"
-          if el.table? and el.row?
-            return ".qx-identifier-#{el.table} table.qx-tbody tr:nth-child(#{(el.row+1)})"
-      )
+          if _.isString(el)
+            if el[0] in [".","#","["]
+              return el
+            return ".qx-identifier-#{el.toLowerCase()}"
+        )
       # Adding properties for wd test' this
       synproto =
         SPECIAL_KEYS:wd.SPECIAL_KEYS

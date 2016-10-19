@@ -29,11 +29,10 @@ module.exports = ->
       ie: (false)
       safari : (false)
 
-
     common:
       timeouts:
-        wd: 120000
-        wait: 30000
+        wd: 50000
+        wait: 10000
 
     dbprofiles:
       informix:
