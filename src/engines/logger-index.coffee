@@ -99,5 +99,6 @@ module.exports = ->
               if f1.indexOf("edge")!=-1 then exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
               if f1.indexOf("ie")!=-1  then exec("start /MIN c:/qat/IEDriverServer_x64.exe")
               if f1.indexOf("chrome")!=-1  then exec("start /MIN c:/qat/chromedriver.exe")
+              if f1.indexOf("opera")!=-1  then exec("start /MIN c:/qat/operadriver_x64.exe")
             throw f)
   @reg plugin

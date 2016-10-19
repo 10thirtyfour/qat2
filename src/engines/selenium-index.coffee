@@ -56,7 +56,7 @@ module.exports = ->
       firefox: "http://localhost:4444/wd/hub/"
       ie: "http://localhost:5555/"
       safari: "http://localhost:4444/wd/hub/"
-      opera: "http://localhost:9516/"
+      opera: "http://localhost:9515/"
     browsers:
       chrome:
         browserName: "chrome"
@@ -725,6 +725,8 @@ module.exports = ->
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
+                    if v.browserName in ["opera"]
+                      exec("taskkill /F /T /IM opera.exe")
                   else
                     browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["firefox"]
