@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
 
-    appHost: "10.38.57.167"
+    appHost: "10.38.57.184"
 
     common:
       options:
