@@ -112,7 +112,7 @@ module.exports = ->
             programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
             if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
             if params.wait
-              yp @get(programUrl).waitIdle().sleep(5000) if @qx$browserName == "safari"
+              yp @get(programUrl).waitIdle().sleep(3000) if @qx$browserName == "safari"
               yp @get(programUrl).waitIdle().sleep(500)
             else
               yp @get(programUrl).sleep(1000)
@@ -352,7 +352,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "remoteCall"
         (el, nm, args...) ->
-          if @qx$browserName in ["firefox","safari"}
+          if @qx$browserName in ["firefox","safari"]
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
             if nm in ["click","dblclick","mouseup","mousedown"]
