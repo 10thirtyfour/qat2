@@ -61,13 +61,13 @@ module.exports = ->
         safari: (true)
         firefox: (true)
       resize:
-        chrome: (false)
         safari: (true)
         firefox: (true)
         ie:(true)
         edge:(true)
       invoke:
         firefox: (true)
+        safari: (true)
 
     promise: ->
       plugin = @
@@ -200,7 +200,7 @@ module.exports = ->
             dx=dx-9
             runner.hackResize=true
             #----------------------------
-            if @qx$browserName in ["firefox"]
+            if @qx$browserName in ["firefox","safari"]
               dx1 = dlSize.width+dx
               dy1 = dlSize.height+dy
               obj = '"width":"'+dx1+'px","height":"'+dy1+'px"'
@@ -352,7 +352,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "remoteCall"
         (el, nm, args...) ->
-          if @qx$browserName == "firefox"
+          if @qx$browserName in ["firefox","safari"}
             if args.length > 0
               return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
             if nm in ["click","dblclick","mouseup","mousedown"]
