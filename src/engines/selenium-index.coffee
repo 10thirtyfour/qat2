@@ -44,17 +44,17 @@ module.exports = ->
       browser: runner.opts.browserList
     links:
       chrome: "http://localhost:9515/"
-      opera: "http://localhost:9515/"
       edge: "http://localhost:17556/"
-      ie: "http://localhost:5555/"
       firefox: "http://localhost:4444/wd/hub/"
+      opera: "http://localhost:9515/"
+      ie: "http://localhost:5555/"
       safari: "http://localhost:4444/wd/hub/"
     browsers:
       chrome:{browserName: "chrome"}
-      opera:{browserName: "opera"}
       edge:{browserName: "edge"}
-      ie:{browserName: "ie"}
       firefox:{browserName: "firefox"}
+      opera:{browserName: "opera"}
+      ie:{browserName: "ie"}
       safari:{browserName: "safari"}
     hacks:
       justType:
