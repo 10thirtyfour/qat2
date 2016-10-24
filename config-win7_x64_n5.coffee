@@ -10,6 +10,11 @@ module.exports = ->
         databaseProfile: "informix"
         env:
           DBDATE: "MDY4/"
+      timeouts:
+        wd: 50000
+        wait: 10000
+        idle: 600
+
 
     logger:
       disable:
@@ -28,11 +33,6 @@ module.exports = ->
       edge: (false)
       ie: (false)
       safari : (false)
-
-    common:
-      timeouts:
-        wd: 50000
-        wait: 10000
 
     dbprofiles:
       informix:
