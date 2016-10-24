@@ -358,7 +358,7 @@ module.exports = ->
             if nm in ["click","dblclick","mouseup","mousedown"]
               return yp @execute("$('#{getSelector(el)}').#{nm}()")
             return yp @execute("return $('#{getSelector(el)}').#{nm}()")
-          if _.isString el
+          if _.isString el or el.selector?
             yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
           else
             yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
