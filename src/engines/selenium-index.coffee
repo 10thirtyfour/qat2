@@ -270,6 +270,8 @@ module.exports = ->
         "justType",
         (val) ->
           if plugin.hacks.justType[@qx$browserName]
+            if @qx$browserName in ["safari"]
+              throw "Error in safari element.type. Workaround: ECONNREFUSED "
             el = yp  @elementByCss(".qx-focused .qx-text")
             @elementByCss(".qx-focused .qx-text").type(val)
           else
