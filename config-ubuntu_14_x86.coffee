@@ -19,9 +19,14 @@ module.exports = ->
       disable:
         file:
           pattern: ["**/*-perf-rest.tlog","**/*-wd-test.coffee"]
+
     browserList :
       chrome: (false)
-      firefox: (true)
+      edge: (false)
+      firefox: (false)
+      opera: (false)
+      ie: (false)
+      safari: (false)
 
     logger:
       disable:

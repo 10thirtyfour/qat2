@@ -22,9 +22,11 @@ module.exports = ->
 
     browserList :
       chrome: (false)
+      edge: (false)
       firefox: (false)
+      opera: (false)
       ie: (false)
-      safari: true
+      safari: (true)
 
     logger:
       disable:

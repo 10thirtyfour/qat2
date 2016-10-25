@@ -11,8 +11,12 @@ module.exports = ->
     scenario: "default"
 
     browserList :
-      chrome: (true)
+      chrome: (false)
       edge: (true)
+      firefox: (false)
+      opera: (false)
+      ie: (true)
+      safari: (false)
 
     common:
       timeouts:

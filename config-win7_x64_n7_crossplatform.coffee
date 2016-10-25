@@ -27,8 +27,11 @@ module.exports = ->
 
     browserList :
       chrome: (false)
+      edge: (false)
       firefox: (true)
       opera: (true)
+      ie: (false)
+      safari: (false)
 
     dbprofiles:
       informix:
