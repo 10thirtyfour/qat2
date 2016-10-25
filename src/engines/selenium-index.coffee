@@ -141,19 +141,6 @@ module.exports = ->
           )
 
       wd.addPromiseMethod(
-        "waitElement"
-        (el,timeout) ->
-          timeout ?= plugin.defaultWaitTimeout
-          for i in [1..10]
-            if ((yp(@execute("return $('"+getSelector(el)+":visible').length")))<1)
-              yp @sleep (timeout/10)
-            else
-              yp(@sleep (timeout)) if @qx$browserName == "firefox"
-              return (true)
-          return throw "Element #{el} not exists"
-          )
-
-      wd.addPromiseMethod(
         "waitMessageBox",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
@@ -163,15 +150,6 @@ module.exports = ->
       wd.addPromiseMethod(
         "getElement"
         (el) -> @elementByCss "#{getSelector(el)}")
-
-      wd.addPromiseMethod(
-        "getElementInrernal"
-        (el) ->
-          if yp @elementExists(el)
-            elenent = yp @execute("return $('#{yp(getSelector(el))}')")
-            return elenent
-          return null
-          )
 
       wd.addPromiseMethod(
         "getContextMenu"
