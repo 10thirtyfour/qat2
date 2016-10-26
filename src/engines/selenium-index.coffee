@@ -117,7 +117,7 @@ module.exports = ->
             else
               yp @get(programUrl).sleep(1000)
           catch e
-            throw "StartApplication <#{command}> failed."
+            throw "StartApplication <#{command}> failed. \n Error - " + e
           (true)
           )
 
@@ -128,7 +128,7 @@ module.exports = ->
             timeout ?= 3000
             yp @waitForElementByCssSelector("#qx-application-restart",timeout)
           catch e
-            throw "Exit application failed."
+            throw "Exit application failed. \n Error - " + e
           (true)
           )
 
