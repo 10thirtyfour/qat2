@@ -2,6 +2,7 @@ module.exports = ->
   ALLTRACE = false
   {_,opts} = @
   _.merge opts,
+    powerOff: true
 
     environCommands:
       lin_ia32: 'sh -c . /opt/Querix/Lycia/environ ; sleep 1; export LD_LIBRARY_PATH=/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:$LD_LIBRARY_PATH ; node -e "console.log(JSON.stringify(process.env))"'

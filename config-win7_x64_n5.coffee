@@ -4,7 +4,6 @@ module.exports = ->
   _.merge opts,
     powerOff: false
 
-    scenario: "firefox"
     common:
       options:
         databaseProfile: "informix"

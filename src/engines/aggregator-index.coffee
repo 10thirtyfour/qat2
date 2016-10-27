@@ -82,6 +82,9 @@ module.exports = ->
   donePromise = runner.tests.done.promise
   runner.tests.done.promise = ->
     runner.logger.trace "done.promise started"
+    if runner.opts.powerOff
+      if process.platform[0] is "w" then exec("taskkill /F /T /IM qrun.exe")
+      if process.platform[0] is "l" then exec("killall -s KILL qrun")
     deff = Q.defer()
     p = deff.promise
     if runner.logger.transports.couchdb?

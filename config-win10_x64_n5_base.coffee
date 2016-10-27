@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     powerOff: true
-    
+
     common:
       options:
         databaseProfile: "informix"
