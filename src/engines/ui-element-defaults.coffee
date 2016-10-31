@@ -80,7 +80,7 @@ elements =
       defaults :
         height : 20
         safari$d :
-          height : 37
+          height : 23
 
   "grid-panel" :
     qxclass : "qx-aum-grid-panel"
