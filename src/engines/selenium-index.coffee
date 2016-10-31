@@ -455,10 +455,10 @@ module.exports = ->
                 unless (res[attr]-res[attr]*checkPrecision <= expected <=res[attr]+res[attr]*checkPrecision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
               else
-                if runner.hackResize? then params.precision += 10
+                if runner.hackResize? then params.precision += 15
                 unless (res[attr]-params.precision <= expected <=res[attr]+params.precision)
                   errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
-                if runner.hackResize? then params.precision = params.precision-10
+                if runner.hackResize? then params.precision = params.precision-15
             else
               unless res[attr] is expected
                 errmsg += "#{attr} mismatch! Actual : <#{res[attr]}>, Expected : <#{expected}>. "
