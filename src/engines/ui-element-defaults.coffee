@@ -79,7 +79,7 @@ elements =
                   if (t.length > 0 ) { return t;} else { return $('#{el} div .qx-text').val();}"
       defaults :
         height : 20
-        safari$l :
+        safari$d :
           height : 37
 
   "grid-panel" :
