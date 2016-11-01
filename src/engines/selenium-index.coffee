@@ -58,16 +58,18 @@ module.exports = ->
       safari:{browserName: "safari"}
     hacks:
       justType:
-        safari: (true)
-        firefox: (true)
-      resize:
-        safari: (true)
-        firefox: (true)
-        ie:(true)
-        edge:(true)
-      invoke:
-        firefox: (true)
-        safari: (true)
+        safari  : (true)
+        firefox : (true)
+      resize  :
+        safari  : (true)
+        firefox : (true)
+        ie      : (true)
+        edge    : (true)
+      invoke  :
+        firefox : (true)
+        safari  : (true)
+      exit    :
+        safari  : (true)
 
     promise: ->
       plugin = @
@@ -125,10 +127,11 @@ module.exports = ->
         "waitExit"
         (timeout) ->
           try
-            timeout ?= 3000
+            timeout ?= 5000
             yp @waitForElementByCssSelector("#qx-application-restart",timeout)
           catch e
-            throw "Exit application failed. \n Error - " + e
+            unless plugin.hacks.exit[@qx$browserName]
+              throw "Exit application failed. \n Error - " + e
           (true)
           )
 
