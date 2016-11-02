@@ -112,7 +112,10 @@ module.exports = ->
             params.instance ?= runner.opts.qatDefaultInstance
             command += ".exe" if process.platform[0] is "w"
             programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
-            if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
+            if params.args
+              programUrl+=params.args+"&cache=check&timeout=0&ui-colors=custom&autotest"
+            else
+              programUrl+="?cache=check&timeout=0&ui-colors=custom&autotest"
             if params.wait
               yp @get(programUrl).waitIdle().sleep(3000) if @qx$browserName == "safari"
               yp @get(programUrl).waitIdle().sleep(500)
