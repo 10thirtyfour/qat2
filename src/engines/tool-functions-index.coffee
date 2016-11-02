@@ -150,6 +150,7 @@ module.exports = ->
           actualBlock = readBlock(nextOutLine,"<<<")
           actualLine = actualBlock.join "\n"
           expectedLine = logBlock.join "\n"
+
           fail = (false)
           if actualLine isnt expectedLine
             fail = (true)
@@ -190,6 +191,7 @@ module.exports = ->
   readBlock = (nextLine, dir) ->
     mess=[]
     while (line=nextLine())
+      line = line.replace(line.match( /\[........\]/ ),'[00000000]')
       if line is ">>>" or line is "<<<"
         if dir is line
           mess.push line
