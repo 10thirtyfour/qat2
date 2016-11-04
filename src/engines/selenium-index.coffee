@@ -325,6 +325,7 @@ module.exports = ->
                   yp @execute("$("+sel+").click()")
                 catch e3
                   console.log "#{sel}.click() failed!"
+                  throw "Error on invoke element. Workaround: ECONNREFUSED "
                   yp @waitIdle()
               yp @waitIdle()
               return (true)
