@@ -17,8 +17,8 @@ module.exports = ->
     common:
       timeouts:
         wd: 300000
-        wait: 30000
-        idle: 1500
+        wait: 60000
+        idle: 2000
 
     browserList :
       chrome: (false)
