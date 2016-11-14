@@ -35,7 +35,7 @@ module.exports = ->
             runner.reg
               name: compileTestName
               failOnly: true
-              after: ["atomic/start","xdep$7"]
+              after: ["xdep$7"]
               before: ["xdep$8"]
               data:
                 kind: "compile"+testData.ext
@@ -57,7 +57,7 @@ module.exports = ->
         unless formTestName of runner.tests
           runner.reg
             name : formTestName
-            after: ["atomic/start","xdep$8"]
+            after: ["xdep$8"]
             before: ["xdep$9"]
             data :
               kind : "xpath"
@@ -191,16 +191,18 @@ module.exports = ->
 
         testData.failOnly ?= testData.deploy
         testData.after ?= []
+        testData.before ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
-        else
-          testData.after.push("atomic/start")
+        #else
+        #  testData.after.push("atomic/start")
 
         runner.reg
           name: testData.buildTestName
           after: testData.after
+          before: testData.before
           data:
             kind: "build"
             src : runner.relativeFn(@fileName)
