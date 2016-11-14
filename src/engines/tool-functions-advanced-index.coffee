@@ -35,6 +35,8 @@ module.exports = ->
             runner.reg
               name: compileTestName
               failOnly: true
+              after: ["atomic/start","xdep$7"]
+              before: ["xdep$8"]
               data:
                 kind: "compile"+testData.ext
                 src : @fileName
@@ -55,6 +57,8 @@ module.exports = ->
         unless formTestName of runner.tests
           runner.reg
             name : formTestName
+            after: ["atomic/start","xdep$8"]
+            before: ["xdep$9"]
             data :
               kind : "xpath"
               src : runner.relativeFn(@fileName)
@@ -149,7 +153,8 @@ module.exports = ->
       #testData.buildTestName = runner.toolfuns.uniformName(
       #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
-      if testData.atomic then  testData.buildTestName ?= "atomic/#{testData.atomic}"
+      if testData.atomic
+        testData.buildTestName ?= "atomic/#{testData.atomic}"
 
       if testData.name
         testData.buildTestName ?= "#{testData.projectName}/#{testData.name}/build"
@@ -188,6 +193,11 @@ module.exports = ->
         testData.after ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
+        if (testData.atomic?) && (testData.atomic == "start")
+          testData.buildTestName = "atomic/" + testData.atomic
+        else
+          testData.after.push("atomic/start")
+
         runner.reg
           name: testData.buildTestName
           after: testData.after
@@ -216,7 +226,11 @@ module.exports = ->
       params.name ?= path.basename(@fileName, "-ld-test.coffee")
 
       params.name = params.projectName+"/"+params.name+"/desktop"
-      params.after     ?= @lastBuiltTestName ? []
+      params.after?= []
+      if @lastBuiltTestName?
+        params.after.push(@lastBuiltTestName)
+      params.after.push("xdep$6")
+      params.before = ["xdep$7"]
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
 
@@ -234,6 +248,7 @@ module.exports = ->
         params = obj
       params.after ?= []
       params.data ?= {}
+      params.level ?= 10
       params.data.src ?= runner.relativeFn(@fileName)
       params.after.push(@lastBuiltTestName) if @lastBuiltTestName?
       params.atomic_before ?= []
@@ -249,8 +264,6 @@ module.exports = ->
       params.name = params.projectName+"/"+params.name
 
       if params.atomic then  params.name = "atomic/#{params.atomic}"
-
-
 
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt

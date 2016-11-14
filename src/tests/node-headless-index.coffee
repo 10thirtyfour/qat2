@@ -40,10 +40,9 @@ module.exports = ->
 
                 if typeof testData.atomic is "string"
                   testData.testName = "atomic/"+testData.atomic
-
+                  testData.level = "0"
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
-
 
                 testData.skipBuild ?= false
                 #unless runner.argv["skip-build"]
@@ -53,6 +52,7 @@ module.exports = ->
                       if runner.tests[testData.buildTestName].after.indexOf(r)==-1
                         runner.tests[testData.buildTestName].after.push(r)
                   else
+                    testReq.push("atomic/start")
                     runner.reg
                       name: testData.buildTestName
                       failOnly: true
@@ -65,7 +65,12 @@ module.exports = ->
                     testReq = []
 
                 testReq.push(testData.buildTestName)
-
+                if testData.level?
+                  testReq.push("xdep$#{testData.level}")
+                  before = ["xdep$" + (parseInt(testData.level)+1)]
+                else
+                  testReq.push("xdep$9")
+                  before = ["xdep$10"]
                 runner.reg
                   name: testData.testName
                   data:
@@ -73,6 +78,7 @@ module.exports = ->
                     src : runner.relativeFn(fn)
                   testData : testData
                   after: testReq
+                  before: before
                   promise: toolfuns.regLogRun
                 true
               catch e
