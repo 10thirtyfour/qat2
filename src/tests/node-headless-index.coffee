@@ -52,7 +52,7 @@ module.exports = ->
                       if runner.tests[testData.buildTestName].after.indexOf(r)==-1
                         runner.tests[testData.buildTestName].after.push(r)
                   else
-                    testReq.push("atomic/start")
+                    #testReq.push("atomic/start")
                     runner.reg
                       name: testData.buildTestName
                       failOnly: true

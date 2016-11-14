@@ -595,7 +595,6 @@ module.exports = ->
               if binfo.syn?
                 binfo.name = "#{info.name}/#{i}"
                 if binfo.name.substring(0,7) is "atomic/"
-                  #binfo.after.push("xdep$0")
                   unless binfo.name.substring(0,10) is "atomic/gui" then binfo.after.push("atomic/gui")
                   binfo.before = ["xdep$1"]
                   if binfo.data.kind is "wd-"+b.first

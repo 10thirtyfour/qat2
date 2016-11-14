@@ -177,7 +177,7 @@ module.exports = ->
       # ------  deploy workaround
 
       unless testData.buildTestName of runner.tests
-        if testData.deployTestName?
+        if testData.deployTestName? && testData.deploy?
           runner.reg
             name: testData.deployTestName
             after: [ testData.buildTestName ]

@@ -60,7 +60,10 @@ class Runner
   # may be some statistics information
   # this is default implantation and may be overridden by some extension
   # default implementation simply runs all tests sequentially
+
   schedule: (actions) ->
+    #console.log "schedule"
+    #console.log actions
     actions.reduce(
       (prev,cur) =>
         prev.then(cur)
@@ -182,7 +185,7 @@ runner.reg
   name: "setup"
 runner.reg
   name: "run"
-  after: "setup"
+  after: ["setup","atomic/start"]
 runner.reg
   name: "done"
   silent: (true)
