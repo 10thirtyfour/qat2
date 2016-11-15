@@ -45,14 +45,12 @@ module.exports = ->
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
                 testData.skipBuild ?= false
-                #unless runner.argv["skip-build"]
                 unless testData.skipBuild
                   if testData.buildTestName of runner.tests
                     testReq.forEach (r)->
                       if runner.tests[testData.buildTestName].after.indexOf(r)==-1
                         runner.tests[testData.buildTestName].after.push(r)
                   else
-                    #testReq.push("atomic/start")
                     runner.reg
                       name: testData.buildTestName
                       failOnly: true
@@ -70,7 +68,7 @@ module.exports = ->
                   before = ["xdep$" + (parseInt(testData.level)+1)]
                 else
                   testReq.push("xdep$9")
-                  before = ["xdep$10"]
+                  #before = ["xdep$10"]
                 runner.reg
                   name: testData.testName
                   data:

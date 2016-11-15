@@ -35,8 +35,8 @@ module.exports = ->
             runner.reg
               name: compileTestName
               failOnly: true
-              after: ["xdep$7"]
-              before: ["xdep$8"]
+              after: ["xdep$8"]
+              #before: ["xdep$8"]
               data:
                 kind: "compile"+testData.ext
                 src : @fileName
@@ -57,8 +57,8 @@ module.exports = ->
         unless formTestName of runner.tests
           runner.reg
             name : formTestName
-            after: ["xdep$8"]
-            before: ["xdep$9"]
+            #after: ["xdep$8"]
+            #before: ["xdep$9"]
             data :
               kind : "xpath"
               src : runner.relativeFn(@fileName)
@@ -114,6 +114,8 @@ module.exports = ->
 
         testData.name = testData.name+"qfgl" if testData.ext is ".4gl"
         testData.name = testData.name+"qform" if testData.ext is ".per"
+
+        testData.after ?= ["xdep$7"]
 
         runner.reg
           name: testData.name
@@ -231,7 +233,7 @@ module.exports = ->
       if @lastBuiltTestName?
         params.after.push(@lastBuiltTestName)
       params.after.push("xdep$6")
-      params.before = ["xdep$7"]
+      #params.before = ["xdep$7"]
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
 
