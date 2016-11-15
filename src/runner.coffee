@@ -185,7 +185,7 @@ runner.reg
   name: "setup"
 runner.reg
   name: "run"
-  after: ["setup","atomic/start"]
+  after: ["setup"]
 runner.reg
   name: "done"
   silent: (true)

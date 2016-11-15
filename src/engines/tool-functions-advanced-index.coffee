@@ -170,14 +170,13 @@ module.exports = ->
           testData.deployTestName = "#{testData.projectName}/#{testData.name}/deploy"
         else
           testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
-        #runner.toolfuns.uniformName(
-        #"advanced$#{@relativeName}$deploy$#{progRelativeName}")
+
         testData.buildMode = "build"
         @lastBuiltTestName = testData.deployTestName
       # ------  deploy workaround
 
       unless testData.buildTestName of runner.tests
-        if testData.deployTestName? && testData.deploy?
+        if testData.deployTestName? && testData.deploy? && testData.deploy
           runner.reg
             name: testData.deployTestName
             after: [ testData.buildTestName ]
@@ -189,15 +188,15 @@ module.exports = ->
             promise: runner.toolfuns.regDeploy
       # ------ end of deploy workaround
 
-        testData.failOnly ?= testData.deploy
+        if testData.deploy
+          testData.failOnly ?= testData.deploy
+        testData.failOnly ?= false
         testData.after ?= []
         testData.before ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
-        #else
-        #  testData.after.push("atomic/start")
 
         runner.reg
           name: testData.buildTestName
