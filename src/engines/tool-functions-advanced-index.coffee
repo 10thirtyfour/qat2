@@ -35,8 +35,6 @@ module.exports = ->
             runner.reg
               name: compileTestName
               failOnly: true
-              after: ["xdep$8"]
-              #before: ["xdep$8"]
               data:
                 kind: "compile"+testData.ext
                 src : @fileName
@@ -57,8 +55,6 @@ module.exports = ->
         unless formTestName of runner.tests
           runner.reg
             name : formTestName
-            #after: ["xdep$8"]
-            #before: ["xdep$9"]
             data :
               kind : "xpath"
               src : runner.relativeFn(@fileName)
@@ -115,11 +111,10 @@ module.exports = ->
         testData.name = testData.name+"qfgl" if testData.ext is ".4gl"
         testData.name = testData.name+"qform" if testData.ext is ".per"
 
-        testData.after ?= ["xdep$7"]
+        #testData.after ?= ["xdep$7"]
 
         runner.reg
           name: testData.name
-          #  name: runner.toolfuns.uniformName("advanced$#{@relativeName}$compile$#{suspectTestName}")
           after: testData.after
           data:
             kind: "compile"+testData.ext.toLowerCase()
@@ -155,20 +150,20 @@ module.exports = ->
       #testData.buildTestName = runner.toolfuns.uniformName(
       #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
-      if testData.atomic
-        testData.buildTestName ?= "atomic/#{testData.atomic}"
-
       if testData.name
         testData.buildTestName ?= "#{testData.projectName}/#{testData.name}/build"
       else
         testData.buildTestName ?= "#{testData.projectName}/#{testData.programName}/build"
+
+      if testData.atomic?
+        testData.buildTestName ?= "atomic/#{testData.atomic}"
 
       # storing test name and program name in test context for future use in WD
       @lastBuiltTestName = testData.buildTestName
       @lastBuilt = testData.programName
 
       if testData.buildMode is "all"
-        if testData.name
+        if testData.name?
           testData.deployTestName = "#{testData.projectName}/#{testData.name}/deploy"
         else
           testData.deployTestName = "#{testData.projectName}/#{testData.programName}/deploy"
@@ -232,7 +227,7 @@ module.exports = ->
       params.after?= []
       if @lastBuiltTestName?
         params.after.push(@lastBuiltTestName)
-      params.after.push("xdep$6")
+      #params.after.push("xdep$6")
       #params.before = ["xdep$7"]
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
@@ -251,7 +246,6 @@ module.exports = ->
         params = obj
       params.after ?= []
       params.data ?= {}
-      params.level ?= 10
       params.data.src ?= runner.relativeFn(@fileName)
       params.after.push(@lastBuiltTestName) if @lastBuiltTestName?
       params.atomic_before ?= []

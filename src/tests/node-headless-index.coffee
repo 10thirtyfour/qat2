@@ -44,6 +44,12 @@ module.exports = ->
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
+                if testData.level?
+                  testReq.push("xdep$#{testData.level}")
+                  before = ["xdep$" + (parseInt(testData.level)+1)]
+                else
+                  testReq.push("xdep$9")
+
                 testData.skipBuild ?= false
                 unless testData.skipBuild
                   if testData.buildTestName of runner.tests
@@ -63,12 +69,7 @@ module.exports = ->
                     testReq = []
 
                 testReq.push(testData.buildTestName)
-                if testData.level?
-                  testReq.push("xdep$#{testData.level}")
-                  before = ["xdep$" + (parseInt(testData.level)+1)]
-                else
-                  testReq.push("xdep$9")
-                  #before = ["xdep$10"]
+
                 runner.reg
                   name: testData.testName
                   data:

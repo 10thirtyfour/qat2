@@ -602,8 +602,9 @@ module.exports = ->
                   else
                     return (true)
                 else
-                  binfo.after.push("xdep$#{binfo.level}")
-                  #binfo.before = ["xdep$" + (parseInt(binfo.level)+1)]
+                  if binfo.level?
+                    binfo.after.push("xdep$#{binfo.level}")
+                    binfo.before = ["xdep$" + (parseInt(binfo.level)+1)]
                 unless binfo.data.kind is "wd-"+b.first
                   if binfo.after.indexOf(_.tempName)==-1 then binfo.after = [ _.tempName ]
                 _.tempName = binfo.name

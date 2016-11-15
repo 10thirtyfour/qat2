@@ -20,6 +20,7 @@ module.exports = ->
            # the edge may deleted during recursive invocation
           continue unless g.hasEdge e
           t = e.w
+          #console.log t+"__"+ visited
           if visited[t]
             #TODO: better cycles detection this way the cycle detection
             # in runner isn't needed

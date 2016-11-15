@@ -135,6 +135,7 @@ class Runner
     @info "building dependencies graph"
     @info "number of nodes:#{graph.nodes().length}"
     for descr in @notInGraph
+
       {name,before,after,setup} = descr
       @trace "building: #{name}"
       if name isnt "setup" and name isnt "run"
@@ -155,7 +156,7 @@ class Runner
         for i in @utils.mkArray after
           unless @tests[i]
             #throw new Error "Unknown dependency #{i} in `after` of #{name}"
-            @info "Unknown dependency #{i} in `before` of #{name}"
+            @info "Unknown dependency #{i} in `after` of #{name}"
           graph.setEdge(i, name)
 
     @notInGraph.length = 0
