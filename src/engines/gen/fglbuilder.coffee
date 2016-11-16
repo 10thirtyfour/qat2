@@ -246,16 +246,25 @@ class ProgramBuilder extends Builder
     END MAIN
     """
 
-  save: ( name , root ) ->
+  save: (name, testData={}) ->
+    if typeof name is "string"
+        testData.name = name
+      else
+        testData = name ? {}
+    testData.name ?= @name ? "main"
+    testData.root ?= @projectRoot
 
-    name ?= @name ? "main"
-    root ?= @projectRoot
+    root = testData.root
+    name = testData.name
+
+    testData.atomic_before ?= []
 
     # target for Build command
     @target =
       projectPath : root
       programName : name
       deploy : (true)
+      atomic_before: testData.atomic_before
 
     mkdirp.sync "#{root}/source/form"
     fs.writeFileSync "#{root}/source/#{name}.4gl", @end()
