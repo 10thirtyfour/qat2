@@ -111,11 +111,9 @@ module.exports = ->
         testData.name = testData.name+"qfgl" if testData.ext is ".4gl"
         testData.name = testData.name+"qform" if testData.ext is ".per"
 
-        #testData.after ?= ["xdep$7"]
-
         runner.reg
           name: testData.name
-          after: testData.after
+          after: ["atomic/start"]
           data:
             kind: "compile"+testData.ext.toLowerCase()
             src : runner.relativeFn(@fileName)
@@ -145,10 +143,6 @@ module.exports = ->
         testData.projectPath,
         testData.projectSource,
         "."+testData.programName+".fgltarget")
-      #progRelativeName = path.relative runner.tests.globLoader.root, path.join(
-      #testData.projectPath, testData.projectSource, testData.programName)
-      #testData.buildTestName = runner.toolfuns.uniformName(
-      #"advanced$#{@relativeName}$build$#{progRelativeName}")
 
       if testData.name
         testData.buildTestName ?= "#{testData.projectName}/#{testData.name}/build"
@@ -170,8 +164,8 @@ module.exports = ->
 
         testData.buildMode = "build"
         @lastBuiltTestName = testData.deployTestName
-      # ------  deploy workaround
 
+      # ------  deploy workaround
       unless testData.buildTestName of runner.tests
         if testData.deployTestName? && testData.deploy? && testData.deploy
           runner.reg
@@ -189,16 +183,15 @@ module.exports = ->
           testData.failOnly ?= testData.deploy
         testData.failOnly ?= false
         testData.after ?= []
-        testData.before ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
+        #TODO if  testData.after.length == 0 then testData.after = ["atomic/start"]
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
-
+          testData.after = []
         runner.reg
           name: testData.buildTestName
           after: testData.after
-          before: testData.before
           data:
             kind: "build"
             src : runner.relativeFn(@fileName)
@@ -227,8 +220,7 @@ module.exports = ->
       params.after?= []
       if @lastBuiltTestName?
         params.after.push(@lastBuiltTestName)
-      #params.after.push("xdep$6")
-      #params.before = ["xdep$7"]
+
       params.name      ?= @testName
       params.source     = path.relative( runner.tests.globLoader.root, @fileName)
 
@@ -264,7 +256,7 @@ module.exports = ->
 
       params.lastBuilt ?= @lastBuilt
       params.testId    ?= params.lastBuilt
-      #if params.testId? then params.name+="/"+params.testId
+
       runner.regWD params
 
     RunLean : (opts={})->

@@ -596,15 +596,14 @@ module.exports = ->
                 binfo.name = "#{info.name}/#{i}"
                 if binfo.name.substring(0,7) is "atomic/"
                   unless binfo.name.substring(0,10) is "atomic/gui" then binfo.after.push("atomic/gui")
-                  binfo.before = ["xdep$1"]
                   if binfo.data.kind is "wd-"+b.first
                     binfo.name = binfo.name.split("/")[0]+"/"+ binfo.name.split("/")[1]
                   else
                     return (true)
-                else
-                  if binfo.level?
-                    binfo.after.push("xdep$#{binfo.level}")
-                    binfo.before = ["xdep$" + (parseInt(binfo.level)+1)]
+                #else
+                #  if binfo.level?
+                #    binfo.after.push("xdep$#{binfo.level}")
+                #    binfo.before = ["xdep$" + (parseInt(binfo.level)+1)]
                 unless binfo.data.kind is "wd-"+b.first
                   if binfo.after.indexOf(_.tempName)==-1 then binfo.after = [ _.tempName ]
                 _.tempName = binfo.name
