@@ -2,12 +2,6 @@
 module.exports = ->
   {Q,utils} = @
 
-  @reg
-    name: "xdep"
-    silent : (true)
-    runAnyway: (true)
-    promise: ->
-      @runner.logger.info "xdep"
   return true
 
   for i in [11..0]
