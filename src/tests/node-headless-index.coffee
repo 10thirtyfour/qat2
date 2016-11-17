@@ -43,8 +43,8 @@ module.exports = ->
                   testData.testName = "atomic/"+testData.atomic
                   testReq.push("atomic/start")
                   testBefore = ["xdep"]
-                else
-                  testReq.push("xdep")
+                #else
+                #  testReq.push("xdep")
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
 

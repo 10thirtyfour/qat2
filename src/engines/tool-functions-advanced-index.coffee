@@ -113,7 +113,7 @@ module.exports = ->
 
         runner.reg
           name: testData.name
-          after: ["atomic/start"]
+          after: ["xdep"]
           data:
             kind: "compile"+testData.ext.toLowerCase()
             src : runner.relativeFn(@fileName)
@@ -151,6 +151,7 @@ module.exports = ->
 
       if testData.atomic?
         testData.buildTestName ?= "atomic/#{testData.atomic}"
+        testData.before = ["xdep"]
 
       # storing test name and program name in test context for future use in WD
       @lastBuiltTestName = testData.buildTestName
@@ -185,13 +186,14 @@ module.exports = ->
         testData.after ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
-        #TODO if  testData.after.length == 0 then testData.after = ["atomic/start"]
+        if  testData.after.length == 0 then testData.after = ["atomic/start"]
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
           testData.after = []
         runner.reg
           name: testData.buildTestName
           after: testData.after
+          before: testData.before
           data:
             kind: "build"
             src : runner.relativeFn(@fileName)
