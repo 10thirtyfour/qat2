@@ -28,7 +28,6 @@ module.exports = ->
                   if testData.platform.indexOf( runner.sysinfo.platform )==-1
                     return true
                 testReq = []
-                testBefore = []
                 testData.name ?= path.basename(fn, "-rest.tlog")
                 testData.testName ?= testData.name
                 testData.testName = "#{testData.projectName}/"+testData.testName+"/runlog"
@@ -41,10 +40,6 @@ module.exports = ->
 
                 if typeof testData.atomic is "string"
                   testData.testName = "atomic/"+testData.atomic
-                  testReq.push("atomic/start")
-                  testBefore = ["xdep"]
-                #else
-                #  testReq.push("xdep")
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
@@ -67,6 +62,7 @@ module.exports = ->
                     testReq = []
 
                 testReq.push(testData.buildTestName)
+
                 runner.reg
                   name: testData.testName
                   data:
@@ -74,9 +70,7 @@ module.exports = ->
                     src : runner.relativeFn(fn)
                   testData : testData
                   after: testReq
-                  before: testBefore
                   promise: toolfuns.regLogRun
-                testBefore = []
                 true
               catch e
                 runner.info "#{fn}. registration failed! #{e}"

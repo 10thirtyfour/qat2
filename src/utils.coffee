@@ -15,13 +15,11 @@ module.exports = ->
         visited[n] = true
         for e in g.inEdges n
           continue if e is link
-          #unless e.v.substr(0,7) is "atomic/"
           g.removeEdge(e) if visited[e.v]
         for e in g.outEdges n
            # the edge may deleted during recursive invocation
           continue unless g.hasEdge e
           t = e.w
-          #console.log t+"__"+ visited
           if visited[t]
             #TODO: better cycles detection this way the cycle detection
             # in runner isn't needed

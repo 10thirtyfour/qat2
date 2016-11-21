@@ -149,13 +149,11 @@ class Runner
       if before?
         for i in @utils.mkArray before
           unless @tests[i]
-            #throw new Error "Unknown dependency #{i} in `before` of #{name}"
             @info "Unknown dependency #{i} in `before` of #{name}"
           graph.setEdge(name, i)
       if after?
         for i in @utils.mkArray after
           unless @tests[i]
-            #throw new Error "Unknown dependency #{i} in `after` of #{name}"
             @info "Unknown dependency #{i} in `after` of #{name}"
           graph.setEdge(i, name)
 
