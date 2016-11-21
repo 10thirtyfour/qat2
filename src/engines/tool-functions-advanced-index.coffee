@@ -35,6 +35,7 @@ module.exports = ->
             runner.reg
               name: compileTestName
               failOnly: true
+              after: ["atomic/start"]
               data:
                 kind: "compile"+testData.ext
                 src : @fileName
@@ -185,7 +186,7 @@ module.exports = ->
         testData.after ?= []
         testData.atomic_before.forEach (e)->
           testData.after.push("atomic/#{e}")
-        #TODO if  testData.after.length == 0 then testData.after = ["atomic/start"]
+        if  testData.after.length == 0 then testData.after = ["atomic/start"]
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
           testData.after = []
