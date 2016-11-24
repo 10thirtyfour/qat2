@@ -45,6 +45,11 @@ module.exports = ->
           DBDATE: "MDY4/"
           LD_LIBRARY_PATH: "/opt/IBM/informix/lib:/opt/IBM/informix/lib/esql:/opt/Querix/Lycia/lib:/opt/Querix/Lycia/axis2/lib:/opt/Querix/Common/lib:/opt/Querix/lycia-desktop:/usr/lib64/jvm/jdk1.8.0_25/jre/lib/amd64/server:"
 
+    inetEnvironment:
+      inet_var1: "var1_value"
+      inet_var1_nested: "inherits_from_%inet_var1%"
+      CLASSPATH: "$CLASSPATH$;home/informix/qat/utils/InformixJdbcDriver/ifxjdbc.jar"
+
     scenario: "safari"
     build: "last_build"
     skip_lycia: true

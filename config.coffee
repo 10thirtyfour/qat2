@@ -94,3 +94,4 @@ module.exports = ->
     inetEnvironment:
       inet_var1: "var1_value"
       inet_var1_nested: "inherits_from_%inet_var1%"
+      CLASSPATH: "$CLASSPATH$;C:\\qat\\utils\\InformixJdbcDriver\\ifxjdbc.jar"
