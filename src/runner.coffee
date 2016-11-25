@@ -76,7 +76,6 @@ class Runner
     {tests} = @
 
     t = tests[node]
-    #console.log "node - "+node
     @trace "crawling #{node}"
     if t.started
       @info "Trying to crawl already started node: #{node}"
@@ -110,7 +109,6 @@ class Runner
         process.exit -1
     else
       r = r.catch (e) =>
-        #@info "error", @prettyjson e
         Q {}
     r = r.finally =>
           @trace "done #{node}, next", @graph.successors node
