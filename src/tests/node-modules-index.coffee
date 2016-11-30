@@ -22,4 +22,10 @@ module.exports = ->
         pattern: ["**/*-index.+(js|coffee)"]
         parseFile: (fn) ->
           Q(require fn)
+    @reg
+      name: "xdep"
+      runAnyway: (true)
+      before : ["done"]
+      promise: ->
+        @runner.logger.trace "xdep"
       Q({})

@@ -3,6 +3,15 @@ module.exports = ->
   {Q,utils} = @
 
   return true
+  @reg
+    name: "xdep"
+    #silent : (true)
+    runAnyway: (true)
+    before : ["done"]
+    promise: ->
+      @runner.logger.trace "xdep"
+
+  return true
 
   for i in [11..0]
     if i==0
