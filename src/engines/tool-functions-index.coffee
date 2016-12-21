@@ -9,6 +9,7 @@ fse = require "fs-extra"
 
 module.exports = ->
   {yp,fs,_,Q,path,xpath,dom} = runner = @
+  {exec} = require 'child_process'
 
   inetEnvSetDatabase = (dbProps) ->
     qatHeader="\n### QAT SECTION START\n"
