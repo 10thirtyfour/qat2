@@ -169,10 +169,18 @@ module.exports = ->
                 passMessage=" WARNING : .exe removed!"
                 fail = (false)
 
-          if fail then throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
+          if fail
+            if process.platform[0] is "w"
+              runner.trace "taskkill /F /T /IM qrun.exe"
+              exec "taskkill /F /T /IM qrun.exe"
+            throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
 
     if (logBlock = readBlock(nextOutLine,"<<<")).length>1
+      if process.platform[0] is "w"
+        runner.trace "taskkill /F /T /IM qrun.exe"
+        exec "taskkill /F /T /IM qrun.exe"
       throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
+
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   exitPromise = (child, opt={}) ->

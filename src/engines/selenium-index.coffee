@@ -619,6 +619,10 @@ module.exports = ->
                         if process.platform[0] is "w"
                           runner.trace "taskkill /F /T /IM #{cmd}.exe"
                           exec "taskkill /F /T /IM #{cmd}.exe"
+                          runner.trace "taskkill /F /T /IM qrun.exe"
+                          exec "taskkill /F /T /IM qrun.exe"
+                          runner.trace "net start qxweb_7"
+                          exec "net start qxweb_7"
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
