@@ -182,6 +182,9 @@ module.exports = ->
         exec "taskkill /F /T /IM qrun.exe"
       throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
 
+    if process.platform[0] is "w"
+      runner.trace "taskkill /F /T /IM qrun.exe"
+      exec "taskkill /F /T /IM qrun.exe"
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
   exitPromise = (child, opt={}) ->

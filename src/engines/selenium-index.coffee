@@ -119,6 +119,11 @@ module.exports = ->
             else
               yp @get(programUrl).sleep(1000)
           catch e
+            if process.platform[0] is "w"
+              runner.trace "net restart qxweb_7"
+              yp exec("net stop qxweb_7")
+              yp @sleep(10000)
+              yp exec("net start qxweb_7")
             throw "StartApplication <#{command}> failed. \n Error - " + e
           (true)
           )
@@ -621,8 +626,6 @@ module.exports = ->
                           exec "taskkill /F /T /IM #{cmd}.exe"
                           runner.trace "taskkill /F /T /IM qrun.exe"
                           exec "taskkill /F /T /IM qrun.exe"
-                          runner.trace "net start qxweb_7"
-                          exec "net start qxweb_7"
                       if ((_.deepGet(e,'cause.value.message')) ? "").split("\n")[0] is "unexpected alert open"
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
