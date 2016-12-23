@@ -24,6 +24,7 @@ module.exports = ->
           Q(require fn)
     @reg
       name: "xdep"
+      silent : (true)
       runAnyway: (true)
       before : ["done"]
       promise: ->
