@@ -1,4 +1,5 @@
-var arr = "2d,14d,1d,10d,4d,1d,1d,1d,1d,1d,1d,1d,1h,15d,1h,2h,1d,78d,15d,4d,3d,10d,7d,20d,20d,2d,1d,20d)"
+var arr =  "1d,1d,1d,4d,1d,1d,1d,1d,1d,1d,15d,1d,10d,4d,10d,2d,2d,2d,1d,1d,1d,34d,9d,1d,1d,1d,5d,10d,15d)"
+
 
 var arr = arr.split(",")
 cont = 0;

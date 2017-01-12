@@ -118,6 +118,9 @@ module.exports = ->
     passMessage = ""
     errMessage = ""
     delimeterSent = (false)
+    #if process.platform[0] is "w"
+    #  yp exec "taskkill /F /T /IM qrun.exe"
+    #  runner.trace "taskkill /F /T /IM qrun.exe"
     writeBlock = ( stream , message, lineTimeout ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
@@ -171,16 +174,16 @@ module.exports = ->
                 fail = (false)
 
           if fail
-            if process.platform[0] is "w"
-              yp exec "taskkill /F /T /IM qrun.exe"
-              runner.trace "taskkill /F /T /IM qrun.exe"
-            throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
+            #if process.platform[0] is "w"
+            #  yp exec "taskkill /F /T /IM qrun.exe"
+            #  runner.trace "taskkill /F /T /IM qrun.exe"
+            yp throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
 
     if (logBlock = readBlock(nextOutLine,"<<<")).length>1
-      if process.platform[0] is "w"
-        yp exec "taskkill /F /T /IM qrun.exe"
-        runner.trace "taskkill /F /T /IM qrun.exe"
-      throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
+      #if process.platform[0] is "w"
+      #  yp exec "taskkill /F /T /IM qrun.exe"
+      #  runner.trace "taskkill /F /T /IM qrun.exe"
+      yp throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
 
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
 
@@ -200,7 +203,9 @@ module.exports = ->
   readBlock = (nextLine, dir) ->
     mess=[]
     while (line=nextLine())
-      line = line.replace(line.match( /\[........\]/ ),'[00000000]')
+      line = line.replace(line.match( /null/ ),'Null')
+        .replace(line.match( /\[[\0,a-f,0-9,]{8}\]/ ),'[00000000]')
+      line = line.replace(line.toString().match( /Null/ ),'null')
       if line is ">>>" or line is "<<<"
         if dir is line
           mess.push line
@@ -440,6 +445,9 @@ module.exports = ->
             @options.env,
             runner.opts.dbprofiles[@options.databaseProfile],
             @testData.env)
+        if process.platform[0] is "w"
+          exec "taskkill /F /T /IM qrun.exe"
+          runner.trace "taskkill /F /T /IM qrun.exe"
         if runner.opts.skip_lycia
           return "Build OK."
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
