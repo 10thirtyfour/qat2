@@ -56,6 +56,7 @@ module.exports = ->
                         continue
                     do (i) =>
                       fullname = "#{d}/#{i}"
+                      if process.platform[0] is "w" then fullname = "#{d}\\#{i}"
                       chainPromise = chainPromise.then( -> parseFile(fullname) )
                   chainPromise
                   )
