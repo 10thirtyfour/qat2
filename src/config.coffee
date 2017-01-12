@@ -34,5 +34,3 @@ module.exports = ->
     qreqconfig("#{i}") for i in utils.mkArray argv.config
   _.merge @opts, argv
   return
-
-# different locale is actually different users

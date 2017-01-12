@@ -118,9 +118,6 @@ module.exports = ->
     passMessage = ""
     errMessage = ""
     delimeterSent = (false)
-    #if process.platform[0] is "w"
-    #  yp exec "taskkill /F /T /IM qrun.exe"
-    #  runner.trace "taskkill /F /T /IM qrun.exe"
     writeBlock = ( stream , message, lineTimeout ) ->
       writeLine = ( line ) ->
         yp Q.ninvoke(stream,"write",line+"\n").timeout( lineTimeout , "Log line timed out")
@@ -174,15 +171,9 @@ module.exports = ->
                 fail = (false)
 
           if fail
-            #if process.platform[0] is "w"
-            #  yp exec "taskkill /F /T /IM qrun.exe"
-            #  runner.trace "taskkill /F /T /IM qrun.exe"
             yp throw errMessage + "Stopped at line : #{nextLogLine(1)}\nActual :#{actualLine}\nExpected :#{expectedLine}"
 
     if (logBlock = readBlock(nextOutLine,"<<<")).length>1
-      #if process.platform[0] is "w"
-      #  yp exec "taskkill /F /T /IM qrun.exe"
-      #  runner.trace "taskkill /F /T /IM qrun.exe"
       yp throw errMessage + "ERROR : Program output not empty at the end of scenario. " + logBlock
 
     return "Lines : [#{nextLogLine("getLine")},#{nextOutLine("getLine")}]."+ passMessage
