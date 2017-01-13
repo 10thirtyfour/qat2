@@ -436,9 +436,15 @@ module.exports = ->
             @options.env,
             runner.opts.dbprofiles[@options.databaseProfile],
             @testData.env)
-        if process.platform[0] is "w"
-          exec "taskkill /F /T /IM qrun.exe"
-          runner.trace "taskkill /F /T /IM qrun.exe"
+
+        if @testData.kill
+          if process.platform[0] is "w"
+            yp exec "taskkill /F /T /IM qrun.exe"
+            runner.trace "taskkill /F /T /IM qrun.exe"
+          else
+            yp exec "killall -s KILL qrun"
+            runner.trace "killall -s KILL qrun"
+
         if runner.opts.skip_lycia
           return "Build OK."
         qrun = path.join(opt.env.LYCIA_DIR,"bin","qbuild")
