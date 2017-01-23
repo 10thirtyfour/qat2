@@ -37,7 +37,7 @@ module.exports = ->
     dbprofiles:
       informix:
         LYCIA_DB_DRIVER: "informix"
-        INFORMIXSERVER: "querix_tcp"
+        INFORMIXSERVER: "querix_test"
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
