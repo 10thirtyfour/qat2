@@ -394,6 +394,7 @@ module.exports = ->
         (el,t,r,c) ->
           sel = getSelector(el)
           if t==0 then return yp @execute "return $('#{sel} .qx-thead thead th:nth-child(#{r})').text()"
+          if runner.opts.vdom then r++
           if t==1 then return yp @execute "return $('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c})').text()"
           return true
         )
