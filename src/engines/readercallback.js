@@ -1,3 +1,5 @@
+"use strict";
+
 // from http://bjouhier.wordpress.com/2012/07/04/node-js-stream-api-events-or-callbacks/
 module.exports.CallbackReadWrapper = function(stream) {
   var _chunks = [];
@@ -43,5 +45,3 @@ module.exports.CallbackReadWrapper = function(stream) {
     };
   }
 }
-
-

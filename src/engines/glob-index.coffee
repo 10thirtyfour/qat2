@@ -1,3 +1,5 @@
+"use strict"
+
 # module which scans some folder for specified pattern and execute scripts
 # form it
 

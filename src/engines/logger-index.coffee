@@ -1,3 +1,5 @@
+"use strict"
+
 module.exports = ->
   {Q,_,winston} = runner = @
   {exec} = require 'child_process'

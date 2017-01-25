@@ -1,3 +1,5 @@
+"use strict"
+
 byline = require "byline"
 spawn = require("child_process").spawn
 execSync = require("child_process").execSync

@@ -1,3 +1,5 @@
+"use strict"
+
 genProgram = require("./gen/fglbuilder").program
 genForm =  require("./gen/formbuilder")
 

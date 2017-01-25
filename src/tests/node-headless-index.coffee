@@ -1,3 +1,5 @@
+"use strict"
+
 process.maxTickDepth = Infinity
 
 splitByCommas = (str)->

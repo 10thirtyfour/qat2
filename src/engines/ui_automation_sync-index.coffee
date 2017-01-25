@@ -1,3 +1,5 @@
+"use strict"
+
 # robot js syntax
 # https://github.com/octalmage/robotjs/wiki/Syntax
 

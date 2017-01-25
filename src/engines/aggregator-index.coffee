@@ -1,3 +1,5 @@
+"use strict"
+
 archy = require "archy"
 
 module.exports = ->

@@ -1,3 +1,5 @@
+"use strict"
+
 module.exports = ->
   # we run scripts in following order
   # ./config (js or coffee)

@@ -1,3 +1,5 @@
+"use strict"
+
 cfeval = require("coffee-script").eval
 vm = require "vm"
 

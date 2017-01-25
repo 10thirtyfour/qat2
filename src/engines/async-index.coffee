@@ -1,3 +1,5 @@
+"use strict"
+
 module.exports = ->
   {Q,_,prettyjson} = runner = @
   @reg
@@ -28,7 +30,7 @@ module.exports = ->
               runner.info "error", prettyjson e
               Q {})
       @trace "replacing scheduler"
-      #TODO: use base scheduler 
+      #TODO: use base scheduler
       runner.schedule = (actions) =>
         queue.push actions...
         checkQ()

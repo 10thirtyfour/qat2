@@ -1,3 +1,5 @@
+"use strict"
+
 runner = {}
 
 stopResponces = ['<interact_wswaitcall/>','']

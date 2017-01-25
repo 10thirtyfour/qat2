@@ -1,9 +1,12 @@
-var arr =  "1d,1d,1d,4d,1d,1d,1d,1d,1d,1d,15d,1d,10d,4d,10d,2d,2d,2d,1d,1d,1d,34d,9d,1d,1d,1d,5d,10d,15d)"
+"use strict";
+
+
+var arr = "1d,2d,1d,1h,2h,1h,1h,1h,1h,1d,1d,1d,2d,5d,2d,15d,10d,10d,1d,1d,1h,1h,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,4h,15d,2d)"
 
 
 var arr = arr.split(",")
-cont = 0;
-for (i = 0; i < arr.length; i++)
+var cont = 0;
+for (var i = 0; i < arr.length; i++)
 {
 if (arr[i].indexOf("d")>-1)
 {

@@ -1,3 +1,5 @@
+"use strict"
+
 module.exports = ->
   {_,proto} = @
   # transitive reduction algorithm implementation

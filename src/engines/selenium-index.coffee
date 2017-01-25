@@ -1,3 +1,5 @@
+"use strict"
+
 log = console.log
 UI_elements = require "./ui-element-defaults"
 dnd_helper = require "./drag_and_drop_helper"
@@ -144,7 +146,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "elementExists"
         (el) ->
-          if yp(@execute("return $('#{getSelector(el)}').length")) > 0
+          if yp(@execute("return jQuery('#{getSelector(el)}').length")) > 0
             return (true)
           return (false)
           )
@@ -163,7 +165,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "getContextMenu"
         (el) ->
-          yp @execute("return $('#{getSelector(el)}').mousedown()").waitIdle(3000,3000)
+          yp @execute("return jQuery('#{getSelector(el)}').mousedown()").waitIdle(3000,3000)
           return yp @elementByCss("#{getSelector("contextmenu")}")
           )
 
@@ -191,11 +193,11 @@ module.exports = ->
               dx1 = dlSize.width+dx
               dy1 = dlSize.height+dy
               obj = '"width":"'+dx1+'px","height":"'+dy1+'px"'
-              str1 = '$(".qx-identifier-win_qat").css({'+obj+'})'
+              str1 = 'jQuery(".qx-identifier-win_qat").css({'+obj+'})'
               dx2 = wbSize.width+dx
               dy2 = wbSize.height+dy
               obj = '"width":"'+dx2+'px","height":"'+dy2+'px"'
-              str2 = '$(".qx-identifier-win_qat .qx-window-border").css({'+obj+'})'
+              str2 = 'jQuery(".qx-identifier-win_qat .qx-window-border").css({'+obj+'})'
               @execute(str1)
               @execute(str2)
               yp @waitIdle()
@@ -224,7 +226,7 @@ module.exports = ->
         (wnd,dx,dy) ->
           if plugin.hacks.resize[@qx$browserName] then return true
           yp @setDialogID(wnd,"win_qat")
-          r = yp @execute "return $('.qx-identifier-win_qat > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
+          r = yp @execute "return jQuery('.qx-identifier-win_qat > div.ui-dialog-titlebar')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss('#qx-home-form')
@@ -241,7 +243,7 @@ module.exports = ->
         (el,dx,dy,h) ->
           if plugin.hacks.resize[@qx$browserName] then return true
           h?="e"
-          r = yp @execute "return $('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
+          r = yp @execute "return jQuery('.qx-identifier-#{el.toLowerCase()} .ui-resizable-#{h}')[0].getBoundingClientRect()"
           x = Math.round(r.left + r.width / 2)
           y = Math.round(r.top + r.height / 2)
           yp @elementByCss('#qx-home-form')
@@ -328,7 +330,7 @@ module.exports = ->
                 el.click().perform()
               catch e2
                 try
-                  yp @execute("$("+sel+").click()")
+                  yp @execute("jQuery("+sel+").click()")
                 catch e3
                   console.log "#{sel}.click() failed!"
                   throw "Error on invoke element. Workaround: ECONNREFUSED "
@@ -344,12 +346,12 @@ module.exports = ->
         (el, nm, args...) ->
           if @qx$browserName in ["firefox","safari"]
             if args.length > 0
-              return yp @execute("return $('#{getSelector(el)}').#{nm}('#{args}')")
+              return yp @execute("return jQuery('#{getSelector(el)}').#{nm}('#{args}')")
             if nm in ["click","dblclick","mouseup","mousedown"]
-              return yp @execute("$('#{getSelector(el)}').#{nm}()")
-            return yp @execute("return $('#{getSelector(el)}').#{nm}()")
+              return yp @execute("jQuery('#{getSelector(el)}').#{nm}()")
+            return yp @execute("return jQuery('#{getSelector(el)}').#{nm}()")
           if _.isString el or el.selector?
-            yp @execute("return $().#{nm}.apply($('#{getSelector(el)}'),arguments)",args)
+            yp @execute("return jQuery().#{nm}.apply(jQuery('#{getSelector(el)}'),arguments)",args)
           else
             yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
         )
@@ -358,7 +360,7 @@ module.exports = ->
         "hasScroll"
         (el) ->
           @execute("""
-                     el=$('#{getSelector(el)}');
+                     el=jQuery('#{getSelector(el)}');
                      if(el.css('overflow')=='hidden') {return false;}
                      if((el.prop('clientWidth' )!=el.prop('scrollWidth' )) ||
                         (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
@@ -372,13 +374,13 @@ module.exports = ->
           if @qx$browserName == "ie"
             s = {}
             sel = getSelector(el)
-            s.width = yp @execute "return $('#{sel}')[0].getBoundingClientRect().width"
-            s.height = yp @execute "return $('#{sel}')[0].getBoundingClientRect().height"
-            s.left = yp @execute "return $('#{sel}')[0].getBoundingClientRect().left"
-            s.right = yp @execute "return $('#{sel}')[0].getBoundingClientRect().right"
-            s.top = yp @execute "return $('#{sel}')[0].getBoundingClientRect().top"
-            s.bottom = yp @execute "return $('#{sel}')[0].getBoundingClientRect().bottom"
-          s ?= yp @execute "return $('#{getSelector(el)}')[0].getBoundingClientRect()"
+            s.width = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().width"
+            s.height = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().height"
+            s.left = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().left"
+            s.right = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().right"
+            s.top = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().top"
+            s.bottom = yp @execute "return jQuery('#{sel}')[0].getBoundingClientRect().bottom"
+          s ?= yp @execute "return jQuery('#{getSelector(el)}')[0].getBoundingClientRect()"
           s.w = s.width = Math.round(s.width)
           s.h = s.height = Math.round(s.height)
           s.l = s.left = Math.round(s.left)
@@ -393,9 +395,9 @@ module.exports = ->
         "getTableText"
         (el,t,r,c) ->
           sel = getSelector(el)
-          if t==0 then return yp @execute "return $('#{sel} .qx-thead thead th:nth-child(#{r})').text()"
+          if t==0 then return yp @execute "return jQuery('#{sel} .qx-thead thead th:nth-child(#{r})').text()"
           if runner.opts.vdom then r++
-          if t==1 then return yp @execute "return $('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c})').text()"
+          if t==1 then return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c})').text()"
           return true
         )
 
@@ -403,9 +405,9 @@ module.exports = ->
         "getFontSize"
         () ->
           s = {}
-          s_leng = yp @execute "return $('.qx-font-test span:nth-child(4)').text().length"
-          s.width = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().width"
-          s.height = yp @execute "return $('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().height"
+          s_leng = yp @execute "return jQuery('.qx-font-test span:nth-child(4)').text().length"
+          s.width = yp @execute "return jQuery('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().width"
+          s.height = yp @execute "return jQuery('.qx-font-test span:nth-child(4)')[0].getBoundingClientRect().height"
           s.width = (s.width)/s_leng
           s.w = s.width
           s.h = s.height
@@ -426,7 +428,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "getConsoleText"
         () ->
-          return yp @execute "return $('.qx-text-console .ui-widget-content textarea').val()"
+          return yp @execute "return jQuery('.qx-text-console .ui-widget-content textarea').val()"
         )
 
       wd.addPromiseMethod(
@@ -447,7 +449,7 @@ module.exports = ->
           if @qx$browserName in ["ie","edge"]
             res = yp @getRect(el)
           else
-            res = yp @execute "return $('#{itemSelector}')[0].getBoundingClientRect()"
+            res = yp @execute "return jQuery('#{itemSelector}')[0].getBoundingClientRect()"
           res.width = Math.floor(res.width)
           res.height = Math.floor(res.height)
           res.left = Math.floor(res.left)
@@ -531,14 +533,14 @@ module.exports = ->
         "setTabId"
         (el, v) ->
           v ?= "h_"+el.toLowerCase()
-          return yp @execute "$('[aria-controls='+$('.qx-identifier-#{el}').prop('id') +']').addClass('qx-identifier-#{v}')"
+          return yp @execute "jQuery('[aria-controls='+jQuery('.qx-identifier-#{el}').prop('id') +']').addClass('qx-identifier-#{v}')"
         )
 
       wd.addPromiseMethod(
         "statusBarText"
         (mType) ->
           mType ?= "message"
-          yp (@execute("return $('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
+          yp (@execute("return jQuery('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
         )
 
       wd.addPromiseMethod(
@@ -550,7 +552,7 @@ module.exports = ->
       wd.addPromiseMethod(
         "dragNDrop",
         (el,button=0)->
-          @execute "$('#{getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
+          @execute "jQuery('#{getSelector(el)}').simulateDragDrop({ dropTarget: '.qx-identifier-table2'});"
         )
 
       wd.addPromiseMethod(
@@ -567,7 +569,7 @@ module.exports = ->
         (el,id)->
           if _.isString(el) then id?="d_"+el
           if el.selector? then id?="d_"+el.id
-          return yp @execute("$('#{getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
+          return yp @execute("jQuery('#{getSelector(el)}').closest('.ui-dialog').addClass('qx-identifier-#{id.toLowerCase()}')")
         )
 
       wd.addPromiseMethod(
