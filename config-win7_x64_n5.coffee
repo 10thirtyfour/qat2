@@ -26,7 +26,7 @@ module.exports = ->
       root: "./tests"
 
     browserList :
-      chrome: (false)
+      chrome: (true)
       edge: (false)
       firefox: (true)
       opera: (true)
@@ -40,4 +40,3 @@ module.exports = ->
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
         INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK\\"
-        DBDATE: "MDY4/"

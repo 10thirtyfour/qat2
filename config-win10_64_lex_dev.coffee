@@ -13,7 +13,7 @@ module.exports = ->
     scenario: "default"
 
     browserList :
-      chrome: (false)
+      chrome: (true)
       #firefox: (true)
       edge: (true)
       ie: (true)
