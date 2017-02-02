@@ -644,7 +644,10 @@ module.exports = ->
                         alertText = yp(testContext.browser.alertText())
                         testContext.errorMessage+=alertText+" alert caught! "+e.message
                       else
-                        throw e
+                        if e.name? and e.name is "AssertionError"
+                          testContext.errorMessage += "#{e.message} Condition '#{e.operator}' not satisfied: Expected value '#{e.expected}' isnt '#{e.operator}' Actual value '#{e.actual}' \n"
+                        else
+                          throw e
                     testContext.errorMessage+=testContext.browser.errorMessage
                     if testContext.errorMessage.length>0
                       throw testContext.errorMessage
