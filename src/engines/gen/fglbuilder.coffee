@@ -53,10 +53,10 @@ class SimpleBuilder extends Builder
 
 class RecordBuilder extends Builder
   constructor: (@par) ->
-    @inpitFields = {}
+    @fields = {}
   initCode: ->
     initSingle = (varname, x) =>
-      for i,v of @inpitFields
+      for i,v of @fields
         res = """  LET #{varname}.#{i} ="""
         switch v.ty
             when "STRING"
@@ -136,27 +136,16 @@ class ProgramBuilder extends Builder
 
 
   initScreenRec: (screenRec) ->
-    console.log screenRec
     return if screenRec.fields.length is 0
-    screenRec.inputFields = screenRec.fields.split(',')
-    console.log screenRec
     b = new RecordBuilder(@)
-    for el in screenRec.inputFields
-      v = {}
-      v._fglType ?= "STRING"
-      v._val ?= el
-      v["#text"] ?= el
-    b.field(v["#text"], v._fglType, v._val)
+    b.field(v["#text"], v._fglType, v._val) for v in screenRec.fields
     b.name = screenRec.identifier.toLowerCase()
     b._isGrid = screenRec._isGrid
     b.initCode()
     return b.varname
 
   inputScreenRec: (screenRec, params = { dialog : false }) ->
-    console.log screenRec
     return if screenRec.fields.length is 0
-    screenRec.inputFields = screenRec.fields.split(',')
-    console.log screenRec
     params.varname ?= @initScreenRec screenRec
     wd = if screenRec._withDefaults or params.dialog then "" else " WITHOUT DEFAULTS"
     attrib = if screenRec._attributes? then " ATTRIBUTES(#{screenRec._attributes})" else ""
@@ -171,7 +160,7 @@ class ProgramBuilder extends Builder
 
 
     interaction = stmt.split(" ")[0]
-    for {_val:{_actions:i}} in screenRec.inputFields when i?
+    for {_val:{_actions:i}} in screenRec.fields when i?
       for v of i
         stmt += """\n  ON ACTION #{v}\n    DISPLAY "#{v}" """
 
@@ -195,11 +184,8 @@ class ProgramBuilder extends Builder
     name = form._name ?= @uniq.newName_ (@name + "_form")
     x ?= 0
     @windowWithForm name
-    console.log "form - "
-    console.log form
-    console.log "form - "
-    if form['form.screenRecords']?
-      @inputScreenRec form['form.screenRecords'][x]
+    if form.screenrecords?
+      @inputScreenRec form.screenrecords[x]
     #@closeWindow name
     @
 
@@ -207,11 +193,11 @@ class ProgramBuilder extends Builder
     @forms.push form
     name = form._name ?= @uniq.newName_ (@name + "_form")
     @windowWithForm name
-    varnames = for sr in form['form.screenRecords']
+    varnames = for sr in form.screenrecords
       @initScreenRec sr
 
     @commands.push "\nDIALOG" + if attr? then " ATTRIBUTES(#{attr})" else ""
-    for sr,i in form['form.screenRecords']
+    for sr,i in form.screenrecords
       @inputScreenRec sr, dialog:true, varname:varnames[i]
     @commands.push """
           ON ACTION cancel
@@ -232,9 +218,9 @@ class ProgramBuilder extends Builder
     sep?='>>>'
     if @forms?
       form=@forms[f]
-      if form['form.screenRecords']?
+      if form.screenrecords?
         mess = ""
-        for field in form['form.screenRecords'][x].fields
+        for field in form.screenrecords[x].fields
           if mess.length then mess+="||'#{sep}'||"
           mess+="NVL(formonly1.#{field._val.identifier},'NULL')"
         @commands.push "MESSAGE "+mess

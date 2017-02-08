@@ -6,8 +6,6 @@ formitems =
   widgets : []
   rangefields : [ "progressbar", "scrollbar", "slider", "spinner" ]
 
-
-
 class Builder
 
 class ElemBuilder extends Builder
@@ -374,35 +372,27 @@ ElemBuilder::widgets = (fun) ->
     return fun.call(@) if @_widget?
 
 class ScreenRecordBuilder extends Builder
-
   constructor: (@rec) ->
-
   isGrid: (v) ->
     @rec._isGrid = v
-
   field: (f) ->
-    @rec.fields +="," if @rec.fields.length > 0
-    @rec.fields += f.identifier
-    #return @ for i in @rec.inpitFields.el when i["#text"] is f.name
-    @rec.inpitFields.el.push
+    return @ for i in @rec.fields when i["#text"] is f.name
+    @rec.fields.push
       "#text": f.identifier
       _val: f
-
+    @
   blocks : (b)->
     @rec._blocks = b
     @
 
 FormBuilder::screenrec = (name) ->
-  recs = @elem['form.screenRecords'] ?= []
+  recs = @elem.screenrecords ?= []
   return new ScreenRecordBuilder(i) for i in recs when i.identifier is name
   rec =
     identifier: name
-    inpitFields:
-      el : []
-    fields: ""
+    fields: []
   recs.push rec
   new ScreenRecordBuilder rec
-
 
 FormBuilder::end = ->
   records = {}
@@ -433,7 +423,6 @@ FormBuilder::end = ->
         f.control._record = @identifier
 
     if @_record?
-
       rec = form.screenrec(@_record).field(@)
       rec.isGrid(true) if grid
     if @_actions

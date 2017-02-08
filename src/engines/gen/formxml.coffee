@@ -28,10 +28,6 @@ module.exports = (opts) ->
       cur = @field(cur, elname, i, true) for i in val
       cur.up()
     object: (cur, name, val, nameopt) ->
-      #console.log cur
-      #console.log name
-      #console.log val
-      #console.log nameopt
       curname = name
       if val._type?
         if name? and not nameopt
@@ -69,6 +65,5 @@ module.exports = (opts) ->
     throw new Error "not implemented"
   write: (obj) ->
     opts.objectInner(
-      builder.create("form", {version: '1.0', encoding: 'UTF-8'}).att("xmlns","http://namespaces.querix.com/2015/fglForms")
-      #.ele("form.rootContainer")
+      builder.create("form", {version: '1.0', encoding: 'UTF-8'}).att("xmlns","http://namespaces.querix.com/2011/fglForms")
       obj).end pretty: true
