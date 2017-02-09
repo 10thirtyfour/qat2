@@ -334,6 +334,8 @@ elements =
       value : (el) -> "return $('#{el} textarea').val()"
       defaults :
         height : 53
+        safari$d :
+          height : 18
      set :
        value : (el,val)->
          @elementByCss("#{el}.qx-aum-text-area").click()
