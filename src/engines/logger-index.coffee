@@ -97,8 +97,8 @@ module.exports = ->
             if f1.indexOf("ECONNREFUSED")==-1 and
                f1.indexOf("WARNING")==-1 and
                f1.indexOf("Failed to connect to")==-1 and
-               (f1.indexOf("StartApplication")==-1 and
-               runner.opts.browserFirst!="safari")
+               !(f1.indexOf("StartApplication")!=-1 and
+               runner.opts.browserFirst=="safari")
               @fail f
             else
               @info f1
