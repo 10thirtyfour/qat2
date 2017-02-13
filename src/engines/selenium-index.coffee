@@ -114,7 +114,8 @@ module.exports = ->
             params.instance ?= runner.opts.qatDefaultInstance
             command += ".exe" if process.platform[0] is "w"
             programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
-            if params.args then programUrl+=params.args+"&cache=check&timeout=0&autotest" else programUrl+="?cache=check&timeout=0&autotest"
+            programUrl+="?console=page&cache=check&timeout=0&autotest"
+            if params.args then programUrl+=("&"+params.args)
             if runner.opts.vdom then programUrl+="&vdom=1"
             if params.wait
               yp @get(programUrl).waitIdle(100000).sleep(5000) if @qx$browserName == "safari"
