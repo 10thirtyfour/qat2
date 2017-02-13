@@ -115,7 +115,9 @@ module.exports = ->
             command += ".exe" if process.platform[0] is "w"
             programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
             programUrl+="?console=page&cache=check&timeout=0&autotest"
-            if params.args then programUrl+=("&"+params.args)
+            if params.args
+              params.args = params.args.replace(/\?/, "")
+              programUrl+=("&"+params.args)
             if runner.opts.vdom then programUrl+="&vdom=1"
             if params.wait
               yp @get(programUrl).waitIdle(100000).sleep(5000) if @qx$browserName == "safari"
