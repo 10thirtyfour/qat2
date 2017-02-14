@@ -48,7 +48,7 @@ module.exports = ->
       chrome: "http://localhost:9515/"
       edge: "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
-      opera: "http://localhost:9515/"
+      opera: "http://localhost:9516/"
       ie: "http://localhost:5555/"
       safari: "http://localhost:4444/wd/hub/"
     browsers:
