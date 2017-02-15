@@ -20,6 +20,9 @@ module.exports = ->
         console:
           level: "info"
 
+    defaultAssemblyPath:
+      win_ia32: "C:/Program Files/Reference Assemblies/Microsoft/Framework/.NETFramework/v4.6/"
+
     globLoader:
       root: "./tests"
 
