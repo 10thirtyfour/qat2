@@ -66,7 +66,9 @@ elements =
   "combo-box" :
     qxclass : "qx-aum-combo-box"
     get :
-      text : (el) -> "return $('#{el} .qx-text').html()"
+      #text : (el) -> "return $('#{el} .qx-text').html()" // contenteditable element 
+      text : (el) -> "var t = $('#{el} .qx-text').html();
+                  if (t.length > 0 ) { return t;} else { return $('#{el} input').val();}"
       defaults :
         height : 18
 
