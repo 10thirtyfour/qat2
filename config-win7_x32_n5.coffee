@@ -3,6 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     powerOff: false
+    input: false
 
     common:
       timeouts:
@@ -34,8 +35,7 @@ module.exports = ->
 
     browserList :
       chrome: (true)
-      #firefox: (true)
-      #ie: (true)
+      opera: (false)
 
     dbprofiles:
       informix:
