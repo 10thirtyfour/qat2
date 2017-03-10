@@ -68,7 +68,8 @@ elements =
     get :
       #text : (el) -> "return $('#{el} .qx-text').html()" // contenteditable element
       text : (el) -> "var t = $('#{el} .qx-text').html();
-                  if (t.length > 0 ) { return t;} else { return $('#{el} input').val();}"
+                      var f = $('#{el} input').val();
+                      if (t.length > 0 ) { return t;} else { if (f == null) { return '';} else { return f;}; }"
       defaults :
         height : 18
 
