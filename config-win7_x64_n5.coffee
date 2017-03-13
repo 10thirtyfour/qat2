@@ -28,8 +28,8 @@ module.exports = ->
     browserList :
       chrome: (true)
       edge: (false)
-      firefox: (true)
-      opera: (true)
+      firefox: (false)
+      opera: (false)
       ie: (false)
       safari: (false)
 
