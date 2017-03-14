@@ -677,7 +677,12 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   unless v.browserName in ["firefox"] then browser.close().quit() else browser.close()
-                  if process.platform[0] is "w" then exec("rd /S /Q %temp%")
+                  if process.platform[0] is "w"
+                    exec("rd /S /Q %temp%")
+                    if v.browserName in ["firefox"]
+                      exec("taskkill /F /T /IM firefox.exe")
+                    if v.browserName in ["opera"]
+                      exec("taskkill /F /T /IM opera.exe")
               return r.then(-> "Pass")
             @reg binfo
             binfo.data.browser = i
