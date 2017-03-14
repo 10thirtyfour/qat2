@@ -676,14 +676,14 @@ module.exports = ->
               browser.qx$browserName = i
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
+                  browser.close().quit() #unless v.browserName in ["firefox"] #browser.quit()
                   if process.platform[0] is "w"
-                    browser.quit() unless v.browserName in ["firefox"]
+                    exec("rd /S /Q %temp%")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
                     if v.browserName in ["opera"]
                       exec("taskkill /F /T /IM opera.exe")
                   else
-                    browser.quit() unless v.browserName in ["firefox"]
                     if v.browserName in ["firefox"]
                       exec("killall -s KILL firefox")
               return r.then(-> "Pass")
