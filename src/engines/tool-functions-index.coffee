@@ -217,7 +217,7 @@ module.exports = ->
 
   runner.toolfuns =
     uniformName: (tn) ->
-      tn.replace(/\\/g, "/")
+      tn.replace(/\\/g, "/")  #"
 
     filenameToTestname : filenameToTestname
 

@@ -95,6 +95,7 @@ module.exports = ->
           (f) =>
             f1 = f.toString()
             if f1.indexOf("ECONNREFUSED")==-1 and
+               f1.indexOf("browserName")==-1 and
                f1.indexOf("maximize")==-1 and
                f1.indexOf("WARNING")==-1 and
                f1.indexOf("Failed to connect to")==-1 and
