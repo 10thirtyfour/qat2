@@ -3,7 +3,7 @@ module.exports = ->
   {_,opts} = @
   _.merge opts,
     powerOff: false
-    input: false
+    input: true
 
     common:
       timeouts:
