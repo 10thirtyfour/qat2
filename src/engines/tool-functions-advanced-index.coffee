@@ -192,6 +192,7 @@ module.exports = ->
         if (testData.atomic?) && (testData.atomic == "start")
           testData.buildTestName = "atomic/" + testData.atomic
           testData.after = []
+        unless runner.tests.async.disabled then testData.after = []
         runner.reg
           name: testData.buildTestName
           after: testData.after
