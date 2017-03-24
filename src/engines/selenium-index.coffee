@@ -669,7 +669,7 @@ module.exports = ->
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
-              if v.browserName in ["chrome","opera"] and runner.tests.async.disabled
+              if v.browserName in ["chrome","opera"] #and runner.tests.async.disabled
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
                 r = browser.init(v).then(=> promise.call @, browser)
@@ -677,7 +677,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   if (v.browserName not in ["firefox"]) and (runner.tests.async.disabled) then browser.close().quit() else browser.close()
-                  if process.platform[0] is "w" and runner.tests.async.disabled
+                  if process.platform[0] is "w" #and runner.tests.async.disabled
                     exec("rd /S /Q %temp%")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")
