@@ -100,8 +100,8 @@ module.exports = ->
                f1.indexOf("WARNING")==-1 and
                f1.indexOf("Failed to connect to")==-1 and
                f1.indexOf("No such driver")==-1 and
-               !(f1.indexOf("StartApplication")!=-1 and
-               runner.opts.browserFirst=="safari")
+               !(f1.indexOf("StartApplication")!=-1 and runner.opts.browserFirst=="safari") and
+               !(f1.indexOf("getBoundingClientRect")!=-1 and !(runner.tests.async.disabled))
               @fail f
             else
               @info f1
