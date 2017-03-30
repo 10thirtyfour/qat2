@@ -122,7 +122,7 @@ module.exports = ->
     runner.logger.trace "done.promise Return promise"
     runner.logger.trace runner.opts.powerOff
     if runner.opts.powerOff
-      runner.logger.trace "shutdown  /S"
-      exec "shutdown  /S"
+      runner.logger.trace "shutdown /S"
+      exec "shutdown /S"
     return p.timeout(20000).then( ()-> donePromise.call context)
   @reg plugin

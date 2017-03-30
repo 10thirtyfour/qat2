@@ -1,6 +1,6 @@
 "use strict";
 
-var arr = "21d,1d,2d,2d,5d,1d,1h,1d,2h,1d,5d,2h,2d,2d,15d,10d,10d,2d,3d,2d,2d,2d,2h,4d,4h,4d,2d,1d,1d,3d,3h,3d,4d,4h,4d,1d,1d,5d,4h,1d,1h,2d,7d,3d,3d,4h,2d,2d,2h,2d,2d,15d,25d,1d,1d,1d,1d,4h)"
+var arr = "2d,1d,1d,1h,1h,1h,1h,1h,1d,2d,5d,5d,15d,10d,10d,3d,2d,1d,1d,1d,1d,1d,1d,1d,4h,15d,25d,2d,1d,1d,1d,5d,1d,1d)"
 
 var arr = arr.split(",")
 var cont = 0;

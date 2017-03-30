@@ -45,19 +45,19 @@ module.exports = ->
     enable:
       browser: runner.opts.browserList
     links:
-      chrome: "http://localhost:9515/"
-      edge: "http://localhost:17556/"
+      chrome:  "http://localhost:9515/"
+      edge:    "http://localhost:17556/"
       firefox: "http://localhost:4444/wd/hub/"
-      opera: "http://localhost:9516/"
-      ie: "http://localhost:5555/"
-      safari: "http://localhost:4444/wd/hub/"
+      opera:   "http://localhost:9516/"
+      ie:      "http://localhost:5555/"
+      safari:  "http://localhost:4444/wd/hub/"
     browsers:
-      chrome:{browserName: "chrome"}
-      edge:{browserName: "edge"}
-      firefox:{browserName: "firefox"}
-      opera:{browserName: "opera"}
-      ie:{browserName: "ie"}
-      safari:{browserName: "safari"}
+      chrome:  {browserName: "chrome" }
+      edge:    {browserName: "edge"   }
+      firefox: {browserName: "firefox"}
+      opera:   {browserName: "opera"  }
+      ie:      {browserName: "ie"     }
+      safari:  {browserName: "safari" }
     hacks:
       justType:
         safari  : (true)
@@ -81,27 +81,7 @@ module.exports = ->
           timeout ?= plugin.defaultWaitTimeout
           idleTimeout ?= plugin.defaultIdleTimeout
           @waitForElementByCssSelector('.qx-application[data-qx-state="idle"]', timeout).sleep(idleTimeout)
-          )
-
-      wd.addPromiseMethod(
-        "runProgram"
-        (prog) ->
-          cmd = path.join(runner.environ.LYCIA_DIR,"client","LyciaDesktop.exe")
-          wurl = opts.appHost.toString()+":9090"
-
-          params = [
-            " --remote-debugging-port=8888",
-            "--server=#{wurl}",
-            "--instance=#{opts.qatDefaultInstance}",
-            "-c",
-            "--command=\"#{prog}\" -d #{opts.common.options.databaseProfile}"]
-
-          yp spawn(cmd,params)
-          yp @sleep(6000)
-          yp @get("localhost:8888")
-          yp @sleep(2000)
-          return (true)
-          )
+        )
 
       wd.addPromiseMethod(
         "startApplication"
@@ -128,11 +108,11 @@ module.exports = ->
             if process.platform[0] is "w"
               runner.trace "net restart qxweb_7"
               yp exec("net stop qxweb_7")
-              yp @sleep(10000)
+              yp @sleep(5000)
               yp exec("net start qxweb_7")
             throw "StartApplication <#{command}> failed. \n Error - " + e
-          (true)
-          )
+          return (true)
+        )
 
       wd.addPromiseMethod(
         "waitExit"
@@ -143,8 +123,8 @@ module.exports = ->
           catch e
             unless plugin.hacks.exit[@qx$browserName]
               throw "Exit application failed. \n Error - " + e
-          (true)
-          )
+          return (true)
+        )
 
       wd.addPromiseMethod(
         "elementExists"
@@ -152,39 +132,39 @@ module.exports = ->
           if yp(@execute("return jQuery('#{getSelector(el)}').length")) > 0
             return (true)
           return (false)
-          )
+        )
 
       wd.addPromiseMethod(
         "waitMessageBox",
         (timeout) ->
           timeout ?= plugin.defaultWaitTimeout
           @waitForElementByCssSelector(".qx-message-box",timeout)
-          )
+        )
 
       wd.addPromiseMethod(
         "getElement"
-        (el) -> @elementByCss "#{getSelector(el)}")
+        (el) ->
+          return @elementByCss "#{getSelector(el)}"
+        )
 
       wd.addPromiseMethod(
         "getContextMenu"
         (el) ->
           yp @execute("return jQuery('#{getSelector(el)}').mousedown()").waitIdle(3000,3000)
           return yp @elementByCss("#{getSelector("contextmenu")}")
-          )
+        )
 
       wd.addPromiseMethod(
         "getWindow"
         (wnd) ->
           yp @setDialogID(wnd,"win_qat")
-          @elementByCss ".qx-identifier-win_qat"
-          )
+          return @elementByCss(".qx-identifier-win_qat")
+        )
 
       wd.addPromiseMethod(
         "resizeWindow"
         (wnd,dx,dy,h) ->
           if plugin.hacks.resize[@qx$browserName]
-            if @qx$browserName in ["ie"]
-              throw "resizeWindow does not support on current version IE browser"
             yp @setDialogID(wnd,"win_qat")
             dlSize = yp @getRect("win_qat")
             wbSize = yp @getRect("win_qat .qx-window-border")
@@ -267,6 +247,7 @@ module.exports = ->
             @elementByCss(".qx-focused .qx-text").type(val)
           else
             @elementByCss(".qx-focused .qx-text").type(val)
+          return (true)
         )
 
       wd.addPromiseMethod(
@@ -280,7 +261,7 @@ module.exports = ->
               return (true)
             catch e
               return (true)
-          el.click()
+          return el.click()
         )
 
       wd.addPromiseMethod(
@@ -310,7 +291,6 @@ module.exports = ->
           return "" unless mess.length>0
           if params.mess?
             mess=params.mess+' '+mess
-          throw mess unless params.deferred
           @errorMessage?=""
           @errorMessage+=mess
           return mess
@@ -341,7 +321,9 @@ module.exports = ->
               return (true)
           el.click()
             .waitIdle()
+          return (true)
         )
+
 
       wd.addPromiseMethod(
         "remoteCall"
@@ -356,18 +338,20 @@ module.exports = ->
             yp @execute("return jQuery().#{nm}.apply(jQuery('#{getSelector(el)}'),arguments)",args)
           else
             yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
+          return (true)
         )
+
 
       wd.addPromiseMethod(
         "hasScroll"
         (el) ->
-          @execute("""
-                     el=jQuery('#{getSelector(el)}');
-                     if(el.css('overflow')=='hidden') {return false;}
-                     if((el.prop('clientWidth' )!=el.prop('scrollWidth' )) ||
-                        (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
-                     return false;
-                   """)
+          return @execute("""
+                           el=jQuery('#{getSelector(el)}');
+                           if(el.css('overflow')=='hidden') {return false;}
+                           if((el.prop('clientWidth' )!=el.prop('scrollWidth' )) ||
+                              (el.prop('clientHeight')!=el.prop('scrollHeight'))) { return true;}
+                           return false;
+                         """)
         )
 
       wd.addPromiseMethod(
@@ -493,9 +477,7 @@ module.exports = ->
           if errmsg is "" then return ""
           mess+=" : #{errmsg}"
           if params.precision.toString() != "0" then mess +="\n Precision = <#{precision}>"
-          params.deferred?=(true)
-          unless params.deferred
-            throw mess
+
           @errorMessage?=""
           @errorMessage+=mess+"\n"
           return mess
@@ -545,7 +527,7 @@ module.exports = ->
         "statusBarText"
         (mType) ->
           mType ?= "message"
-          yp (@execute("return jQuery('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
+          return yp (@execute("return jQuery('div.qx-identifier-statusbar#{mType}:visible .qx-text').text()")) ? ""
         )
 
       wd.addPromiseMethod(
@@ -668,7 +650,7 @@ module.exports = ->
               if plugin.wdTrace
                 browser.on("status", (info) -> plugin.trace info.cyan)
                 browser.on("command", (meth, path, data) -> plugin.trace "> #{meth.yellow}", path.grey, data || '')
-              if v.browserName in ["chrome","opera"] #and runner.tests.async.disabled
+              if v.browserName in ["chrome","opera"]
                 r = browser.init(v).maximize().then(=> promise.call @, browser)
               else
                 r = browser.init(v).then(=> promise.call @, browser)
@@ -676,7 +658,7 @@ module.exports = ->
               unless binfo.closeBrowser is false or plugin.closeBrowser is (false)
                 r = r.finally =>
                   if (v.browserName not in ["firefox"]) and (runner.tests.async.disabled) then browser.close().quit() else browser.close()
-                  if process.platform[0] is "w" #and runner.tests.async.disabled
+                  if process.platform[0] is "w"
                     exec("rd /S /Q %temp%")
                     if v.browserName in ["firefox"]
                       exec("taskkill /F /T /IM firefox.exe")

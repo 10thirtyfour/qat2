@@ -89,7 +89,7 @@ module.exports = ->
     return path.basename testName[0...(testName.length-5-path.extname(testName).length)]
 
   runner.relativeFn = (fn)->
-    (path.relative runner.tests.globLoader.root, path.resolve(fn)).replace( /\\/g, "/" )
+    (path.relative runner.tests.globLoader.root, path.resolve(fn)).replace( /\\/g, "/" ) #"
 
   parseError = (raw) ->
     errorMessage = raw : raw
@@ -410,7 +410,6 @@ module.exports = ->
             errorMessage.code ?= result
             errorMessage.line ?= -1
 
-            #errorMessage ?= { text:txt.raw, code:parseInt(result), line:-1 }
             if @testData.reverse
               if (not @testData.errorCode) or (parseInt(@testData.errorCode,10) is parseInt(errorMessage.code,10))
                 return "Code matched:#{errorMessage.code}. Line:#{errorMessage.line}."
@@ -454,7 +453,7 @@ module.exports = ->
         @testData.buildTimeout ?= @timeouts.build
 
         params = [ "-M", @testData.buildMode, opt.cwd, path.basename(@testData.programName) ]
-        #@data.commandLine = "qbuild " + params.join(" ")
+
         try
           child = spawn( qrun , params , opt)
           result = (yp exitPromise(child).timeout(@testData.buildTimeout,"Build timed out"))

@@ -42,7 +42,6 @@ module.exports = ->
 
                 if typeof testData.atomic is "string"
                   testData.testName = "atomic/"+testData.atomic
-                  #testData.before = ["xdep"]
                 if typeof testData.after is "string"
                   testReq = testReq.concat( splitByCommas(testData.after) )
 
@@ -73,7 +72,6 @@ module.exports = ->
                     src : runner.relativeFn(fn)
                   testData : testData
                   after: testReq
-                  #before: testData.before
                   promise: toolfuns.regLogRun
                 true
               catch e

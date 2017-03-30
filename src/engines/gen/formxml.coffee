@@ -65,5 +65,5 @@ module.exports = (opts) ->
     throw new Error "not implemented"
   write: (obj) ->
     opts.objectInner(
-      builder.create("form", {version: '1.0', encoding: 'UTF-8'}).att("xmlns","http://namespaces.querix.com/2011/fglForms")
+      builder.create("form", {version: '1.0', encoding: 'UTF-8'}).att("xmlns","http://namespaces.querix.com/2015/fglForms")
       obj).end pretty: true

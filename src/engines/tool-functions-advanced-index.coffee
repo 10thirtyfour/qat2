@@ -7,7 +7,6 @@ module.exports = ->
   {Q,yp,fs,path,_, opts} = runner = @
   runner.extfuns?={}
   _.merge runner.extfuns,
-    #uniformName : runner.toolfuns.uniformName
     log : console.log
     ver : (v)->
       if opts.version<v

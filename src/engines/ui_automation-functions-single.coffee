@@ -347,37 +347,6 @@ module.exports =
         }
 
 
-        // ====================================================================
-        //
-        //
-        //private object getConsoleText(dynamic input) {
-        //  string text="";
-        //  try {
-        //    var el = AutomationElement.RootElement
-        //      .FindFirst( TreeScope.Children,
-        //        new PropertyCondition( AutomationElement.NameProperty,
-        //        "LyciaConsole"))
-        //      .FindFirst( TreeScope.Children,
-        //        new PropertyCondition( AutomationElement.ClassNameProperty,
-        //        "Edit"));
-        //    //var el = AutomationElement.RootElement
-        //    //  .FindFirst( TreeScope.Children,
-        //    //    new PropertyCondition( AutomationElement.ClassNameProperty,
-        //    //    "Chrome_RenderWidgetHostHWND"));
-        //      object pObj;
-        //      if (el.TryGetCurrentPattern(TextPattern.Pattern, out pObj)) {
-        //        var textPattern = (TextPattern)pObj;
-        //        text = textPattern.DocumentRange.GetText(-1);
-        //      }
-        //    } catch {
-        //      //Console.WriteLine("No Lycia Console window found!");
-        //      text = "";
-        //    }
-        //  return(text);
-        //}
-        //
-        // ==========================
-
         private int closeWindowHelper( AutomationElement el ) {
           string name="";
           try {
