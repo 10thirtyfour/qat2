@@ -335,10 +335,9 @@ module.exports = ->
               return yp @execute("jQuery('#{getSelector(el)}').#{nm}()")
             return yp @execute("return jQuery('#{getSelector(el)}').#{nm}()")
           if _.isString el or el.selector?
-            yp @execute("return jQuery().#{nm}.apply(jQuery('#{getSelector(el)}'),arguments)",args)
+            return yp @execute("return jQuery().#{nm}.apply(jQuery('#{getSelector(el)}'),arguments)",args)
           else
-            yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
-          return (true)
+            return yp @execute("return $().#{nm}.apply($(arguments[0]),arguments[1])",[el,args])
         )
 
 
