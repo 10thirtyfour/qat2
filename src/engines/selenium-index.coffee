@@ -244,10 +244,9 @@ module.exports = ->
             if @qx$browserName in ["safari"]
               throw "Error in safari element.type. Workaround: ECONNREFUSED "
             el = yp  @elementByCss(".qx-focused .qx-text")
-            @elementByCss(".qx-focused .qx-text").type(val)
+            return @elementByCss(".qx-focused .qx-text").type(val)
           else
-            @elementByCss(".qx-focused .qx-text").type(val)
-          return (true)
+            return @elementByCss(".qx-focused .qx-text").type(val)
         )
 
       wd.addPromiseMethod(
