@@ -101,13 +101,14 @@ module.exports = ->
                f1.indexOf("Failed to connect to")==-1 and
                f1.indexOf("No such driver")==-1 and
                !(f1.indexOf("StartApplication")!=-1 and runner.opts.browserFirst=="safari") and
+               !(f1.indexOf("Not JSON response")!=-1 and runner.opts.browserFirst=="ie") and
                !(f1.indexOf("getBoundingClientRect")!=-1 and !(runner.tests.async.disabled))
               @fail f
             else
               @info f1
               if f1.indexOf("edge")!=-1 then exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-              if f1.indexOf("ie")!=-1  then exec("start /MIN c:/qat/IEDriverServer_x64.exe")
+              if f1.indexOf("ie")!=-1  then exec("start /MIN c:/qat/IEDriverServer.exe")
               if f1.indexOf("chrome")!=-1  then exec("start /MIN c:/qat/chromedriver.exe")
-              if f1.indexOf("opera")!=-1  then exec("start /MIN c:/qat/operadriver_x64.exe")
+              if f1.indexOf("opera")!=-1  then exec("start /MIN c:/qat/operadriver.exe")
             throw f)
   @reg plugin
