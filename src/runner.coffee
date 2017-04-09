@@ -23,6 +23,7 @@ class Runner
     @runner = @
   name: "runner"
   glob: glob
+  require: require
   minimatch: require "minimatch"
   _: _
   Q: Q

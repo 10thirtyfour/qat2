@@ -99,6 +99,7 @@ module.exports = ->
               params.args = params.args.replace(/\?/, "")
               programUrl+=("&"+params.args)
             if runner.opts.vdom then programUrl+="&vdom=1"
+            programUrl+="&cssgrid=#{runner.opts.cssgrid or 'yes'}"
             if params.wait
               yp @get(programUrl).waitIdle(100000).sleep(5000) if @qx$browserName == "safari"
               yp @get(programUrl).waitIdle().sleep(500) unless @qx$browserName == "safari"

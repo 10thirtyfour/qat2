@@ -32,6 +32,10 @@ module.exports = ->
                   contextParams[n] = (params...) ->
                     f.apply contextParams,params
               try
+                pageObject = "#{runner.path.dirname(fn)}/XPageObject.js"
+                if fs.existsSync(pageObject)
+                  runner.pageObject = require(pageObject)
+                  runner.info '>>>Using page object:',pageObject
                 cfeval fs.readFileSync(fn,encoding:"utf8"),sandbox: contextParams
               catch errorMessage
                 runner.info "Headless-advanced. Eval failed for #{fn}. Message : #{errorMessage}"
