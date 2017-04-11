@@ -76,6 +76,13 @@ module.exports = ->
     promise: ->
       plugin = @
       wd.addPromiseMethod(
+        "getStyles"
+        (el) ->
+          iefe = "return (function(){var k,r,s,x=jQuery('#{getSelector(el)}')[0];s=getComputedStyle(x);r=Object.keys(s).reduce(function(a,i){k=s[i];if(isNaN(parseInt(k))&&s[k])a[k]=s[k];return a;},{});return r;})();"
+          return yp @execute(iefe)
+        )
+
+      wd.addPromiseMethod(
         "waitIdle",
         (timeout,idleTimeout) ->
           timeout ?= plugin.defaultWaitTimeout
@@ -374,7 +381,6 @@ module.exports = ->
           s.b = s.bottom = Math.round(s.bottom)
           return s
         )
-
 
       wd.addPromiseMethod(
         "getTableText"
