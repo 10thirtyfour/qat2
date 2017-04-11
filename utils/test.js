@@ -1,9 +1,9 @@
 "use strict";
 
-var arr = "2d,1d,1d,1h,1h,1h,1h,1h,1d,2d,5d,5d,15d,10d,10d,3d,2d,1d,1d,1d,1d,1d,1d,1d,4h,15d,25d,2d,1d,1d,1d,5d,1d,1d)"
-
+var arr = ""
 var arr = arr.split(",")
 var cont = 0;
+
 for (var i = 0; i < arr.length; i++)
   {
     if (arr[i].indexOf("d")>-1) {

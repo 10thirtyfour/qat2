@@ -1,11 +1,11 @@
 {
   "name": "qat",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Querix tests runner.",
   "main": "lib/main.js",
   "repository": {
     "type": "git",
-    "url": "ssh://robot@qatrepo.qx/qat2.git"
+    "url": "ssh://robot@qatrepo.qx/qat2"
   },
   "dependencies": {
     "archy": "^1.0.0",
@@ -31,6 +31,7 @@
     "prettyjson": "^1.1.0",
     "q": "~1.1.2",
     "q-io": "^1.13.1",
+    "selenium-webdriver": "*",
     "source-map-support": "^0.3.3",
     "tsort": "0.0.1",
     "wd": "^0.3.11",
@@ -39,7 +40,8 @@
     "xmlbuilder": "~2.5.2",
     "xmldom": "^0.1.19",
     "xpath": "0.0.9",
-    "yield-on-promise": "0.0.1"
+    "yield-on-promise": "0.0.1",
+    "webdriver-manager": "*"
   },
   "devDependencies": {
     "grunt": "*",
