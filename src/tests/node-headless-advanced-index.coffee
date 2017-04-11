@@ -33,6 +33,7 @@ module.exports = ->
                     f.apply contextParams,params
               try
                 pageObject = "#{runner.path.dirname(fn)}/XPageObject.js"
+                pageObject = runner.path.resolve(pageObject)
                 if fs.existsSync(pageObject)
                   runner.pageObject = require(pageObject)
                   runner.info '>>>Using page object:',pageObject
