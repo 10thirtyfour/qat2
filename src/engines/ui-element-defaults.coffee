@@ -296,13 +296,23 @@ elements =
   "stack-panel" :
     qxclass : "qx-aum-stack-panel"
 
-  "tab" :
+  "tab" :    
     qxclass : "qx-aum-tab"
     get :
       value : (el) -> "return $('div#{el}.qx-aum-tab li.ui-tabs-active')[0].className.match(/qx-h-identifier-(.*)/)[1]"
     set :
       value : (el,val) ->
         return @execute "return $('div#{el} li[aria-controls='+$('.qx-identifier-#{val}').prop('id') +'] a').click()"
+
+  'tab:grid':
+    selector: 'qx-aum-tab'
+    qxclass: 'qx-aum-tab'
+    get :
+      value : (el) -> "return $('div#{el}.qx-aum-tab li.ui-tabs-active')[0].className.match(/qx-h-identifier-(.*)/)[1]"
+    set :
+      value : (el,val) ->
+        return @execute "return $('div#{el} li[aria-controls='+$('.qx-identifier-#{val}').prop('id') +'] a').click()"
+         
 
   "tab-page" :
     qxclass : "qx-aum-tab-page"

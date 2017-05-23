@@ -514,6 +514,7 @@ module.exports = ->
         "setValue"
         (el, value) ->
           try
+            log getSelector(el), value, el
             yp UI_elements[ yp @getType(el) ].set.value.apply(@,[getSelector(el),value,el])
           catch e
             plugin.info "#{el} setValue failed"

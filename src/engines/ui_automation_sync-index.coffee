@@ -4,7 +4,7 @@
 # https://github.com/octalmage/robotjs/wiki/Syntax
 
 module.exports = ()->
-  return if process.platform[0] isnt "w"
+  return #if process.platform[0] isnt "w"
 
   DesktopDefaults =
     topMenuHeight : 19
