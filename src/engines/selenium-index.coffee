@@ -251,7 +251,7 @@ module.exports = ->
           if plugin.hacks.justType[@qx$browserName]
             if @qx$browserName in ["safari"]
               throw "Error in safari element.type. Workaround: ECONNREFUSED "
-            el = yp  @elementByCss(".qx-focused .qx-text")
+            #el = yp  @elementByCss(".qx-focused .qx-text")
             return @elementByCss(".qx-focused .qx-text").type(val)
           else
             return @elementByCss(".qx-focused .qx-text").type(val)
@@ -387,11 +387,11 @@ module.exports = ->
         (el,t,r,c) ->
           sel = getSelector(el)
           if t==0 then return yp @execute "return jQuery('#{sel} .qx-thead thead th:nth-child(#{r})').text()"
-          if runner.opts.vdom then r++
+          #if runner.opts.vdom then r++
           if t==1
-            if (yp @execute "return jQuery('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c}) input').length") > 0
-              return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c}) input').val()"
-            return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr:nth-child(#{r}) td:nth-child(#{c})').text()"
+            if (yp @execute "return jQuery('#{sel} .qx-tbody tbody tr.qx-table-row:nth-child(#{r}) td:nth-child(#{c}) input').length") > 0
+              return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr.qx-table-row:nth-child(#{r}) td:nth-child(#{c}) input').val()"
+            return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr.qx-table-row:nth-child(#{r}) td:nth-child(#{c})').text()"
           return true
         )
 
