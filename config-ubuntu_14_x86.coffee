@@ -19,7 +19,8 @@ module.exports = ->
     globLoader:
       disable:
         file:
-          pattern: ["**/*-perf-rest.tlog","**/*-wd-test.coffee"]
+          pattern: ["**/*-perf-rest.tlog"]
+          lexpattern: ["**/*-perf-rest.tlog","**/*-wd-test.coffee"]
 
     browserList :
       chrome: (false)
