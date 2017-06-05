@@ -7,7 +7,7 @@ module.exports = ->
     qatDefaultInstance : "default"
     tempPath : "./tests"
     powerOff: false
-    vdom: false
+    vdom: true
     input: true
     cssgrid: 'no'
 
