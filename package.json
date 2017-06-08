@@ -91,10 +91,10 @@
     "17564": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\17000\\source\\17564\\ --globLoader.only.file.pattern=\"17564_app_selector-wd-test.coffee\"",
     "17646": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\17000\\source\\17646\\ --globLoader.only.file.pattern=\"17646_tab_switch-wd-test.coffee\"",
     "17732": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\17000\\source\\17732\\ --globLoader.only.file.pattern=\"17732_clear_screen_and_form_location-wd-test.coffee\"",
-    "cssgrid":"yarn scenario:cssgrid -- --cssgrid=yes > log_grid",
-    "scenario:cssgrid":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\gui",
+    "cssgrid": "yarn scenario:cssgrid -- --cssgrid=yes > log_grid",
+    "scenario:cssgrid": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\gui",
     "disparr:visual": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\display_array\\source\\ --globLoader.only.file.pattern=\"block_on_sort_display_arr_arrayToVisualIndex-wd-test.coffee\"",
-    "15":"npm-run-all --parallel 15:**:* -- vdom=1 ",
+    "15": "npm-run-all --parallel 15:**:* -- vdom=1 ",
     "start": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\gui\\",
     "time": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\timeeditfield\\",
     "blob": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\blobviewer\\",
@@ -146,7 +146,9 @@
     "tree:webcomponents": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\treetable\\source\\ --globLoader.only.file.pattern=\"treeTable_widget_webcomponent-wd-test.coffee\"",
     "pre": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\pre15000\\source\\14836\\ --globLoader.only.file.pattern=\"14836_fgl_grid_export-wd-test.coffee\"",
     "genero_images": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15297\\ --globLoader.only.file.pattern=\"15297_genero_images-wd-test.coffee\"",
-    "s": "npm run tw&& npm run tw2&& npm run tw3"
+    "s": "npm run tw&& npm run tw2&& npm run tw3",
+    "borderpanel:calendar":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_widget_calendar-wd-test.coffee\"",
+    "borderpanel:blob":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_widget_blob-wd-test.coffee\""
   },
   "dependencies": {
     "archy": "^1.0.0",
@@ -207,7 +209,7 @@
   ],
   "author": "Querix team",
   "private": true,
-  "license": "ALLRIGHTSRESERVED",
+  "license": "UNLICENSED",
   "optionalDependencies": {
     "edge": "4.0.0",
     "robotjs": "0.3.3"
