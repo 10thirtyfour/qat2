@@ -305,7 +305,7 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "invokeElement",
-        (el) ->
+        (el) ->          
           unless el.click?
             sel = yp @getSelector(el)
             el = yp(@elementByCssSelectorIfExists(getSelector(el))) ? yp(@elementByCss(getSelector(el)))
@@ -326,9 +326,11 @@ module.exports = ->
                   yp @waitIdle()
               yp @waitIdle()
               return (true)
-          el.click()
-            .waitIdle()
-          return (true)
+          try   
+            yp el.click().waitIdle()
+          catch e
+            el.click().waitIdle()  
+          return true
         )
 
 
@@ -567,7 +569,7 @@ module.exports = ->
 
       wd.addPromiseMethod(
         "getSelector",
-        (el)->
+        (el) ->          
           if el.selector? then return el.selector
           if _.isString(el)
             if el[0] in [".","#","["]

@@ -40,6 +40,7 @@
     "15866": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15866\\ --globLoader.only.file.pattern=\"15866_TreeTable_gridColor-wd-test.coffee\"",
     "15883": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15883\\ --globLoader.only.file.pattern=\"15883_elementBorder_corner_radius-wd-test.coffee\"",
     "15884": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15884\\ --globLoader.only.file.pattern=\"15884_border_prop-wd-test.coffee\"",
+    "15890": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15890\\ --globLoader.only.file.pattern=\"15890_radius_border_theme_apply-wd-test.coffee\"",
     "15909": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15909\\ --globLoader.only.file.pattern=\"15909_gp_horizontal_alignment-wd-test.coffee\"",
     "15942": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15942\\ --globLoader.only.file.pattern=\"15942_get_fldbuf_function-wd-test.coffee\"",
     "15992": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15992\\ --globLoader.only.file.pattern=\"15992_tabpage_grid_size-wd-test.coffee\"",
@@ -62,6 +63,7 @@
     "16424": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16424\\ --globLoader.only.file.pattern=\"16424_tablecolumn_font_theme-wd-test.coffee\"",
     "16428": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16428\\ --globLoader.only.file.pattern=\"16428_table_col_gridLength-wd-test.coffee\"",
     "16437": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16437\\ --globLoader.only.file.pattern=\"16437_text_to_blobviewer-wd-test.coffee\"",
+    "16442": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16442\\ --globLoader.only.file.pattern=\"16442_font_table_control-wd-test.coffee\"",
     "16459": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16459\\ --globLoader.only.file.pattern=\"16459_noEntry_table-wd-test.coffee\"",
     "16495": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16459\\ --globLoader.only.file.pattern=\"16495_aggregate_program-wd-test.coffee\"",
     "16530": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\16000\\source\\16530\\ --globLoader.only.file.pattern=\"16530_SetEnable_uiButton-wd-test.coffee\"",
@@ -105,6 +107,7 @@
     "widget": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\widget_size\\",
     "scrollbar": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\scrollbar\\",
     "grid": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\scrollbar\\",
+    "borderpanel": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\",
     "scroll:vw": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\scrollviewer\\",
     "table": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\table\\",
     "coordpanel": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\gui\\container_test\\coordpanel\\source",
@@ -148,7 +151,11 @@
     "genero_images": "node . --globLoader.root=C:\\Users\\ollu\\workspace\\15000\\source\\15297\\ --globLoader.only.file.pattern=\"15297_genero_images-wd-test.coffee\"",
     "s": "npm run tw&& npm run tw2&& npm run tw3",
     "borderpanel:calendar":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_widget_calendar-wd-test.coffee\"",
-    "borderpanel:blob":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_widget_blob-wd-test.coffee\""
+    "borderpanel:blob":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_widget_blob-wd-test.coffee\"",
+    "borderpanel:5":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"borderpanel_05_alignment-wd-test.coffee\"",
+    "borderpanel:table":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_cont_table-wd-test.coffee\"",
+    "borderpanel:tree":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_cont_treetable-wd-test.coffee\"",
+    "borderpanel:brd":"node . --globLoader.root=C:\\Users\\ollu\\workspace\\borderpanel\\source\\ --globLoader.only.file.pattern=\"brdPanel_cont_brdPanel-wd-test.coffee\""
   },
   "dependencies": {
     "archy": "^1.0.0",

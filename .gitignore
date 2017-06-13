@@ -9,3 +9,4 @@ tests
 debug.log
 temp
 .history
+.vscode

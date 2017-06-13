@@ -3,7 +3,7 @@
 module.exports = ()->
   return true
 allBelowIsDisabled = ()->
-  return #if process.platform[0] isnt "w"
+  return if process.platform[0] isnt "w"
 
   { opts, _, path, Q } = runner = @
 
