@@ -1,2 +1,2 @@
 
-java -jar selenium-server-standalone-3.3.0.jar > nul
+java -jar selenium-server-standalone-3.4.0.jar > nul
