@@ -105,7 +105,7 @@ module.exports = ->
             if params.args
               params.args = params.args.replace(/\?/, "")
               programUrl+=("&"+params.args)
-            if runner.opts.vdom then programUrl+="&vdom=1"
+            if runner.opts.vdom then programUrl+="&vdom=#{runner.opts.vdom or 1}"
             programUrl+="&cssgrid=#{runner.opts.cssgrid or 'yes'}"
             if params.wait
               yp @get(programUrl).waitIdle(100000).sleep(5000) if @qx$browserName == "safari"
@@ -389,7 +389,7 @@ module.exports = ->
         (el,t,r,c) ->
           sel = getSelector(el)
           if t==0 then return yp @execute "return jQuery('#{sel} .qx-thead thead th:nth-child(#{r})').text()"
-          #if runner.opts.vdom then r++
+          if runner.opts.vdom then r++
           if t==1
             if (yp @execute "return jQuery('#{sel} .qx-tbody tbody tr.qx-table-row:nth-child(#{r}) td:nth-child(#{c}) input').length") > 0
               return yp @execute "return jQuery('#{sel} .qx-tbody tbody tr.qx-table-row:nth-child(#{r}) td:nth-child(#{c}) input').val()"
