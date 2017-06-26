@@ -2,7 +2,7 @@
 
 module.exports = ->
   {Q,_,winston} = runner = @
-  {exec} = require 'child_process'
+  {exec, spawn} = require 'child_process'
   killSeleniumProcess = require './utils/killSeleniumProcess';
   ex = require('child_process').exec;
   extend = (obj) ->
@@ -106,11 +106,12 @@ module.exports = ->
                !(f1.indexOf("getBoundingClientRect")!=-1 and !(runner.tests.async.disabled))
               @fail f
             else
-              @info f1
+              @info '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1
               # TODO Firefox requires to close current selenium runner
+              # log '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1
               if f1.indexOf("firefox") != -1 then killSeleniumProcess()
               if f1.indexOf("edge") !=-1 then exec("start /MIN c:/qat/MicrosoftWebDriver.exe")
-              if f1.indexOf("ie") !=-1  then exec("start /MIN c:/qat/IEDriverServer.exe")
+              if f1.indexOf("browserName=ie") !=-1  then exec("start /MIN c:/qat/IEDriverServer.exe")
               if f1.indexOf("chrome") !=-1  then exec("start /MIN c:/qat/chromedriver.exe")
               if f1.indexOf("opera") !=-1  then exec("start /MIN c:/qat/operadriver.exe")
             throw f)

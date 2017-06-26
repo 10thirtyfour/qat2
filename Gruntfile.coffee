@@ -43,7 +43,7 @@ module.exports = (grunt) ->
     watch:
       main:
         files: ["src/**"]
-        tasks: "coffee"
+        tasks: ["coffee", "copy"]
     markdown:
       main:
         files: [

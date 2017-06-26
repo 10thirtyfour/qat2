@@ -5,15 +5,22 @@ const { exec } = require('child_process');
 const killProcesess = ({ commands, spawnCommand = 'start /MIN c:/qat/firefox.bat' } = {}) => {
   const findSeleniumProcess = name => (err, result) => {
     if (err) console.log(err);
-    let seleniumProcess = result.find(elem => {
-      return elem.arguments.length && elem.arguments.find(arg => arg.includes('selenium'));
+    // console.log('matched process: ', result)
+    let seleniumProcess;
+    // method Array.prototype.find doesn't working here
+    let seleniumFind = result.forEach(elem => {
+      if (elem.arguments.length && !seleniumProcess) {
+        elem.arguments.forEach(arg => (arg.includes('selenium') ? (seleniumProcess = elem) : null));
+      }
     });
-    if (!seleniumProcess) {
+    console.log(seleniumProcess);
+    if (!~seleniumProcess) {
       console.log(`${name} process not found`);
       return;
     }
     const { pid } = seleniumProcess;
-    console.log(`process ${name} was founded!`);
+
+    console.log(`process ${name} was founded! with PID:${pid}`);
     try {
       ps.kill(pid, err => {
         if (err && err.message && !err.message.includes('timeout')) {
