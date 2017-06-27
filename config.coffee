@@ -64,9 +64,9 @@ module.exports = ->
           pattern: ["**/*-perf-rest.tlog","**/output/**"]
 
     browserList :
-      chrome: (false)
+      chrome: (true)
       edge: (false)
-      firefox: (true)
+      firefox: (false)
       opera: (false)
       ie: (false)
       safari: (false)
