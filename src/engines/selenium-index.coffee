@@ -75,6 +75,13 @@ module.exports = ->
 
     promise: ->
       plugin = @
+
+      wd.addPromiseMethod(
+        "justExecute"
+        (stringOfCode) ->
+          return yp @execute(stringOfCode)
+        )
+
       wd.addPromiseMethod(
         "getStyles"
         (el) ->
