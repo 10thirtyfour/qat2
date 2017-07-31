@@ -132,28 +132,6 @@ class Runner
   sync: ->
     graph = @graph
     t = @tests
-
-    #imports graph from file if importDependencyFile is set to true
-          @info 'syncing...'
-          console.time 'sync'
-
-    #gets filepath from command line
-          args = process.argv.join().split('dependencyFile=')
-          dependencyFileName = args[1]
-          console.log 'filepaths= ' + dependencyFileName
-
-     #if filepath isn`t set, then the dependency tree will be created
-          if dependencyFileName != undefined
-            importDependencyFile = true
-            console.log 'import dependency file= ' + importDependencyFile
-          if importDependencyFile
-            graph = graphlib.json.read(JSON.parse(fs.readFileSync(dependencyFileName)))
-            @info 'Reading dependencies from file...'
-            @info 'number of nodes:' + graph.nodes().length
-            @info 'number of edges:' + graph.edges().length
-            console.timeEnd 'sync'
-            graph
-          else
     syncNo++
     @info "building dependencies graph"
     @info "number of nodes:#{graph.nodes().length}"
@@ -188,13 +166,6 @@ class Runner
       @info "cycles in test dependencies: #{@prettyjson cycles}"
     @info "no dependency cycles"
     @utils.transRed @graph, "setup"
-
-     # putting dependencies into json file:
-            jsonGraph = graphlib.json.write(@graph)
-            jsonGraphString = JSON.stringify(jsonGraph)
-            fs.writeFileSync 'tmp/jsonGraph', jsonGraphString
-            graph2 = graphlib.json.read(JSON.parse(fs.readFileSync('tmp/jsonGraph')))
-            @info 'number of edges after reduction jsongraph:' + graph2.edges().length
     fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
     @info "number of edges after reduction:#{graph.edges().length}"
 
