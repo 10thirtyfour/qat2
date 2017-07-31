@@ -58,7 +58,7 @@ class Runner
     _.merge descr, @common, @opts.common, @opts[name]
     @notInGraph.push descr
     @graph.setNode name
-  # schedules next actions for execution
+   # schedules next actions for execution
   # res - initial result, there report is aggregating
   # may be some statistics information
   # this is default implantation and may be overridden by some extension
