@@ -107,6 +107,7 @@ module.exports = ->
             params.wait ?= (true)
             params.instance ?= runner.opts.qatDefaultInstance
             command += ".exe" if process.platform[0] is "w"
+            log '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', params
             programUrl = plugin.lyciaWebUrl + "run/" + params.instance + "/" + command
             programUrl+="?console=page&cache=check&timeout=0&autotest"
             if params.args

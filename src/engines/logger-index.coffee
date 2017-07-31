@@ -106,7 +106,7 @@ module.exports = ->
                !(f1.indexOf("getBoundingClientRect")!=-1 and !(runner.tests.async.disabled))
               @fail f
             else
-              @info '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1
+              @info '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1 @info '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1
               # TODO Firefox requires to close current selenium runner
               # log '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', f1
               # if f1.indexOf("firefox") != -1 then killSeleniumProcess()
