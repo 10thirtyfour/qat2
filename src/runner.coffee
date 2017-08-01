@@ -35,6 +35,7 @@ class Runner
     dashColor: "magenta"
   os: require "os"
   graph: new graphlib.Graph
+  importDependencyFile = false
   fs: fs
   colors: require "colors"
   EventEmitter: require("events").EventEmitter
@@ -72,7 +73,7 @@ class Runner
         prev.then(cur)
       Q {})
   # executes provided node and schedules its children
-  crawl: (node) ->
+  crawl: (node,graph) ->
     # what's wrong, crawl should return promise
     # with the test case result
     # we need bind here!
@@ -86,7 +87,7 @@ class Runner
       return true
 
     t.error = false
-    for i in @graph.predecessors(node)
+    for i in graph.predecessors(node)
       pt = tests[i]
       unless pt?
         @info "Node #{node} has invalid predecessor #{i}. Ignoring."
@@ -114,11 +115,11 @@ class Runner
       r = r.catch (e) =>
         Q {}
     r = r.finally =>
-          @trace "done #{node}, next", @graph.successors node
+          @trace "done #{node}, next", graph.successors node
           t.done = true
-          next = for i in @graph.successors node
+          next = for i in graph.successors node
             do (i) =>
-              => @crawl i
+              => @crawl i,graph
           @schedule next
     r = @postPromise r
     r
@@ -132,51 +133,82 @@ class Runner
   sync: ->
     graph = @graph
     t = @tests
-    syncNo++
-    @info "building dependencies graph"
-    @info "number of nodes:#{graph.nodes().length}"
-    for descr in @notInGraph
 
-      {name,before,after,setup} = descr
-      @trace "building: #{name}"
-      if name isnt "setup" and name isnt "run"
-        if setup
-          graph.setEdge "setup", name
-          graph.setEdge name, "run"
-        else
-          graph.setEdge "run", name
-      unless name is "done"
-        graph.setEdge name, "done"
-      if before?
-        for i in @utils.mkArray before
-          unless @tests[i]
-            @info "Unknown dependency #{i} in `before` of #{name}"
-          graph.setEdge(name, i)
-      if after?
-        for i in @utils.mkArray after
-          unless @tests[i]
-            @info "Unknown dependency #{i} in `after` of #{name}"
-          graph.setEdge(i, name)
+    #imports graph from file if importDependencyFile is set to true
+    @info 'syncing...'
+    console.time 'sync'
 
-    @notInGraph.length = 0
-    @info "number of edges:#{graph.edges().length}"
-    fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
-    cycles = graphlib.alg.findCycles graph
-    if cycles.length isnt 0
-      @info "cycles in test dependencies: #{@prettyjson cycles}"
-    @info "no dependency cycles"
-    @utils.transRed @graph, "setup"
-    fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
-    @info "number of edges after reduction:#{graph.edges().length}"
+    #gets filepath from command line
+    args = process.argv.join().split('dependencyFile=')
+    dependencyFileName = args[1]
+    console.log 'filepaths= ' + dependencyFileName
+
+    #if filepath isn`t set, then the dependency tree will be created
+    if dependencyFileName != undefined
+            importDependencyFile = true
+            console.log 'import dependency file= ' + importDependencyFile
+    if importDependencyFile
+            graph = graphlib.json.read(JSON.parse(fs.readFileSync(dependencyFileName)))
+            @info 'Reading dependencies from file...'
+            @info 'number of nodes:' + graph.nodes().length
+            @info 'number of edges:' + graph.edges().length
+            console.timeEnd 'sync'
+            graph
+          else
+            syncNo++
+            @info "building dependencies graph"
+            @info "number of nodes:#{graph.nodes().length}"
+            for descr in @notInGraph
+
+             {name,before,after,setup} = descr
+             @trace "building: #{name}"
+             if name isnt "setup" and name isnt "run"
+              if setup
+               graph.setEdge "setup", name
+               graph.setEdge name, "run"
+              else
+               graph.setEdge "run", name
+             unless name is "done"
+              graph.setEdge name, "done"
+             if before?
+              for i in @utils.mkArray before
+               unless @tests[i]
+                @info "Unknown dependency #{i} in `before` of #{name}"
+               graph.setEdge(name, i)
+             if after?
+              for i in @utils.mkArray after
+                unless @tests[i]
+                 @info "Unknown dependency #{i} in `after` of #{name}"
+                graph.setEdge(i, name)
+
+            @notInGraph.length = 0
+            @info "number of edges:#{graph.edges().length}"
+            fs.writeFileSync "tmp/graph-#{syncNo}", dot.write(graph)
+            cycles = graphlib.alg.findCycles graph
+            if cycles.length isnt 0
+             @info "cycles in test dependencies: #{@prettyjson cycles}"
+            @info "no dependency cycles"
+            @utils.transRed @graph, "setup"
+
+            # putting dependencies into json file:
+            jsonGraph = graphlib.json.write(@graph)
+            jsonGraphString = JSON.stringify(jsonGraph)
+            fs.writeFileSync 'tmp/jsonGraph', jsonGraphString
+            graph2 = graphlib.json.read(JSON.parse(fs.readFileSync('tmp/jsonGraph')))
+            @info 'number of edges after reduction jsongraph:' + graph2.edges().length
+            fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
+            @info "number of edges after reduction:#{graph.edges().length}"
+            console.timeEnd 'sync'
+            graph
 
   go: ->
     try
       fs.mkdirSync "tmp"
     @trace "options:", @opts
     @info "start crawling"
-    @sync()
+    graph = @sync()
     @logger.profile "run"
-    @crawl("setup")
+    @crawl("setup",graph)
 
 _.merge Runner.prototype, Runner.prototype.common
 runner = new Runner
