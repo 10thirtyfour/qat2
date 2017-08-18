@@ -74,10 +74,10 @@ module.exports = ->
     dbprofiles:
       informix:
         LYCIA_DB_DRIVER: "informix"
-        INFORMIXSERVER: "querix_test"
+        INFORMIXSERVER: "querix_tcp"
         LOGNAME: "informix"
         INFORMIXPASS: "default2375"
-        INFORMIXDIR: "C:\\Program Files\\IBM\\Informix\\Client-SDK\\"
+        INFORMIXDIR: "C:\\Program Files\\IBM Informix Client SDK"
 
       oracle:
         LYCIA_DB_DRIVER: "oracle"

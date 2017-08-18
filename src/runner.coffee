@@ -141,15 +141,17 @@ class Runner
     #gets filepath from command line
     args = process.argv.join().split('dependencyFile=')
     dependencyFileName = args[1]
-    console.log 'filepaths= ' + dependencyFileName
-
+    args = process.argv.join().split('--scenario=');
+    scenarioName = args[1];
+    args = scenarioName.split(',--');
+    scenarioName = args[0];
     #if filepath isn`t set, then the dependency tree will be created
     if dependencyFileName != undefined
             importDependencyFile = true
             console.log 'import dependency file= ' + importDependencyFile
     if importDependencyFile
-            graph = graphlib.json.read(JSON.parse(fs.readFileSync(dependencyFileName)))
-            @info 'Reading dependencies from file...'
+            graph = graphlib.json.read(JSON.parse(fs.readFileSync("dependencyFiles/dependencyFile_#{scenarioName}")))
+            @info 'Reading dependencies from file: dependencyFiles/dependencyFile_'+scenarioName
             @info 'number of nodes:' + graph.nodes().length
             @info 'number of edges:' + graph.edges().length
             console.timeEnd 'sync'
@@ -193,9 +195,10 @@ class Runner
             # putting dependencies into json file:
             jsonGraph = graphlib.json.write(@graph)
             jsonGraphString = JSON.stringify(jsonGraph)
-            fs.writeFileSync 'tmp/jsonGraph', jsonGraphString
-            graph2 = graphlib.json.read(JSON.parse(fs.readFileSync('tmp/jsonGraph')))
-            @info 'number of edges after reduction jsongraph:' + graph2.edges().length
+            fs.writeFileSync "dependencyFiles/dependencyFile_#{scenarioName}", jsonGraphString
+            graph2 = graphlib.json.read(JSON.parse(fs.readFileSync("dependencyFiles/dependencyFile_#{scenarioName}")))
+            @info "updated dependency file: dependencyFiles/dependencyFile_#{scenarioName}"
+            @info 'number of edges:' + graph2.edges().length
             fs.writeFileSync "tmp/graph-red-#{syncNo}", dot.write(graph)
             @info "number of edges after reduction:#{graph.edges().length}"
             console.timeEnd 'sync'
